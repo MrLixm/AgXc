@@ -16,6 +16,14 @@ smooth color transitions and pleasing exposure handling.
 If you find that there was too much scary-looking words until now, just
 consider AgX as a "LUT".
 
+# Background
+
+The AgX formula used is based on the original Troy's implementation which is not the same as what is currently being implemented in Blender-4+.
+- assume sRGB working space
+- clip everything outside
+- apply "inset" (gamut reshaping)
+- apply tonescale (1D curve)
+
 # Integrations
 
 - [OpenColorIO](ocio) : v1 compatible
