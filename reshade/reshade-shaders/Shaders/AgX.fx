@@ -18,7 +18,7 @@ References:
 
 namespace AgX {
 
-    #define __version__ "1.1.2"
+    #define __version__ "1.1.3"
     #define CATEGORY_DEBUG "DEBUG"
     #define CATEGORY_INPUT "Input (Pre AgX)"
     #define CATEGORY_OUTPUT "Output (Post AgX)"
