@@ -150,7 +150,7 @@ namespace AgX {
 
 
     texture LUTTex < source = "AgX-default_contrast.lut.png"; > { Width = LUT_DIMENSIONS.x; Height = LUT_DIMENSIONS.y; Format = RGBA8; };
-    sampler LUTSampler {Texture = LUTTex; Format = RGBA8;};
+    sampler2D LUTSampler {Texture = LUTTex;};
 
 
     static const float3 luma_coefs_bt709 = float3(0.2126, 0.7152, 0.0722);
