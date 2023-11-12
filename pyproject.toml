@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.11"
-colour = { git = "https://github.com/colour-science/colour.git", tag = "v0.4.2" }
+colour-science = { git = "https://github.com/colour-science/colour.git", tag = "v0.4.3" }
 numpy = "*"
 opencolorio = "2.1.*"
 
