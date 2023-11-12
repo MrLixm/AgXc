@@ -2,3 +2,8 @@ from . import c
 from .generators import BaseGenerator
 from .generators import LuaGenerator
 from .generators import HlslGenerator
+from ._colorcomponents import Whitepoint
+from ._colorcomponents import Cat
+from ._colorcomponents import AssemblyColorspace
+from ._colorcomponents import ColorspaceGamut
+from ._colorcomponents import TransferFunction

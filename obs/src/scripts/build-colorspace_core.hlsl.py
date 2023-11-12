@@ -3,11 +3,11 @@ from typing import Type
 
 import colour
 
-from obs_codegen.colorcomponents import Whitepoint
-from obs_codegen.colorcomponents import Cat
-from obs_codegen.colorcomponents import AssemblyColorspace
-from obs_codegen.colorcomponents import ColorspaceGamut
-from obs_codegen.colorcomponents import TransferFunction
+from obs_codegen import Whitepoint
+from obs_codegen import Cat
+from obs_codegen import AssemblyColorspace
+from obs_codegen import ColorspaceGamut
+from obs_codegen import TransferFunction
 from obs_codegen import BaseGenerator
 from obs_codegen import HlslGenerator
 from obs_codegen import LuaGenerator

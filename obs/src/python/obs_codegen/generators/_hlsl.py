@@ -6,9 +6,9 @@ import colour
 
 from obs_codegen.c import HLSL_INDENT as INDENT
 from obs_codegen.generators import BaseGenerator
-from obs_codegen.colorcomponents import Whitepoint
-from obs_codegen.colorcomponents import Cat
-from obs_codegen.colorcomponents import ColorspaceGamut
+from obs_codegen._colorcomponents import Whitepoint
+from obs_codegen._colorcomponents import Cat
+from obs_codegen._colorcomponents import ColorspaceGamut
 from obs_codegen.hlsl_utils import convert3x3MatrixToHlslStr
 from obs_codegen.hlsl_utils import generateCommentHeader
 

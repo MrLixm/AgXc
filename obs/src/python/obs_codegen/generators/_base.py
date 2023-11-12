@@ -4,11 +4,11 @@ import dataclasses
 import logging
 from abc import abstractmethod
 
-from obs_codegen.colorcomponents import Whitepoint
-from obs_codegen.colorcomponents import Cat
-from obs_codegen.colorcomponents import AssemblyColorspace
-from obs_codegen.colorcomponents import ColorspaceGamut
-from obs_codegen.colorcomponents import TransferFunction
+from obs_codegen._colorcomponents import Whitepoint
+from obs_codegen._colorcomponents import Cat
+from obs_codegen._colorcomponents import AssemblyColorspace
+from obs_codegen._colorcomponents import ColorspaceGamut
+from obs_codegen._colorcomponents import TransferFunction
 
 logger = logging.getLogger(__name__)
 
