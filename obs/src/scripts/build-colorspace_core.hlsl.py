@@ -1,20 +1,21 @@
 import logging
+from typing import Type
+
 import colour
-import argparse
 
 from obs_codegen.entitities import Whitepoint
 from obs_codegen.entitities import Cat
 from obs_codegen.entitities import AssemblyColorspace
 from obs_codegen.entitities import ColorspaceGamut
 from obs_codegen.entitities import TransferFunction
+from obs_codegen.generator import BaseGenerator
 from obs_codegen.hlsl.generator import HlslGenerator
 from obs_codegen.lua.generator import LuaGenerator
 
 logger = logging.getLogger(__name__)
 
 
-def generate(language: str):
-
+def generate_instance(generator_class: Type[BaseGenerator]):
     illuminant1931: dict = colour.CCS_ILLUMINANTS["CIE 1931 2 Degree Standard Observer"]
 
     transfer_function_power_2_2 = TransferFunction("Power 2.2")
@@ -149,51 +150,29 @@ def generate(language: str):
         assembly_colorspace_DCIP3_Linear,
     ]
 
-    generator_kwargs = {
-        "colorspaces_gamut": colorspace_gamut_list,
-        "whitepoints": whitepoint_list,
-        "cats": [
+    instance = generator_class(
+        colorspaces_gamut=colorspace_gamut_list,
+        whitepoints=whitepoint_list,
+        cats=[
             Cat("XYZ Scaling"),
             Cat("Bradford"),
             Cat("CAT02"),
             Cat("Von Kries"),
         ],
-        "colorspaces_assemblies": assembly_colorspace_list,
-        "transfer_functions": transfer_function_list,
-    }
-
-    if language == "hlsl":
-
-        generator_hlsl = HlslGenerator(**generator_kwargs)
-        print(generator_hlsl.generateCode())
-
-    elif language == "lua":
-
-        generator_lua = LuaGenerator(**generator_kwargs)
-        print(generator_lua.generateCode())
-
-    else:
-        raise ValueError(f"Unsupported {language=}")
-
-    return
-
-
-def cli():
-
-    parser = argparse.ArgumentParser(
-        description="OBS code generator. Just print in console."
+        colorspaces_assemblies=assembly_colorspace_list,
+        transfer_functions=transfer_function_list,
     )
-    parser.add_argument(
-        "language",
-        choices=["hlsl", "lua"],
-        help="For which language shoudl teh code be generated",
-    )
-    args = parser.parse_args()
-    language: str = args.language.lower()
 
-    generate(language=language)
+    return instance
+
+
+def build():
+    generator_hlsl = generate_instance(HlslGenerator)
+    print(generator_hlsl.generateCode())
+
+    generator_lua = generate_instance(LuaGenerator)
+    print(generator_lua.generateCode())
 
 
 if __name__ == "__main__":
-
-    cli()
+    build()
