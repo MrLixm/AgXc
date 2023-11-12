@@ -65,10 +65,10 @@ class HlslGenerator(BaseGenerator):
         Returns:
             valid HLSL code snippet
         """
-        str_cctf = self._generateTransferFunctionBlock()
-        str_matrices = self._generateMatricesBlock()
-        str_cat = self._generateCatBlock()
-        str_colorspace = self._generateColorspacesBlock()
+        str_cctf = self.generateTransferFunctionBlock()
+        str_matrices = self.generateMatricesBlock()
+        str_cat = self.generateCatBlock()
+        str_colorspace = self.generateColorspacesBlock()
 
         return (
             "// region WARNING code is procedurally generated\n"
@@ -76,7 +76,7 @@ class HlslGenerator(BaseGenerator):
             "// endregion\n"
         )
 
-    def _generateTransferFunctionBlock(self) -> str:
+    def generateTransferFunctionBlock(self) -> str:
         out_str = ""
         out_str += "\n"
 
@@ -107,7 +107,7 @@ class HlslGenerator(BaseGenerator):
 
         return out_str
 
-    def _generateMatricesBlock(self) -> str:
+    def generateMatricesBlock(self) -> str:
         out_str = generateCommentHeader("Matrices")
         out_str += "\n"
 
@@ -134,7 +134,7 @@ class HlslGenerator(BaseGenerator):
 
         return out_str
 
-    def _generateCatBlock(self) -> str:
+    def generateCatBlock(self) -> str:
         out_str = generateCommentHeader("Chromatic Adaptation Transforms")
         out_str += "\n"
 
@@ -184,7 +184,7 @@ class HlslGenerator(BaseGenerator):
 
         return out_str
 
-    def _generateColorspacesBlock(self) -> str:
+    def generateColorspacesBlock(self) -> str:
         out_str = generateCommentHeader("Colorspaces")
         out_str += "\n"
 
