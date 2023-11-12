@@ -1,3 +1,9 @@
+/*
+References
+----------
+
+- [1] https://github.com/ampas/aces-dev/blob/master/transforms/ctl/lib/ACESlib.Utilities_Color.ctl#L492
+*/
 #define matrix_identity_3x3 float3x3(\
     1.0, 0.0, 0.0,\
     0.0, 1.0, 0.0,\
@@ -32,7 +38,7 @@ float3 saturation(float3 color, float saturationAmount){
       :param color: expected sRGB primaries input
       :oaram saturationAmount: expected 0-1 range with 1=neutral, 0=no saturation.
 
-      -- ref[2] [4]
+      -- ref[1]
   */
   float luma = get_luminance(color);
   return lerp(luma, color, saturationAmount);

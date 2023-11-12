@@ -6,12 +6,6 @@ References
 ----------
 
 All data without explicit reference can assumed to be extracted/generated from `colour-science` python library.
-
-- [1] https://github.com/sobotka/AgX-S2O3/blob/main/AgX.py
-- [2] https://github.com/colour-science/colour/blob/develop/colour/models/rgb/transfer_functions/srgb.py#L99
-- [3] https://github.com/colour-science/colour/blob/develop/colour/models/rgb/transfer_functions/st_2084.py
-- [4] https://github.com/ampas/aces-dev/blob/master/transforms/ctl/lib/ACESlib.Utilities_Color.ctl#L492
-- [5] https://github.com/ampas/aces-dev/blob/master/transforms/ctl/lib/ACESlib.ODT_Common.ctl#L42
 */
 
 uniform int CAT_METHOD = 0; // See Chromatic Adapatation transform section for availables ids

@@ -1,5 +1,13 @@
 /* --------------------------------------------------------------------------------
 Transfer functions
+
+References
+----------
+
+All data without explicit reference can assumed to be extracted/generated from `colour-science` python library.
+
+- [1] https://github.com/sobotka/AgX-S2O3/blob/main/AgX.py
+- [2] https://github.com/colour-science/colour/blob/develop/colour/models/rgb/transfer_functions/srgb.py#L99
 -------------------------------------------------------------------------------- */
 
 float3 cctf_log2_normalized_from_open_domain(float3 color, float minimum_ev, float maximum_ev)
@@ -8,7 +16,7 @@ float3 cctf_log2_normalized_from_open_domain(float3 color, float minimum_ev, flo
 
     Similar to OCIO lg2 AllocationTransform.
 
-    ref[1]
+    --ref[1]
 */
 {
     float in_midgrey = 0.18;
