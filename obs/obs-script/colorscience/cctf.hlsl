@@ -11,6 +11,7 @@ All data without explicit reference can assumed to be extracted/generated from `
 - [3] https://dl.fujifilm-x.com/support/lut/F-Log_DataSheet_E_Ver.1.0.pdf
 - [4] https://dl.fujifilm-x.com/support/lut/F-Log2_DataSheet_E_Ver.1.0.pdf
 - [5] https://github.com/colour-science/colour/blob/develop/colour/models/rgb/transfer_functions/fujifilm_f_log.py
+- [6] http://download.nikonimglib.com/archive3/hDCmK00m9JDI03RPruD74xpoU905/N-Log_Specification_(En)01.pdf
 -------------------------------------------------------------------------------- */
 
 float3 cctf_log2_normalized_from_open_domain(float3 color, float minimum_ev, float maximum_ev)
@@ -139,7 +140,7 @@ _FLogConstants FLog2Constants(){
 float3 _cctf_decoding_FLog(float3 color, _FLogConstants flconst){
     return color < flconst.cut2 ?
         (color - flconst.f) / flconst.e :
-        powsafe(10, ((color - flconst.d) / flconst.c)) / flconst.a - flconst.b / flconst.a;
+        powsafe(10.0, ((color - flconst.d) / flconst.c)) / flconst.a - flconst.b / flconst.a;
 }
 float3 _cctf_encoding_FLog(float3 color, _FLogConstants flconst){
     return color < flconst.cut1 ?
@@ -152,3 +153,36 @@ float3 cctf_encoding_FLog(float3 color){return _cctf_encoding_FLog(color, FLogCo
 
 float3 cctf_decoding_FLog2(float3 color){return _cctf_decoding_FLog(color, FLog2Constants());}
 float3 cctf_encoding_FLog2(float3 color){return _cctf_encoding_FLog(color, FLog2Constants());}
+
+struct _NLogConstants {
+    float a;
+    float b;
+    float c;
+    float d;
+    float cut1;
+    float cut2;
+};
+// ref[6]
+_NLogConstants NLogConstants(){
+    _NLogConstants output;
+    output.a = 650.0/1023.0;
+    output.b = 0.0075;
+    output.c = 150.0/1023.0;
+    output.d = 619.0/1023.0;
+    output.cut1 = 0.328;
+    output.cut2 = 452.0/1023.0;
+    return output;
+}
+// ref[6]
+float3 cctf_decoding_NLog(float3 color){
+     _NLogConstants nlconst = NLogConstants();
+     return color < nlconst.cut2 ?
+            powsafe(color/nlconst.a, 3.0) - nlconst.b:
+            exp((color - nlconst.d) / nlconst.c);
+}
+float3 cctf_encoding_NLog(float3 color){
+     _NLogConstants nlconst = NLogConstants();
+     return color < nlconst.cut1 ?
+            nlconst.a * powsafe(color + nlconst.b, 1.0/3.0):
+            nlconst.c * log(color) + nlconst.d;
+}
