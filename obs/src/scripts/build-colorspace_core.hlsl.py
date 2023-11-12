@@ -8,9 +8,9 @@ from obs_codegen.entitities import Cat
 from obs_codegen.entitities import AssemblyColorspace
 from obs_codegen.entitities import ColorspaceGamut
 from obs_codegen.entitities import TransferFunction
-from obs_codegen.generator import BaseGenerator
-from obs_codegen.hlsl.generator import HlslGenerator
-from obs_codegen.lua.generator import LuaGenerator
+from obs_codegen import BaseGenerator
+from obs_codegen import HlslGenerator
+from obs_codegen import LuaGenerator
 
 logger = logging.getLogger(__name__)
 

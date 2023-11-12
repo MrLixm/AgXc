@@ -9,15 +9,14 @@ from obs_codegen.generator import BaseGenerator
 from obs_codegen.entitities import Whitepoint
 from obs_codegen.entitities import Cat
 from obs_codegen.entitities import ColorspaceGamut
-from .util import convert3x3MatrixToHlslStr
-from .util import generateCommentHeader
+from obs_codegen.hlsl_utils import convert3x3MatrixToHlslStr
+from obs_codegen.hlsl_utils import generateCommentHeader
 
 logger = logging.getLogger(__name__)
 
 
 @dataclasses.dataclass
 class HlslVariable:
-
     name: str
     definition: str
 
@@ -27,7 +26,6 @@ def processCat(
     whitepoint_target: Whitepoint,
     cat: Cat,
 ) -> HlslVariable:
-
     matrix_cat = colour.adaptation.matrix_chromatic_adaptation_VonKries(
         colour.xy_to_XYZ(whitepoint_source.coordinates),
         colour.xy_to_XYZ(whitepoint_target.coordinates),
@@ -79,21 +77,17 @@ class HlslGenerator(BaseGenerator):
         )
 
     def _generateTransferFunctionBlock(self) -> str:
-
         out_str = ""
         out_str += "\n"
 
         for transfer_function in self.transfer_functions:
-
             out_str += f"uniform int {transfer_function.id_variable_name} = {transfer_function.id};  // {transfer_function.name}\n"
 
         for cctf_mode in ["decoding", "encoding"]:
-
             out_str += "\n\n"
             out_str += f"float3 apply_cctf_{cctf_mode}(float3 color, int cctf_id){{\n"
 
             for transfer_function in self.transfer_functions:
-
                 skip = not transfer_function.has_decoding and cctf_mode == "decoding"
                 if skip:
                     continue
@@ -114,12 +108,10 @@ class HlslGenerator(BaseGenerator):
         return out_str
 
     def _generateMatricesBlock(self) -> str:
-
         out_str = generateCommentHeader("Matrices")
         out_str += "\n"
 
         for colorspace in self.colorspaces_gamut:
-
             out_str += processColorspaceMatrix(colorspace) + "\n"
 
         out_str += "\n"
@@ -128,7 +120,6 @@ class HlslGenerator(BaseGenerator):
             out_str += f"uniform int {colorspace.id_variable_name} = {colorspace.id};\n"
 
         for gamut_direction in ["to_XYZ", "from_XYZ"]:
-
             out_str += "\n\n"
             out_str += f"float3x3 get_gamut_matrix_{gamut_direction}(int gamutid){{\n"
 
@@ -144,7 +135,6 @@ class HlslGenerator(BaseGenerator):
         return out_str
 
     def _generateCatBlock(self) -> str:
-
         out_str = generateCommentHeader("Chromatic Adaptation Transforms")
         out_str += "\n"
 
@@ -155,9 +145,7 @@ class HlslGenerator(BaseGenerator):
         cat_variable_dict = dict()
 
         for cat in self.cats:
-
             for whitepoint_combinaison in whitepoint_combinaison_list:
-
                 whitepoint_source = whitepoint_combinaison[0]
                 whitepoint_target = whitepoint_combinaison[1]
 
@@ -197,7 +185,6 @@ class HlslGenerator(BaseGenerator):
         return out_str
 
     def _generateColorspacesBlock(self) -> str:
-
         out_str = generateCommentHeader("Colorspaces")
         out_str += "\n"
 
@@ -210,7 +197,6 @@ class HlslGenerator(BaseGenerator):
         out_str += "};\n\n"
 
         for assembly_colorspace in self.colorspaces_assemblies:
-
             out_str += f"uniform int {assembly_colorspace.id_variable_name} = {assembly_colorspace.id};\n"
 
         out_str += "\n"
@@ -219,7 +205,6 @@ class HlslGenerator(BaseGenerator):
         out_str += f"\n{INDENT}Colorspace colorspace;\n\n"
 
         for assembly_colorspace in self.colorspaces_assemblies:
-
             out_str += INDENT
             out_str += (
                 f"if (colorspace_id == {assembly_colorspace.id_variable_name}){{\n"
