@@ -8,6 +8,9 @@ All data without explicit reference can assumed to be extracted/generated from `
 
 - [1] https://github.com/sobotka/AgX-S2O3/blob/main/AgX.py
 - [2] https://github.com/colour-science/colour/blob/develop/colour/models/rgb/transfer_functions/srgb.py#L99
+- [3] https://dl.fujifilm-x.com/support/lut/F-Log_DataSheet_E_Ver.1.0.pdf
+- [4] https://dl.fujifilm-x.com/support/lut/F-Log2_DataSheet_E_Ver.1.0.pdf
+- [5] https://github.com/colour-science/colour/blob/develop/colour/models/rgb/transfer_functions/fujifilm_f_log.py
 -------------------------------------------------------------------------------- */
 
 float3 cctf_log2_normalized_from_open_domain(float3 color, float minimum_ev, float maximum_ev)
@@ -93,3 +96,59 @@ float3 cctf_encoding_Display_P3(float3 color){return cctf_encoding_sRGB_EOTF(col
 
 float3 cctf_decoding_Adobe_RGB_1998(float3 color){return powsafe(color, 2.19921875);}
 float3 cctf_encoding_Adobe_RGB_1998(float3 color){return powsafe(color, 1/2.19921875);}
+
+
+struct _FLogConstants {
+    float a;
+    float b;
+    float c;
+    float d;
+    float e;
+    float f;
+    float cut1;
+    float cut2;
+};
+// ref[3]
+_FLogConstants FLogConstants(){
+    _FLogConstants output;
+    output.a = 0.555556;
+    output.b = 0.009468;
+    output.c = 0.344676;
+    output.d = 0.790453;
+    output.e = 8.735631;
+    output.f = 0.092864;
+    output.cut1 = 0.00089;
+    output.cut2 = 0.10053777522386;
+    return output;
+}
+// ref[4]
+_FLogConstants FLog2Constants(){
+    _FLogConstants output;
+    output.a = 5.555556;
+    output.b = 0.064829;
+    output.c = 0.245281;
+    output.d = 0.384316;
+    output.e = 8.799461;
+    output.f = 0.092864;
+    output.cut1 = 0.000889;
+    output.cut2 = 0.100686685370811;
+    return output;
+}
+
+// ref[3][4][5]
+float3 _cctf_decoding_FLog(float3 color, _FLogConstants flconst){
+    return color < flconst.cut2 ?
+        (color - flconst.f) / flconst.e :
+        powsafe(10, ((color - flconst.d) / flconst.c)) / flconst.a - flconst.b / flconst.a;
+}
+float3 _cctf_encoding_FLog(float3 color, _FLogConstants flconst){
+    return color < flconst.cut1 ?
+        flconst.e * color + flconst.f :
+        flconst.c * log10(flconst.a * color + flconst.b) + flconst.d;
+}
+
+float3 cctf_decoding_FLog(float3 color){return _cctf_decoding_FLog(color, FLogConstants());}
+float3 cctf_encoding_FLog(float3 color){return _cctf_encoding_FLog(color, FLogConstants());}
+
+float3 cctf_decoding_FLog2(float3 color){return _cctf_decoding_FLog(color, FLog2Constants());}
+float3 cctf_encoding_FLog2(float3 color){return _cctf_encoding_FLog(color, FLog2Constants());}
