@@ -59,32 +59,29 @@ float3 cctf_decoding_sRGB_EOTF(float3 color){
     // ref[2]
     return (color <= 0.04045) ? (color / 12.92) : (powsafe((color + 0.055) / 1.055, 2.4));
 }
-
 float3 cctf_encoding_sRGB_EOTF(float3 color){
     // ref[2]
     return (color <= 0.0031308) ? (color * 12.92) : (1.055 * powsafe(color, 1/2.4) - 0.055);
 }
 
 float3 cctf_decoding_Power_2_2(float3 color){return powsafe(color, 2.2);}
-
 float3 cctf_encoding_Power_2_2(float3 color){return powsafe(color, 1/2.2);}
 
 float3 cctf_decoding_BT_709(float3 color){return powsafe(color, 2.4);}
-
 float3 cctf_encoding_BT_709(float3 color){return powsafe(color, 1/2.4);}
 
 float3 cctf_decoding_DCIP3(float3 color){return powsafe(color, 2.6);}
-
 float3 cctf_encoding_DCIP3(float3 color){return powsafe(color, 1/2.6);}
 
-float3 cctf_encoding_BT_2020(float3 color){return (color < 0.0181) ? color * 4.5 : 1.0993 * powsafe(color, 0.45) - (1.0993 - 1);}
-
-float3 cctf_decoding_BT_2020(float3 color){return (color < cctf_encoding_BT_2020(0.0181)) ? color / 4.5 : powsafe((color + (1.0993 - 1)) / 1.0993, 1 / 0.45) ;}
+float3 cctf_encoding_BT_2020(float3 color){
+    return (color < 0.0181) ? color * 4.5 : 1.0993 * powsafe(color, 0.45) - (1.0993 - 1);
+}
+float3 cctf_decoding_BT_2020(float3 color){
+    return (color < cctf_encoding_BT_2020(0.0181)) ? color / 4.5 : powsafe((color + (1.0993 - 1)) / 1.0993, 1 / 0.45) ;
+}
 
 float3 cctf_decoding_Display_P3(float3 color){return cctf_decoding_sRGB_EOTF(color);}
-
 float3 cctf_encoding_Display_P3(float3 color){return cctf_encoding_sRGB_EOTF(color);}
 
 float3 cctf_decoding_Adobe_RGB_1998(float3 color){return powsafe(color, 2.19921875);}
-
 float3 cctf_encoding_Adobe_RGB_1998(float3 color){return powsafe(color, 1/2.19921875);}
