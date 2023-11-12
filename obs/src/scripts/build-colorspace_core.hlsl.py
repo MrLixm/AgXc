@@ -1,5 +1,8 @@
 import logging
+import sys
+from pathlib import Path
 from typing import Type
+from typing import TypeVar
 
 import colour
 
@@ -12,10 +15,13 @@ from obs_codegen import BaseGenerator
 from obs_codegen import HlslGenerator
 from obs_codegen import LuaGenerator
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
-def generate_instance(generator_class: Type[BaseGenerator]):
+BaseGeneratorType = TypeVar("BaseGeneratorType", bound=BaseGenerator)
+
+
+def generate_instance(generator_class: Type[BaseGeneratorType]) -> BaseGeneratorType:
     illuminant1931: dict = colour.CCS_ILLUMINANTS["CIE 1931 2 Degree Standard Observer"]
 
     transfer_function_power_2_2 = TransferFunction("Power 2.2")
@@ -166,13 +172,32 @@ def generate_instance(generator_class: Type[BaseGenerator]):
     return instance
 
 
+class BuildPaths:
+    root = Path(__file__).parent.parent.parent / "obs-script"
+    assert root.exists()
+
+    colorspace_core_hlsl = root / "colorspace_core.hlsl"
+
+
 def build():
+    LOGGER.info("started build.")
+
     generator_hlsl = generate_instance(HlslGenerator)
-    print(generator_hlsl.generateCode())
+    hlsl_code = generator_hlsl.generateCode()
+    LOGGER.info(f"writting <{BuildPaths.colorspace_core_hlsl}> ...")
+    BuildPaths.colorspace_core_hlsl.write_text(hlsl_code)
 
     generator_lua = generate_instance(LuaGenerator)
-    print(generator_lua.generateCode())
+    lua_code = generator_lua.generateCode()
+    print(lua_code)
+    LOGGER.info("finished build.")
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="{levelname: <7} | {asctime} [{name}] {message}",
+        style="{",
+        stream=sys.stdout,
+    )
     build()
