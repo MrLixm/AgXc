@@ -12,7 +12,7 @@ generated from python code.
 To keep scalability on such a pontentatilly big dataset and reduce human mistakes,
 a good part of the code is generated in python.
 
-This can be found in [{root}/dev/obs/obs_codegen](../../dev/obs/obs_codegen)
+This can be found in [../src/](../src)
 package. More details below.
 
 # Add a new colorspace.
@@ -21,7 +21,7 @@ package. More details below.
 
 You will need :
 
-1. Modify the `/dev/obs/obs_codegen/__main__.py` by adding the new colorspace.
+1. Modify the `../src/python/obs_codegen/__main__.py` by adding the new colorspace.
 This is done by adding a new instance of `AssemblyColorspace`.
 
 2. Generate the HLSL code by running `python -m obs_codegen hlsl`
