@@ -12,6 +12,8 @@ All data without explicit reference can assumed to be extracted/generated from `
 - [4] https://dl.fujifilm-x.com/support/lut/F-Log2_DataSheet_E_Ver.1.0.pdf
 - [5] https://github.com/colour-science/colour/blob/develop/colour/models/rgb/transfer_functions/fujifilm_f_log.py
 - [6] http://download.nikonimglib.com/archive3/hDCmK00m9JDI03RPruD74xpoU905/N-Log_Specification_(En)01.pdf
+- [7] https://github.com/colour-science/colour/blob/develop/colour/models/rgb/transfer_functions/sony.py
+- [8] https://drive.google.com/file/d/1Q1RYri6BaxtYYxX0D4zVD6lAmbwmgikc/view
 -------------------------------------------------------------------------------- */
 
 float3 cctf_log2_normalized_from_open_domain(float3 color, float minimum_ev, float maximum_ev)
@@ -140,7 +142,7 @@ _FLogConstants FLog2Constants(){
 float3 _cctf_decoding_FLog(float3 color, _FLogConstants flconst){
     return color < flconst.cut2 ?
         (color - flconst.f) / flconst.e :
-        powsafe(10.0, ((color - flconst.d) / flconst.c)) / flconst.a - flconst.b / flconst.a;
+        pow(10.0, ((color - flconst.d) / flconst.c)) / flconst.a - flconst.b / flconst.a;
 }
 float3 _cctf_encoding_FLog(float3 color, _FLogConstants flconst){
     return color < flconst.cut1 ?
@@ -185,4 +187,71 @@ float3 cctf_encoding_NLog(float3 color){
      return color < nlconst.cut1 ?
             nlconst.a * powsafe(color + nlconst.b, 1.0/3.0):
             nlconst.c * log(color) + nlconst.d;
+}
+
+struct _SLogConstants {
+    float a;
+    float b;
+    float c;
+    float d;
+    float e;
+    float f;
+    float g;
+    float h;
+};
+// ref[7][8]
+_SLogConstants SLogConstants(){
+    _SLogConstants output;
+    output.a = 0.432699;
+    output.b = 0.616596;
+    output.c = 0.030001222851889303;
+    output.d = 3.53881278538813;
+    output.e = 0.03;
+    output.f = 155.0;
+    output.g = 219.0;
+    output.h = 0.037584;
+    return output;
+}
+// ref[7]
+float3 cctf_encoding_SLog(float3 color){
+     _SLogConstants slconst = SLogConstants();
+     // convert from reflection to IRE
+     float3 outcolor = color / 0.9;
+     outcolor = color >= 0.0 ?
+            (slconst.a * log10(outcolor + slconst.h) + slconst.b) + slconst.e:
+            outcolor * 5.0 + slconst.c;
+     // asume bitdepth=10 and out_normalised_code_value=True compared to colour
+     return convert_cctf_full_to_legal(outcolor);
+
+}
+float3 cctf_decoding_SLog(float3 color){
+     _SLogConstants slconst = SLogConstants();
+     // asume bitdepth=10 and in_normalised_code_value=True compared to colour
+     float3 outcolor = convert_cctf_legal_to_full(color);
+     outcolor = color >= cctf_encoding_SLog(0.0) ?
+            pow(10.0, (color - slconst.b - slconst.e) / slconst.a) - slconst.h:
+            (color - slconst.c) / 5.0;
+     // convert IRE to reflection
+     return outcolor * 0.9;
+
+}
+
+float3 cctf_decoding_SLog2(float3 color){return 219.0 * cctf_decoding_SLog(color) / 155.0;}
+float3 cctf_encoding_SLog2(float3 color){return cctf_encoding_SLog(color * 155.0 / 219.0);}
+
+
+// ref[7]
+float3 cctf_decoding_SLog3(float3 color){
+     float slconst_a = 0.01125000;
+     float slconst_b = 171.2102946929;
+     return color >= slconst_b / 1023.0 ?
+            pow(10.0, (color * 1023.0 - 420.0) / 261.5) * (0.18 + 0.01) - 0.01:
+            (color * 1023.0 - 95.0) * slconst_a / (slconst_b - 95.0);
+}
+float3 cctf_encoding_SLog3(float3 color){
+     float slconst_a = 0.01125000;
+    float slconst_b = 171.2102946929;
+     return color >= slconst_a ?
+            (420.0 + log10((color + 0.01) / (0.18 + 0.01)) * 261.5) / 1023.0:
+            (color * (slconst_b - 95.0) / slconst_a + 95.0) / 1023.0;
 }
