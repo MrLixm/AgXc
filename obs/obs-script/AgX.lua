@@ -18,7 +18,7 @@ local agx_lut_file_path = script_path() .. 'AgX-default_contrast.lut.png'
 function script_description()
   return ([[
   <p>
-  AgX is a display rendering transform to improve image formation.
+  AgX is a display rendering transform to improve imagery rendering.
   </p>
   <p>
   Visit <a href=https://github.com/MrLixm/AgXc >https://github.com/MrLixm/AgXc</a>
