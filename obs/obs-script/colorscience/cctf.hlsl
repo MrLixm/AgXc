@@ -14,6 +14,7 @@ All data without explicit reference can assumed to be extracted/generated from `
 - [6] http://download.nikonimglib.com/archive3/hDCmK00m9JDI03RPruD74xpoU905/N-Log_Specification_(En)01.pdf
 - [7] https://github.com/colour-science/colour/blob/develop/colour/models/rgb/transfer_functions/sony.py
 - [8] https://drive.google.com/file/d/1Q1RYri6BaxtYYxX0D4zVD6lAmbwmgikc/view
+- [9] https://pro-av.panasonic.net/en/cinema_camera_varicam_eva/support/pdf/VARICAM_V-Log_V-Gamut.pdf
 -------------------------------------------------------------------------------- */
 
 float3 cctf_log2_normalized_from_open_domain(float3 color, float minimum_ev, float maximum_ev)
@@ -254,4 +255,34 @@ float3 cctf_encoding_SLog3(float3 color){
      return color >= slconst_a ?
             (420.0 + log10((color + 0.01) / (0.18 + 0.01)) * 261.5) / 1023.0:
             (color * (slconst_b - 95.0) / slconst_a + 95.0) / 1023.0;
+}
+
+struct _VLogConstants {
+    float b;
+    float c;
+    float d;
+    float cut1;
+    float cut2;
+};
+// ref[9]
+_VLogConstants VLogConstants(){
+    _VLogConstants output;
+    output.b = 0.00873;
+    output.c = 0.241514;
+    output.d = 0.598206;
+    output.cut1 = 0.01;
+    output.cut2 = 0.181;
+    return output;
+}
+float3 cctf_decoding_VLog(float3 color){
+     _VLogConstants vlconst = VLogConstants();
+     return color < vlconst.cut2 ?
+           (color - 0.125) / 5.6:
+           pow(10.0, (color - vlconst.d) / vlconst.c) - vlconst.b;
+}
+float3 cctf_encoding_VLog(float3 color){
+     _VLogConstants vlconst = VLogConstants();
+     return color < vlconst.cut1 ?
+           5.6 * color + 0.125:
+           vlconst.c * log10(color + vlconst.b) + vlconst.d;
 }
