@@ -7,6 +7,13 @@ uniform int cctf_id_DCIP3 = 3;  // DCI-P3
 uniform int cctf_id_Display_P3 = 4;  // Display P3
 uniform int cctf_id_Adobe_RGB_1998 = 5;  // Adobe RGB 1998
 uniform int cctf_id_BT_2020 = 6;  // BT.2020
+uniform int cctf_id_FLog = 7;  // FLog
+uniform int cctf_id_FLog2 = 8;  // FLog2
+uniform int cctf_id_NLog = 9;  // NLog
+uniform int cctf_id_SLog = 10;  // SLog
+uniform int cctf_id_SLog2 = 11;  // SLog2
+uniform int cctf_id_SLog3 = 12;  // SLog3
+uniform int cctf_id_VLog = 13;  // VLog
 
 
 float3 apply_cctf_decoding(float3 color, int cctf_id){
@@ -17,6 +24,13 @@ float3 apply_cctf_decoding(float3 color, int cctf_id){
     if (cctf_id == cctf_id_Display_P3       ) return cctf_decoding_Display_P3(color);
     if (cctf_id == cctf_id_Adobe_RGB_1998   ) return cctf_decoding_Adobe_RGB_1998(color);
     if (cctf_id == cctf_id_BT_2020          ) return cctf_decoding_BT_2020(color);
+    if (cctf_id == cctf_id_FLog             ) return cctf_decoding_FLog(color);
+    if (cctf_id == cctf_id_FLog2            ) return cctf_decoding_FLog2(color);
+    if (cctf_id == cctf_id_NLog             ) return cctf_decoding_NLog(color);
+    if (cctf_id == cctf_id_SLog             ) return cctf_decoding_SLog(color);
+    if (cctf_id == cctf_id_SLog2            ) return cctf_decoding_SLog2(color);
+    if (cctf_id == cctf_id_SLog3            ) return cctf_decoding_SLog3(color);
+    if (cctf_id == cctf_id_VLog             ) return cctf_decoding_VLog(color);
     return color;
 }
 
@@ -28,5 +42,12 @@ float3 apply_cctf_encoding(float3 color, int cctf_id){
     if (cctf_id == cctf_id_Display_P3       ) return cctf_encoding_Display_P3(color);
     if (cctf_id == cctf_id_Adobe_RGB_1998   ) return cctf_encoding_Adobe_RGB_1998(color);
     if (cctf_id == cctf_id_BT_2020          ) return cctf_encoding_BT_2020(color);
+    if (cctf_id == cctf_id_FLog             ) return cctf_encoding_FLog(color);
+    if (cctf_id == cctf_id_FLog2            ) return cctf_encoding_FLog2(color);
+    if (cctf_id == cctf_id_NLog             ) return cctf_encoding_NLog(color);
+    if (cctf_id == cctf_id_SLog             ) return cctf_encoding_SLog(color);
+    if (cctf_id == cctf_id_SLog2            ) return cctf_encoding_SLog2(color);
+    if (cctf_id == cctf_id_SLog3            ) return cctf_encoding_SLog3(color);
+    if (cctf_id == cctf_id_VLog             ) return cctf_encoding_VLog(color);
     return color;
 }

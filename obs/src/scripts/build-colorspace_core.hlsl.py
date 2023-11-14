@@ -31,6 +31,13 @@ def generate_instance(generator_class: Type[BaseGeneratorType]) -> BaseGenerator
     transfer_function_Display_P3 = TransferFunction("Display P3")
     transfer_function_Adobe_RGB_1998 = TransferFunction("Adobe RGB 1998")
     transfer_function_BT2020 = TransferFunction("BT.2020")
+    transfer_function_FLog = TransferFunction("FLog")
+    transfer_function_FLog2 = TransferFunction("FLog2")
+    transfer_function_NLog = TransferFunction("NLog")
+    transfer_function_SLog = TransferFunction("SLog")
+    transfer_function_SLog2 = TransferFunction("SLog2")
+    transfer_function_SLog3 = TransferFunction("SLog3")
+    transfer_function_VLog = TransferFunction("VLog")
 
     transfer_function_list = [
         transfer_function_power_2_2,
@@ -40,6 +47,13 @@ def generate_instance(generator_class: Type[BaseGeneratorType]) -> BaseGenerator
         transfer_function_Display_P3,
         transfer_function_Adobe_RGB_1998,
         transfer_function_BT2020,
+        transfer_function_FLog,
+        transfer_function_FLog2,
+        transfer_function_NLog,
+        transfer_function_SLog,
+        transfer_function_SLog2,
+        transfer_function_SLog3,
+        transfer_function_VLog,
     ]
 
     # fmt: off
@@ -48,12 +62,20 @@ def generate_instance(generator_class: Type[BaseGeneratorType]) -> BaseGenerator
     colorspace_gamut_Display_P3 = ColorspaceGamut.fromColourColorspaceName("Display P3")
     colorspace_gamut_Adobe_RGB_1998 = ColorspaceGamut.fromColourColorspaceName("Adobe RGB (1998)")
     colorspace_gamut_ITUR_BT_2020 = ColorspaceGamut.fromColourColorspaceName("ITU-R BT.2020")
+    colorspace_gamut_Cinema_Gamut = ColorspaceGamut.fromColourColorspaceName("Cinema Gamut")
+    colorspace_gamut_S_Gamut = ColorspaceGamut.fromColourColorspaceName("S-Gamut")
+    colorspace_gamut_S_Gamut3_Cine = ColorspaceGamut.fromColourColorspaceName("S-Gamut3.Cine")
+    colorspace_gamut_V_Gamut = ColorspaceGamut.fromColourColorspaceName("V-Gamut")
     colorspace_gamut_list = [
         colorspace_gamut_sRGB,
         colorspace_gamut_DCIP3,
         colorspace_gamut_Display_P3,
         colorspace_gamut_Adobe_RGB_1998,
         colorspace_gamut_ITUR_BT_2020,
+        colorspace_gamut_Cinema_Gamut,
+        colorspace_gamut_S_Gamut,
+        colorspace_gamut_S_Gamut3_Cine,
+        colorspace_gamut_V_Gamut,
     ]
     # fmt: on
 
@@ -140,6 +162,60 @@ def generate_instance(generator_class: Type[BaseGeneratorType]) -> BaseGenerator
         whitepoint_DCIP3,
         None,
     )
+    assembly_colorspace_Cinema_Gamut = AssemblyColorspace(
+        "Cinema Gamut (Canon)",
+        colorspace_gamut_Cinema_Gamut,
+        whitepoint_D65,
+        None,
+    )
+    assembly_colorspace_F_Gamut_FLog = AssemblyColorspace(
+        "F-Gamut FLog (Fujifilm)",
+        colorspace_gamut_ITUR_BT_2020,
+        whitepoint_D65,
+        transfer_function_FLog,
+    )
+    assembly_colorspace_F_Gamut_FLog2 = AssemblyColorspace(
+        "F-Gamut FLog2 (Fujifilm)",
+        colorspace_gamut_ITUR_BT_2020,
+        whitepoint_D65,
+        transfer_function_FLog2,
+    )
+    assembly_colorspace_N_Gamut = AssemblyColorspace(
+        "N-Gamut (Nikon)",
+        colorspace_gamut_ITUR_BT_2020,
+        whitepoint_D65,
+        transfer_function_NLog,
+    )
+    assembly_colorspace_S_Gamut = AssemblyColorspace(
+        "S-Gamut (Sony)",
+        colorspace_gamut_S_Gamut,
+        whitepoint_D65,
+        transfer_function_SLog,
+    )
+    assembly_colorspace_S_Gamut2 = AssemblyColorspace(
+        "S-Gamut2 (Sony)",
+        colorspace_gamut_S_Gamut,
+        whitepoint_D65,
+        transfer_function_SLog2,
+    )
+    assembly_colorspace_S_Gamut3 = AssemblyColorspace(
+        "S-Gamut3 (Sony)",
+        colorspace_gamut_S_Gamut,
+        whitepoint_D65,
+        transfer_function_SLog3,
+    )
+    assembly_colorspace_S_Gamut3_Cine = AssemblyColorspace(
+        "S-Gamut3.Cine (Sony)",
+        colorspace_gamut_S_Gamut3_Cine,
+        whitepoint_D65,
+        transfer_function_SLog3,
+    )
+    assembly_colorspace_V_Gamut = AssemblyColorspace(
+        "V-Gamut (Panasonic)",
+        colorspace_gamut_V_Gamut,
+        whitepoint_D65,
+        transfer_function_VLog,
+    )
     assembly_colorspace_list = [
         assembly_colorspace_Passthrough,
         assembly_colorspace_sRGB_Display_EOTF,
@@ -154,6 +230,15 @@ def generate_instance(generator_class: Type[BaseGeneratorType]) -> BaseGenerator
         assembly_colorspace_BT_2020_Display_OETF,
         assembly_colorspace_BT_2020_Linear,
         assembly_colorspace_DCIP3_Linear,
+        assembly_colorspace_Cinema_Gamut,
+        assembly_colorspace_F_Gamut_FLog,
+        assembly_colorspace_F_Gamut_FLog2,
+        assembly_colorspace_N_Gamut,
+        assembly_colorspace_S_Gamut,
+        assembly_colorspace_S_Gamut2,
+        assembly_colorspace_S_Gamut3,
+        assembly_colorspace_S_Gamut3_Cine,
+        assembly_colorspace_V_Gamut,
     ]
 
     instance = generator_class(
@@ -204,6 +289,7 @@ def build():
         LOGGER.info(f"writting <{target_path}> ...")
         target_path.write_text(hlsl_code)
 
+    LOGGER.info("generating lua code ...")
     generator_lua = generate_instance(LuaGenerator)
     lua_code = generator_lua.generateCode()
     print(lua_code)

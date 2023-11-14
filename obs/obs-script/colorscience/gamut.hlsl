@@ -63,12 +63,64 @@ Matrices
     0.017639857, -0.042770613, 0.942103121\
 )
 
+// Cinema Gamut
+#define matrix_Cinema_Gamut_to_XYZ float3x3(\
+    0.716049647, 0.129683478, 0.104722803,\
+    0.261261358, 0.869642146, -0.130903503,\
+    -0.009676347, -0.236481636, 1.335215733\
+)
+#define matrix_Cinema_Gamut_from_XYZ float3x3(\
+    1.489818275, -0.260895902, -0.142426522,\
+    -0.458166574, 1.261627783, 0.159623632,\
+    -0.070349668, 0.221557667, 0.776181604\
+)
+
+// S-Gamut
+#define matrix_SGamut_to_XYZ float3x3(\
+    0.706482713, 0.12880105, 0.115172164,\
+    0.270979671, 0.786606411, -0.057586082,\
+    -0.009677845, 0.004600038, 1.094135559\
+)
+#define matrix_SGamut_from_XYZ float3x3(\
+    1.507399899, -0.245822137, -0.171611681,\
+    -0.518151727, 1.355391241, 0.125878668,\
+    0.015511698, -0.007872771, 0.911916366\
+)
+
+// S-Gamut3.Cine
+#define matrix_SGamut3_Cine_to_XYZ float3x3(\
+    0.599083921, 0.248925516, 0.10244649,\
+    0.21507582, 0.885068502, -0.100144322,\
+    -0.03206585, -0.027658391, 1.148781991\
+)
+#define matrix_SGamut3_Cine_from_XYZ float3x3(\
+    1.846778969, -0.525986123, -0.210545211,\
+    -0.444153263, 1.259442903, 0.149399973,\
+    0.040855421, 0.015640889, 0.868207249\
+)
+
+// V-Gamut
+#define matrix_VGamut_to_XYZ float3x3(\
+    0.679644, 0.152211, 0.1186,\
+    0.260686, 0.774894, -0.03558,\
+    -0.00931, -0.004612, 1.10298\
+)
+#define matrix_VGamut_from_XYZ float3x3(\
+    1.589012, -0.313204, -0.180965,\
+    -0.534053, 1.396011, 0.102458,\
+    0.011179, 0.003194, 0.905535\
+)
+
 
 uniform int gamutid_sRGB = 0;
 uniform int gamutid_DCIP3 = 1;
 uniform int gamutid_Display_P3 = 2;
 uniform int gamutid_Adobe_RGB_1998 = 3;
 uniform int gamutid_ITUR_BT_2020 = 4;
+uniform int gamutid_Cinema_Gamut = 5;
+uniform int gamutid_SGamut = 6;
+uniform int gamutid_SGamut3_Cine = 7;
+uniform int gamutid_VGamut = 8;
 
 
 float3x3 get_gamut_matrix_to_XYZ(int gamutid){
@@ -77,6 +129,10 @@ float3x3 get_gamut_matrix_to_XYZ(int gamutid){
     if (gamutid == gamutid_Display_P3       ) return matrix_Display_P3_to_XYZ;
     if (gamutid == gamutid_Adobe_RGB_1998   ) return matrix_Adobe_RGB_1998_to_XYZ;
     if (gamutid == gamutid_ITUR_BT_2020     ) return matrix_ITUR_BT_2020_to_XYZ;
+    if (gamutid == gamutid_Cinema_Gamut     ) return matrix_Cinema_Gamut_to_XYZ;
+    if (gamutid == gamutid_SGamut           ) return matrix_SGamut_to_XYZ;
+    if (gamutid == gamutid_SGamut3_Cine     ) return matrix_SGamut3_Cine_to_XYZ;
+    if (gamutid == gamutid_VGamut           ) return matrix_VGamut_to_XYZ;
     return matrix_identity_3x3;
 }
 
@@ -86,5 +142,9 @@ float3x3 get_gamut_matrix_from_XYZ(int gamutid){
     if (gamutid == gamutid_Display_P3       ) return matrix_Display_P3_from_XYZ;
     if (gamutid == gamutid_Adobe_RGB_1998   ) return matrix_Adobe_RGB_1998_from_XYZ;
     if (gamutid == gamutid_ITUR_BT_2020     ) return matrix_ITUR_BT_2020_from_XYZ;
+    if (gamutid == gamutid_Cinema_Gamut     ) return matrix_Cinema_Gamut_from_XYZ;
+    if (gamutid == gamutid_SGamut           ) return matrix_SGamut_from_XYZ;
+    if (gamutid == gamutid_SGamut3_Cine     ) return matrix_SGamut3_Cine_from_XYZ;
+    if (gamutid == gamutid_VGamut           ) return matrix_VGamut_from_XYZ;
     return matrix_identity_3x3;
 }

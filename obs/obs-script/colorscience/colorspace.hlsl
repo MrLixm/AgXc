@@ -22,6 +22,15 @@ uniform int colorspaceid_Adobe_RGB_1998_Display = 9;
 uniform int colorspaceid_BT_2020_Display_OETF = 10;
 uniform int colorspaceid_BT_2020_Linear = 11;
 uniform int colorspaceid_DCIP3_Linear = 12;
+uniform int colorspaceid_Cinema_Gamut_Canon = 13;
+uniform int colorspaceid_FGamut_FLog_Fujifilm = 14;
+uniform int colorspaceid_FGamut_FLog2_Fujifilm = 15;
+uniform int colorspaceid_NGamut_Nikon = 16;
+uniform int colorspaceid_SGamut_Sony = 17;
+uniform int colorspaceid_SGamut2_Sony = 18;
+uniform int colorspaceid_SGamut3_Sony = 19;
+uniform int colorspaceid_SGamut3_Cine_Sony = 20;
+uniform int colorspaceid_VGamut_Panasonic = 21;
 
 Colorspace getColorspaceFromId(int colorspace_id){
 
@@ -91,6 +100,51 @@ Colorspace getColorspaceFromId(int colorspace_id){
         colorspace.gamut_id = gamutid_DCIP3;
         colorspace.whitepoint_id = whitepointid_DCIP3;
         colorspace.cctf_id = -1;
+    };
+    if (colorspace_id == colorspaceid_Cinema_Gamut_Canon){
+        colorspace.gamut_id = gamutid_Cinema_Gamut;
+        colorspace.whitepoint_id = whitepointid_D65;
+        colorspace.cctf_id = -1;
+    };
+    if (colorspace_id == colorspaceid_FGamut_FLog_Fujifilm){
+        colorspace.gamut_id = gamutid_ITUR_BT_2020;
+        colorspace.whitepoint_id = whitepointid_D65;
+        colorspace.cctf_id = cctf_id_FLog;
+    };
+    if (colorspace_id == colorspaceid_FGamut_FLog2_Fujifilm){
+        colorspace.gamut_id = gamutid_ITUR_BT_2020;
+        colorspace.whitepoint_id = whitepointid_D65;
+        colorspace.cctf_id = cctf_id_FLog2;
+    };
+    if (colorspace_id == colorspaceid_NGamut_Nikon){
+        colorspace.gamut_id = gamutid_ITUR_BT_2020;
+        colorspace.whitepoint_id = whitepointid_D65;
+        colorspace.cctf_id = cctf_id_NLog;
+    };
+    if (colorspace_id == colorspaceid_SGamut_Sony){
+        colorspace.gamut_id = gamutid_SGamut;
+        colorspace.whitepoint_id = whitepointid_D65;
+        colorspace.cctf_id = cctf_id_SLog;
+    };
+    if (colorspace_id == colorspaceid_SGamut2_Sony){
+        colorspace.gamut_id = gamutid_SGamut;
+        colorspace.whitepoint_id = whitepointid_D65;
+        colorspace.cctf_id = cctf_id_SLog2;
+    };
+    if (colorspace_id == colorspaceid_SGamut3_Sony){
+        colorspace.gamut_id = gamutid_SGamut;
+        colorspace.whitepoint_id = whitepointid_D65;
+        colorspace.cctf_id = cctf_id_SLog3;
+    };
+    if (colorspace_id == colorspaceid_SGamut3_Cine_Sony){
+        colorspace.gamut_id = gamutid_SGamut3_Cine;
+        colorspace.whitepoint_id = whitepointid_D65;
+        colorspace.cctf_id = cctf_id_SLog3;
+    };
+    if (colorspace_id == colorspaceid_VGamut_Panasonic){
+        colorspace.gamut_id = gamutid_VGamut;
+        colorspace.whitepoint_id = whitepointid_D65;
+        colorspace.cctf_id = cctf_id_VLog;
     };
     return colorspace;
 }
