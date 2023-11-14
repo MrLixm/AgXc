@@ -1,3 +1,4 @@
+import dataclasses
 import logging
 import sys
 from pathlib import Path
@@ -21,7 +22,28 @@ LOGGER = logging.getLogger(__name__)
 BaseGeneratorType = TypeVar("BaseGeneratorType", bound=BaseGenerator)
 
 
-def generate_instance(generator_class: Type[BaseGeneratorType]) -> BaseGeneratorType:
+@dataclasses.dataclass
+class ColorManagementConfig:
+    colorspaces_gamut: list[ColorspaceGamut]
+    whitepoints: list[Whitepoint]
+    cats: list[Cat]
+    colorspaces_assemblies: list[AssemblyColorspace]
+    transfer_functions: list[TransferFunction]
+
+    def use_with_generator(
+        self, generator_class: Type[BaseGeneratorType]
+    ) -> BaseGeneratorType:
+        instance = generator_class(
+            colorspaces_gamut=self.colorspaces_gamut,
+            whitepoints=self.whitepoints,
+            cats=self.cats,
+            colorspaces_assemblies=self.colorspaces_assemblies,
+            transfer_functions=self.transfer_functions,
+        )
+        return instance
+
+
+def get_config():
     illuminant1931: dict = colour.CCS_ILLUMINANTS["CIE 1931 2 Degree Standard Observer"]
 
     transfer_function_power_2_2 = TransferFunction("Power 2.2")
@@ -241,7 +263,7 @@ def generate_instance(generator_class: Type[BaseGeneratorType]) -> BaseGenerator
         assembly_colorspace_V_Gamut,
     ]
 
-    instance = generator_class(
+    config = ColorManagementConfig(
         colorspaces_gamut=colorspace_gamut_list,
         whitepoints=whitepoint_list,
         cats=[
@@ -253,8 +275,7 @@ def generate_instance(generator_class: Type[BaseGeneratorType]) -> BaseGenerator
         colorspaces_assemblies=assembly_colorspace_list,
         transfer_functions=transfer_function_list,
     )
-
-    return instance
+    return config
 
 
 class BuildPaths:
@@ -273,7 +294,9 @@ class BuildPaths:
 def build():
     LOGGER.info("started build.")
 
-    generator_hlsl = generate_instance(HlslGenerator)
+    colormanagement_config = get_config()
+
+    generator_hlsl = colormanagement_config.use_with_generator(HlslGenerator)
 
     hlsl_code_mapping = {
         BuildPaths.hlsl_colorscience_cctfa: generator_hlsl.generateTransferFunctionBlock(),
@@ -290,7 +313,7 @@ def build():
         target_path.write_text(hlsl_code)
 
     LOGGER.info("generating lua code ...")
-    generator_lua = generate_instance(LuaGenerator)
+    generator_lua = colormanagement_config.use_with_generator(LuaGenerator)
     lua_code = generator_lua.generateCode()
     print(lua_code)
     LOGGER.info("finished build.")
