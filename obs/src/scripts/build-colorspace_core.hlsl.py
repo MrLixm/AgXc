@@ -282,7 +282,7 @@ class BuildPaths:
     root = Path(__file__).parent.parent.parent / "obs-script"
     assert root.exists()
 
-    hlsl_colorscience_root = root / "colorscience"
+    hlsl_colorscience_root = root / "_lib_colorscience"
     assert hlsl_colorscience_root.exists()
 
     hlsl_colorscience_cctfa = hlsl_colorscience_root / "cctf-auto.hlsl"
