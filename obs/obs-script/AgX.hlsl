@@ -93,6 +93,7 @@ struct PixelData
 // order matters + need the constants defined above
 #include "lib_math.hlsl"
 #include "lib_colorscience.hlsl"
+#include "lib_grading.hlsl"
 #include "lib_agx.hlsl"
 
 /*=================

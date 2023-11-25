@@ -15,6 +15,7 @@ uniform int CAT_METHOD = 0; // See Chromatic Adapatation transform section for a
 #include "_lib_colorscience/cat.hlsl"
 #include "_lib_colorscience/gamut.hlsl"
 #include "_lib_colorscience/colorspace.hlsl"
+#include "_lib_colorscience/imaging.hlsl"
 
 
 float3 convertColorspaceToColorspace(float3 color, int sourceColorspaceId, int targetColorspaceId){
