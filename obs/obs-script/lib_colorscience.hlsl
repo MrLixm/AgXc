@@ -10,7 +10,6 @@ All data without explicit reference can assumed to be extracted/generated from `
 
 uniform int CAT_METHOD = 0; // See Chromatic Adapatation transform section for availables ids
 
-#include "_lib_colorscience/math.hlsl"
 #include "_lib_colorscience/cctf.hlsl"
 #include "_lib_colorscience/cctf-auto.hlsl"
 #include "_lib_colorscience/cat.hlsl"

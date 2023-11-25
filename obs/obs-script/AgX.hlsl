@@ -12,6 +12,8 @@ References:
 - [4] https://github.com/Unity-Technologies/Graphics/blob/master/com.unity.postprocessing/PostProcessing/Shaders/Colors.hlsl#L574
 - [5] https://github.com/colour-science/colour/blob/develop/colour/models/rgb/transfer_functions/srgb.py#L99
 */
+// order matters !!
+#include "lib_math.hlsl"
 #include "lib_colorscience.hlsl"
 
 // OBS-specific syntax adaptation to HLSL standard to avoid errors reported by the code editor

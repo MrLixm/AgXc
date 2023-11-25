@@ -15,7 +15,28 @@ All data without explicit reference can assumed to be extracted/generated from `
 - [7] https://github.com/colour-science/colour/blob/develop/colour/models/rgb/transfer_functions/sony.py
 - [8] https://drive.google.com/file/d/1Q1RYri6BaxtYYxX0D4zVD6lAmbwmgikc/view
 - [9] https://pro-av.panasonic.net/en/cinema_camera_varicam_eva/support/pdf/VARICAM_V-Log_V-Gamut.pdf
+- [10] https://github.com/colour-science/colour/blob/develop/colour/models/rgb/transfer_functions/common.py
 -------------------------------------------------------------------------------- */
+
+float3 convert_cctf_full_to_legal(float3 color){
+    // ref[10] but we assume bitdepth=10, in_int=False, out_int=False
+    float bitdepth = 10.0;
+    float MV = pow(2.0, bitdepth) - 1.0;
+    float B = 64.0;
+    float W = 940.0;
+    float3 CV_legal = (W - B) * color + B;
+    return CV_legal / MV;
+}
+
+float3 convert_cctf_legal_to_full(float3 color){
+    // ref[10] but we assume bitdepth=10, in_int=False, out_int=False
+    float bitdepth = 10.0;
+    float MV = pow(2.0, bitdepth) - 1.0;
+    float B = 64.0;
+    float W = 940.0;
+    float3 CV_full = color * MV;
+    return (CV_full - B) / (W - B);
+}
 
 float3 cctf_log2_normalized_from_open_domain(float3 color, float minimum_ev, float maximum_ev)
 /*

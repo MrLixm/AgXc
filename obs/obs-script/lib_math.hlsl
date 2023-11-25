@@ -3,7 +3,7 @@ References
 ----------
 
 - [1] https://github.com/ampas/aces-dev/blob/master/transforms/ctl/lib/ACESlib.Utilities_Color.ctl#L492
-- [2] https://github.com/colour-science/colour/blob/develop/colour/models/rgb/transfer_functions/common.py
+
 */
 #define matrix_identity_3x3 float3x3(\
     1.0, 0.0, 0.0,\
@@ -43,24 +43,4 @@ float3 saturation(float3 color, float saturationAmount){
   */
   float luma = get_luminance(color);
   return lerp(luma, color, saturationAmount);
-}
-
-float3 convert_cctf_full_to_legal(float3 color){
-    // ref[2] but we assume bitdepth=10, in_int=False, out_int=False
-    float bitdepth = 10.0;
-    float MV = pow(2.0, bitdepth) - 1.0;
-    float B = 64.0;
-    float W = 940.0;
-    float3 CV_legal = (W - B) * color + B;
-    return CV_legal / MV;
-}
-
-float3 convert_cctf_legal_to_full(float3 color){
-    // ref[2] but we assume bitdepth=10, in_int=False, out_int=False
-    float bitdepth = 10.0;
-    float MV = pow(2.0, bitdepth) - 1.0;
-    float B = 64.0;
-    float W = 940.0;
-    float3 CV_full = color * MV;
-    return (CV_full - B) / (W - B);
 }
