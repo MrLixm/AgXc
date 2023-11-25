@@ -108,9 +108,11 @@ float3 applyInputTransform(float3 Image)
     return convertColorspaceToColorspace(Image, INPUT_COLORSPACE, colorspaceid_working_space);
 }
 
-float3 applyGrading(float3 Image)
+float3 applyOpenGrading(float3 Image)
 /*
-    Apply creative grading operations (pre-display-transform).
+    Apply creative grading on open-domain image state.
+
+    :param Image: expected to be in a open-domain state.
 */
 {
 
@@ -150,11 +152,11 @@ float3 applyODT(float3 Image)
 }
 
 
-float3 applyLookPunchy(float3 Image)
+float3 applyDisplayGrading(float3 Image)
 /*
-    Applies the post "Punchy" look to display-encoded data.
+    Apply creative grading on display-domain image state.
 
-    Input is expected to be in a display-state.
+    :param Image: expected to be in a display-state.
 */
 {
     Image = powsafe(Image, PUNCH_GAMMA);
@@ -178,10 +180,10 @@ float4 PIXELSHADER_AgX(PixelData pixel) : TARGET
     float4 OriginalImage = image.Sample(linear_clamp, pixel.uv);
     float3 Image = OriginalImage.rgb;
     Image = applyInputTransform(Image);
-    Image = applyGrading(Image);
+    Image = applyOpenGrading(Image);
     Image = applyDRT(Image);
     Image = applyODT(Image);
-    Image = applyLookPunchy(Image);
+    Image = applyDisplayGrading(Image);
 
     Image = convertColorspaceToColorspace(Image, 1, 4);
 
