@@ -34,16 +34,16 @@ colorspaceid_DCIP3_Display_2_6 = 5;
 colorspaceid_Apple_Display_P3 = 6;
 */
 uniform int DRT = 1;
-uniform float INPUT_EXPOSURE = 0.75;
+uniform float INPUT_EXPOSURE = 0.5;
 uniform float INPUT_GAMMA = 1.0;
 uniform float INPUT_SATURATION = 1.0;
-uniform float INPUT_HIGHLIGHT_GAIN = 0.0;
+uniform float INPUT_HIGHLIGHT_GAIN = 1.5;
 uniform float INPUT_HIGHLIGHT_GAIN_GAMMA = 1.0;
 uniform float PUNCH_EXPOSURE = 0.0;
 uniform float PUNCH_SATURATION = 1.0;
-uniform float PUNCH_GAMMA = 1.3;
+uniform float PUNCH_GAMMA = 1.0;
 uniform bool USE_OCIO_LOG = false;
-uniform bool APPLY_OUTSET = true;
+uniform bool APPLY_OUTSET = false;
 
 // LUT AgX-default_contrast.lut.png
 uniform texture2d AgXLUT;
