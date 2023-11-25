@@ -2,26 +2,31 @@
 
 Implementation of AgX for [OBS](https://obsproject.com/) as a script.
 
+This is mainly intended to be applied on live camera feeds as this would not have
+many benefits applied on desktop capture.
+
 ![screenshot of OBS interface while in the Filters section](doc/img/obs-main.png)
 
-This is mainly intended to be applied on live camera feeds as this would have not much benefit
-to apply this on desktop captures.
+| default rendering                                                                                                           | with AgX filter                                                                                                         |
+|-----------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------|
+| ![screenshot of obs interface while camera is pointing at various colored objects like legos](doc/img/obs-c922-default.jpg) | ![screenshot of obs interface while camera is pointing at various colored objects like legos](doc/img/obs-c922-agx.jpg) |
 
-![screenshot of obs interface while camera is pointing at various colored objects like legos](doc/img/obs-c922-default.jpg)
-![screenshot of obs interface while camera is pointing at various colored objects like legos](doc/img/obs-c922-agx.jpg)
-> bottom image has the AgX filter applied in OBS, top is default rendering -- standard C922 webcam
-
+> video device is a "standard" Logitech C922 webcam
 
 # Requirements
 
-- This has been developed on OBS 28.1.2 for Windows but should work for lower version
-and other operating systems.
+- This has been developed on OBS `28.1.2` for Windows but should work for lower 
+versions, and other operating systems.
 
 - Nothing more than the content of this directory.
 
 # Installation
 
-Put the **whole** content of the [obs-script](obs-script) directory anywhere you want.
+[Download](https://github.com/MrLixm/AgXc/archive/refs/heads/main.zip) this whole
+GitHub repository.
+
+Put the **whole** content of the [obs/obs-script](obs-script) directory 
+anywhere you want on your system (you DON'T need the `src/` or the `doc/` directory).
 
 1. Open OBS
 2. In the top menu > Tools > Scripts
@@ -39,21 +44,22 @@ All done ! You can now configure it.
 
 ![screenshot of OBS interface while in the Filters section](doc/img/obs-filter-options.png)
 
-> **Note** Reminder that AgX being a display transform it should be placed at the
-> very end of the image processing chain. (so at the bottom in OBS)
+> ![NOTE]
+> Reminder that AgX being a display transform it should be placed at
+> **the very end** of the image processing chain (= at the bottom in OBS).
 
 The camera/video-source and your lighting setup will affect how much you need
-to tweak the paramaters. There is no setup that work for all cases (but once
-configured for your camera/usual lighting, you will not need to touch it anymore)
+to tweak the parameters. There is no setup that work for all cases, but once
+configured for your camera/usual lighting, you should not need to touch it anymore.
 
-## Recommended
+## Recommended Options
 
 I recommend to always start by :
 
-- boosting the Grading Exposure by +1.0 stop.
+- boosting the `Grading Exposure` by +1.0 stop.
 - boosting `Highligh Gain` by 2.0
 
-## Available
+## Available Options
 
 ### Input Colorspace
 
@@ -65,20 +71,20 @@ Passthrough means no decoding is applied.
 
 Target colorspace encoding. Must correspond to your monitor calibration.
 
-> **Note** You can request adding new colorspace by opening an issue !
+> ![NOTE]
+> You can request adding new colorspace by opening an issue on GitHub !
 
 ### DRT
 
 Pick the DRT to use. Technically here we could include other DRT than AgX.
 But for now only None and AgX are available.
 
-None means you can use all the options like grading, input colorspace, ... but
-you will get a look similar to the usual broken imagery workflow.
+`None` will not apply AgX but still allow you to use the grading options. 
 
 
 ### Pre-Grading/...
 
-Adjust imagery look in a Linear space, before AgX is applied.
+Adjust imagery look in a linear space, before AgX is applied.
 
 ### Grading/Exposure
 
@@ -108,7 +114,7 @@ See above.
 Grading modifications applied after AgX on display encoded data. This will
 introduce skews, clipping and other artefacts.
 
-Recommended to change small values if used.
+Not recommended to use or with very small values.
 
 ### Debug/Use OCIO Log Transform
 
@@ -120,6 +126,7 @@ Does not create any change visually.
 
 Not originally included in the first AgX version but should be in the future.
 Restore chroma and avoid having to use Punchy saturation.
+Might bring back some hue skews so better left off. 
 
 ### Debug/CAT Method
 
