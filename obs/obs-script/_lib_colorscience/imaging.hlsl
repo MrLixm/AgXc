@@ -1,10 +1,14 @@
 // require "colorspace.hlsl"
+// require "coefficients.hlsl"
 
-// TODO more flexible system
-#define luma_coefs_bt709 float3(0.2126, 0.7152, 0.0722)
+float get_luminance(float3 image, int colorspace_id){
+  /*
+      Return approximative perceptive luminance of the image with
+      colorspace encoding awarness.
 
-float get_luminance(float3 image){
-  // Return approximative perceptive luminance of the image with
-  // colorspace encoding awarness.
-  return dot(image, luma_coefs_bt709);
+      :param image: colorspace-encoded imagery in any state
+      :param colorspace_id: id of the colorspace the image is encoded in
+  */
+  float3 luma_coeff = getLumaCoefficientFromId(colorspace_id);
+  return dot(image, luma_coeff);
 }
