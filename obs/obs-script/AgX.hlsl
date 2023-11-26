@@ -122,7 +122,7 @@ float3 applyOpenGrading(float3 Image)
 
     Image = grade_saturation(Image, INPUT_SATURATION, colorspaceid_working_space);
     Image = grade_gamma(Image, INPUT_GAMMA);
-    Image *= powsafe(2.0, INPUT_EXPOSURE);
+    Image = grade_exposure(Image, INPUT_EXPOSURE);
     return Image;
 }
 
@@ -162,7 +162,7 @@ float3 applyDisplayGrading(float3 Image)
 {
     Image = grade_gamma(Image, PUNCH_GAMMA);
     Image = grade_saturation(Image, PUNCH_SATURATION, OUTPUT_COLORSPACE);
-    Image *= powsafe(2.0, PUNCH_EXPOSURE);  // not part of initial cdl
+    Image = grade_exposure(Image, PUNCH_EXPOSURE);  // not part of initial cdl
     return Image;
 
 }

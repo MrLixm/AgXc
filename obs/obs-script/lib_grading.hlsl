@@ -29,3 +29,10 @@ float3 grade_gamma(float3 color, float amount){
   */
   return powsafe(color, amount);
 }
+
+float3 grade_exposure(float3 color, float amount){
+  /*
+      Change color exposure up or down by the given amount.
+  */
+  return color * powsafe(2.0, amount);
+}
