@@ -120,7 +120,7 @@ float3 applyOpenGrading(float3 Image)
     ImageLuma = powsafe(ImageLuma, INPUT_HIGHLIGHT_GAIN_GAMMA);
     Image += Image * ImageLuma.xxx * INPUT_HIGHLIGHT_GAIN;
 
-    Image = saturation(Image, INPUT_SATURATION, colorspaceid_working_space);
+    Image = grade_saturation(Image, INPUT_SATURATION, colorspaceid_working_space);
     Image = powsafe(Image, INPUT_GAMMA);
     Image *= powsafe(2.0, INPUT_EXPOSURE);
     return Image;
@@ -161,7 +161,7 @@ float3 applyDisplayGrading(float3 Image)
 */
 {
     Image = powsafe(Image, PUNCH_GAMMA);
-    Image = saturation(Image, PUNCH_SATURATION, OUTPUT_COLORSPACE);
+    Image = grade_saturation(Image, PUNCH_SATURATION, OUTPUT_COLORSPACE);
     Image *= powsafe(2.0, PUNCH_EXPOSURE);  // not part of initial cdl
     return Image;
 

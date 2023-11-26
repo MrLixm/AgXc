@@ -8,7 +8,7 @@ References
 // require "lib_math.hlsl"
 // require "lib_colorscience.hlsl"
 
-float3 saturation(float3 color, float saturationAmount, int colorspace_id){
+float3 grade_saturation(float3 color, float saturationAmount, int colorspace_id){
   /*
 
       Increase color saturation of the given color data.
