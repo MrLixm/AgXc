@@ -49,6 +49,9 @@ uniform float INPUT_WHITE_BALANCE_TINT = -15.5;
 uniform float PUNCH_EXPOSURE = 0.0;
 uniform float PUNCH_SATURATION = 1.0;
 uniform float PUNCH_GAMMA = 1.0;
+uniform bool PUNCH_WHITE_BALANCE_ENABLE = false;
+uniform float PUNCH_WHITE_BALANCE_TEMPERATURE = 5400;
+uniform float PUNCH_WHITE_BALANCE_TINT = -15.5;
 uniform bool USE_OCIO_LOG = false;
 
 // LUT AgX-default_contrast.lut.png
@@ -168,6 +171,9 @@ float3 applyDisplayGrading(float3 Image)
     :param Image: expected to be in a display-state.
 */
 {
+    if (PUNCH_WHITE_BALANCE_ENABLE){
+        Image = white_balance(Image, PUNCH_WHITE_BALANCE_TEMPERATURE, PUNCH_WHITE_BALANCE_TINT);
+    }
     Image = grade_gamma(Image, PUNCH_GAMMA);
     Image = grade_saturation(Image, PUNCH_SATURATION, OUTPUT_COLORSPACE);
     Image = grade_exposure(Image, PUNCH_EXPOSURE);  // not part of initial cdl
