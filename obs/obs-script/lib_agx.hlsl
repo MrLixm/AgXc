@@ -24,10 +24,7 @@ float3 _applyAgXLog(float3 Image)
     // Image = mul(agx_compressed_matrix, Image);
 	Image = apply_matrix(Image, agx_compressed_matrix);
 
-    if (USE_OCIO_LOG)
-        Image = cctf_log2_ocio_transform(Image);
-    else
-        Image = cctf_log2_normalized_from_open_domain(Image, -10.0, 6.5);
+    Image = cctf_log2_normalized_from_open_domain(Image, -10.0, 6.5);
 
     Image = clamp(Image, 0.0, 1.0);
     return Image;

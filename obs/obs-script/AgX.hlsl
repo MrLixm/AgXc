@@ -52,7 +52,6 @@ uniform float PUNCH_GAMMA = 1.0;
 uniform bool PUNCH_WHITE_BALANCE_ENABLE = false;
 uniform float PUNCH_WHITE_BALANCE_TEMPERATURE = 5400;
 uniform float PUNCH_WHITE_BALANCE_TINT = -15.5;
-uniform bool USE_OCIO_LOG = false;
 
 // LUT AgX-default_contrast.lut.png
 uniform texture2d AgXLUT;
