@@ -3,13 +3,13 @@
 # Introduction.
 
 - `AgX.lua` : direct interface with OBS used for building the GUI
-- `AgX.hlsl` : GPU shader with the actual AgX code.
-- `colorspace.hlsl` : side-library imported in `AgX.hlsl`
-  - this is actually the public interface of the `colorscience/` "package".
-- `colorscience/` library of hlsl modules for color manipulation. some of the modules
-are code-generated and not intended to be edited directly. Directly editable modules are :
-  - `math.hlsl`
-  - `cctf.hlsl`
+- `AgX.hlsl` : top-level GPU shader used in the lua script.
+
+With that you will find additional hlsl modules that are all imported in `AgX.hlsl` :
+
+- `lib_colorscience.hlsl`: library of hlsl modules for color manipulation
+  - `_lib_colorscience/`: some of the modules are procedurally-generated and not 
+   intended to be edited directly (see header comment).
 
 The "procedurally" generated code can be found in the [../src/](../src) directory.
 
