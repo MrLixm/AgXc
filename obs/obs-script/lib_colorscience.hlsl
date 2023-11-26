@@ -16,6 +16,7 @@ uniform int CAT_METHOD = 0; // See Chromatic Adapatation transform section for a
 #include "_lib_colorscience/gamut.hlsl"
 #include "_lib_colorscience/colorspace.hlsl"
 #include "_lib_colorscience/coefficients.hlsl"
+#include "_lib_colorscience/temperature.hlsl"
 #include "_lib_colorscience/imaging.hlsl"
 
 
