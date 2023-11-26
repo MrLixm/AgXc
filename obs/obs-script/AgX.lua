@@ -9,7 +9,7 @@ tutorial for learning the basics.
 ]]
 obs = obslua
 
-local __version__ = "1.2.0"
+local __version__ = "1.3.0"
 
 -- dependencies :
 local hlsl_shader_file_path = script_path() .. 'AgX.hlsl'
