@@ -231,3 +231,51 @@ class HlslGenerator(BaseGenerator):
 
         out_str += f"{INDENT}return colorspace;\n}}"
         return out_str
+
+    def generateLuminanceCoeffBlock(self) -> str:
+        out_str = generateCommentHeader(
+            "Luminance Coefficients",
+            "based on CIE 1931 2degree colorimetry.",
+        )
+        out_str += "\n"
+
+        for assembly_colorspace in self.colorspaces_assemblies:
+            if not assembly_colorspace.gamut or not assembly_colorspace.whitepoint:
+                continue
+
+            coeff = assembly_colorspace.get_luminance_coefficient()
+            print(coeff)
+            out_str += (
+                f"#define luma_coeffs_{assembly_colorspace.safe_name} "
+                f"float3({coeff[0]}, {coeff[1]}, {coeff[2]})\n"
+            )
+
+        out_str += "\n"
+        out_str += "float3 getLumaCoefficientFromId(int colorspace_id){\n"
+        out_str += f"{INDENT}/*\n"
+        out_str += (
+            f"{INDENT*2}Retrieve luminance coefficients for the given colorspace.\n"
+        )
+        out_str += f"{INDENT}*/\n"
+
+        for assembly_colorspace in self.colorspaces_assemblies:
+            if not assembly_colorspace.gamut or not assembly_colorspace.whitepoint:
+                out_str += (
+                    f"{INDENT}// ignored: {assembly_colorspace.id_variable_name}\n"
+                )
+                continue
+
+            out_str += INDENT
+            out_str += (
+                f"if (colorspace_id == {assembly_colorspace.id_variable_name}){{\n"
+            )
+
+            out_str += (
+                f"{INDENT * 2}return luma_coeffs_{assembly_colorspace.safe_name};\n"
+            )
+            out_str += f"{INDENT}}}\n"
+
+        out_str += f"{INDENT}return float3(1.0, 1.0, 1.0);\n"
+        out_str += "}\n"
+
+        return out_str

@@ -289,6 +289,7 @@ class BuildPaths:
     hlsl_colorscience_colorspace = hlsl_colorscience_root / "colorspace.hlsl"
     hlsl_colorscience_gamut = hlsl_colorscience_root / "gamut.hlsl"
     hlsl_colorscience_cat = hlsl_colorscience_root / "cat.hlsl"
+    hlsl_colorscience_coeff = hlsl_colorscience_root / "coefficients.hlsl"
 
 
 def build():
@@ -303,6 +304,7 @@ def build():
         BuildPaths.hlsl_colorscience_cat: generator_hlsl.generateCatBlock(),
         BuildPaths.hlsl_colorscience_gamut: generator_hlsl.generateMatricesBlock(),
         BuildPaths.hlsl_colorscience_colorspace: generator_hlsl.generateColorspacesBlock(),
+        BuildPaths.hlsl_colorscience_coeff: generator_hlsl.generateLuminanceCoeffBlock(),
     }
 
     for target_path, hlsl_code in hlsl_code_mapping.items():
