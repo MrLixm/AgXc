@@ -22,3 +22,10 @@ float3 grade_saturation(float3 color, float saturationAmount, int colorspace_id)
   float luma = get_luminance(color, colorspace_id);
   return lerp(luma, color, saturationAmount);
 }
+
+float3 grade_gamma(float3 color, float amount){
+  /*
+      Change color gamma as color**amount
+  */
+  return powsafe(color, amount);
+}

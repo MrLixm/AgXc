@@ -117,11 +117,11 @@ float3 applyOpenGrading(float3 Image)
 */
 {
     float ImageLuma = get_luminance(Image, colorspaceid_working_space);
-    ImageLuma = powsafe(ImageLuma, INPUT_HIGHLIGHT_GAIN_GAMMA);
+    ImageLuma = grade_gamma(ImageLuma, INPUT_HIGHLIGHT_GAIN_GAMMA);
     Image += Image * ImageLuma.xxx * INPUT_HIGHLIGHT_GAIN;
 
     Image = grade_saturation(Image, INPUT_SATURATION, colorspaceid_working_space);
-    Image = powsafe(Image, INPUT_GAMMA);
+    Image = grade_gamma(Image, INPUT_GAMMA);
     Image *= powsafe(2.0, INPUT_EXPOSURE);
     return Image;
 }
@@ -160,7 +160,7 @@ float3 applyDisplayGrading(float3 Image)
     :param Image: expected to be in a display-state.
 */
 {
-    Image = powsafe(Image, PUNCH_GAMMA);
+    Image = grade_gamma(Image, PUNCH_GAMMA);
     Image = grade_saturation(Image, PUNCH_SATURATION, OUTPUT_COLORSPACE);
     Image *= powsafe(2.0, PUNCH_EXPOSURE);  // not part of initial cdl
     return Image;
