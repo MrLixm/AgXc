@@ -54,7 +54,7 @@ float2 convert_CCT_Duv_to_xy(float CCT, float Duv){
     return float2(x, y);
 }
 
-float3 white_balance(float3 color, float CCT, float tint){
+float3 white_balance(float3 color, float CCT, float tint, float intensity){
     /*
         Change the white balance of the given color based on the given CCT and tint.
 
@@ -77,5 +77,5 @@ float3 white_balance(float3 color, float CCT, float tint){
         0.0, W.y, 0.0,
         0.0, 0.0, W.z
     };
-    return apply_matrix(color, whitepoint_matrix);
+    return lerp(color, apply_matrix(color, whitepoint_matrix), intensity);
 }

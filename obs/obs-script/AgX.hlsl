@@ -42,16 +42,16 @@ uniform float INPUT_GAMMA = 1.0;
 uniform float INPUT_SATURATION = 1.0;
 uniform float INPUT_HIGHLIGHT_GAIN = 1.5;
 uniform float INPUT_HIGHLIGHT_GAIN_GAMMA = 1.0;
-uniform bool INPUT_WHITE_BALANCE_ENABLE = false;
 // temperature/tint values try to emulate whitepoint E for neutral result
 uniform float INPUT_WHITE_BALANCE_TEMPERATURE = 5400;
 uniform float INPUT_WHITE_BALANCE_TINT = -15.5;
+uniform float INPUT_WHITE_BALANCE_INTENSITY = 1.0;
 uniform float PUNCH_EXPOSURE = 0.0;
 uniform float PUNCH_SATURATION = 1.0;
 uniform float PUNCH_GAMMA = 1.0;
-uniform bool PUNCH_WHITE_BALANCE_ENABLE = false;
 uniform float PUNCH_WHITE_BALANCE_TEMPERATURE = 5400;
 uniform float PUNCH_WHITE_BALANCE_TINT = -15.5;
+uniform float PUNCH_WHITE_BALANCE_INTENSITY = 1.0;
 
 // LUT AgX-default_contrast.lut.png
 uniform texture2d AgXLUT;
@@ -122,9 +122,12 @@ float3 applyOpenGrading(float3 Image)
     :param Image: expected to be in a open-domain state.
 */
 {
-    if (INPUT_WHITE_BALANCE_ENABLE){
-        Image = white_balance(Image, INPUT_WHITE_BALANCE_TEMPERATURE, INPUT_WHITE_BALANCE_TINT);
-    }
+    Image = white_balance(
+        Image,
+        INPUT_WHITE_BALANCE_TEMPERATURE,
+        INPUT_WHITE_BALANCE_TINT,
+        INPUT_WHITE_BALANCE_INTENSITY
+    );
 
     float ImageLuma = get_luminance(Image, colorspaceid_working_space);
     ImageLuma = grade_gamma(ImageLuma, INPUT_HIGHLIGHT_GAIN_GAMMA);
@@ -170,9 +173,13 @@ float3 applyDisplayGrading(float3 Image)
     :param Image: expected to be in a display-state.
 */
 {
-    if (PUNCH_WHITE_BALANCE_ENABLE){
-        Image = white_balance(Image, PUNCH_WHITE_BALANCE_TEMPERATURE, PUNCH_WHITE_BALANCE_TINT);
-    }
+    Image = white_balance(
+        Image,
+        PUNCH_WHITE_BALANCE_TEMPERATURE,
+        PUNCH_WHITE_BALANCE_TINT,
+        PUNCH_WHITE_BALANCE_INTENSITY
+    );
+
     Image = grade_gamma(Image, PUNCH_GAMMA);
     Image = grade_saturation(Image, PUNCH_SATURATION, OUTPUT_COLORSPACE);
     Image = grade_exposure(Image, PUNCH_EXPOSURE);  // not part of initial cdl
