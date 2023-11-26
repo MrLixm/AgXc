@@ -42,6 +42,10 @@ uniform float INPUT_GAMMA = 1.0;
 uniform float INPUT_SATURATION = 1.0;
 uniform float INPUT_HIGHLIGHT_GAIN = 1.5;
 uniform float INPUT_HIGHLIGHT_GAIN_GAMMA = 1.0;
+uniform bool INPUT_WHITE_BALANCE_ENABLE = false;
+// temperature/tint values try to emulate whitepoint E for neutral result
+uniform float INPUT_WHITE_BALANCE_TEMPERATURE = 5400;
+uniform float INPUT_WHITE_BALANCE_TINT = -15.5;
 uniform float PUNCH_EXPOSURE = 0.0;
 uniform float PUNCH_SATURATION = 1.0;
 uniform float PUNCH_GAMMA = 1.0;
@@ -116,6 +120,10 @@ float3 applyOpenGrading(float3 Image)
     :param Image: expected to be in a open-domain state.
 */
 {
+    if (INPUT_WHITE_BALANCE_ENABLE){
+        Image = white_balance(Image, INPUT_WHITE_BALANCE_TEMPERATURE, INPUT_WHITE_BALANCE_TINT);
+    }
+
     float ImageLuma = get_luminance(Image, colorspaceid_working_space);
     ImageLuma = grade_gamma(ImageLuma, INPUT_HIGHLIGHT_GAIN_GAMMA);
     Image += Image * ImageLuma.xxx * INPUT_HIGHLIGHT_GAIN;
