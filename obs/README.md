@@ -11,7 +11,7 @@ many benefits applied on desktop capture.
 |-----------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------|
 | ![screenshot of obs interface while camera is pointing at various colored objects like legos](doc/img/obs-c922-default.jpg) | ![screenshot of obs interface while camera is pointing at various colored objects like legos](doc/img/obs-c922-agx.jpg) |
 
-> video device is a "standard" Logitech C922 webcam
+> video device is a "standard" Logitech C922 webcam for the above comparison
 
 # Requirements
 
