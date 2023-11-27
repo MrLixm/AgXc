@@ -13,6 +13,39 @@ many benefits applied on desktop capture.
 
 > video device is a "standard" Logitech C922 webcam for the above comparison
 
+# Features
+
+Colorspaces available as input and output :
+
+| open-domain    | display-referred         | camera vendor             |
+|----------------|--------------------------|---------------------------|
+| sRGB Linear    | sRGB Display (EOTF)      | Cinema Gamut (Canon)      |
+| BT.2020 Linear | sRGB Display (2.2)¹      | F-Gamut FLog (Fujifilm)   |
+| DCI-P3 Linear  | BT.709 Display (2.4)     | F-Gamut FLog2 (Fujifilm)  |
+| Passthrough²   | DCI-P3 Display (2.6)     | N-Gamut (Nikon)           |
+|                | DCI-P3 D65 Display (2.6) | S-Gamut (Sony)            |
+|                | DCI-P3 D60 Display (2.6) | S-Gamut2 (Sony)           |
+|                | Apple Display P3         | S-Gamut3 (Sony)           |
+|                | Adobe RGB 1998 Display   | S-Gamut3.Cine (Sony)      |
+|                | BT.2020 Display (OETF)   | V-Gamut (Panasonic)       |
+
+- ¹ parenthesis for display-referred colorspace indicate transfer-function characteristic. `2.2` being the power function.
+- ² Means "no color-transformation applied"
+
+Grading Options :
+
+- Exposure
+- Gamma
+- Saturation
+- Highlight Gain
+- Highlight Gain Threshold
+- White Balance Temperature
+- White Balance Tint
+- White Balance Intensity
+
+All gradings options are available a "pre image-formation" (linear open-domain) and "post image-formation" (display-referred closed-domain).
+Grading in "pre image-formation" is performed in a linear sRGB working space and "post image-formation" is performed in the Output colorspace selected.
+  
 # Requirements
 
 - This has been developed on OBS `28.1.2` for Windows but should work for lower 
