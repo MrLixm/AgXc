@@ -1,5 +1,9 @@
 /*
-HLSL implementation of AgX (by Troy Sobotka) for OBS.
+HLSL implementation of AgX for OBS.
+
+AgX is a Display Rendering Transform designed by Troy Sobotka.
+
+The code is not AgX-specific and actually very flexible to integrate any other DRT.
 
 author = "Liam Collod"
 repository = "https://github.com/MrLixm/AgXc"
@@ -12,7 +16,6 @@ References:
 - [4] https://github.com/Unity-Technologies/Graphics/blob/master/com.unity.postprocessing/PostProcessing/Shaders/Colors.hlsl#L574
 - [5] https://github.com/colour-science/colour/blob/develop/colour/models/rgb/transfer_functions/srgb.py#L99
 */
-#include "colorspace.hlsl"
 
 // OBS-specific syntax adaptation to HLSL standard to avoid errors reported by the code editor
 #define SamplerState sampler_state
@@ -34,16 +37,21 @@ colorspaceid_DCIP3_Display_2_6 = 5;
 colorspaceid_Apple_Display_P3 = 6;
 */
 uniform int DRT = 1;
-uniform float INPUT_EXPOSURE = 0.75;
+uniform float INPUT_EXPOSURE = 0.5;
 uniform float INPUT_GAMMA = 1.0;
 uniform float INPUT_SATURATION = 1.0;
-uniform float INPUT_HIGHLIGHT_GAIN = 0.0;
+uniform float INPUT_HIGHLIGHT_GAIN = 1.5;
 uniform float INPUT_HIGHLIGHT_GAIN_GAMMA = 1.0;
+// temperature/tint values try to emulate whitepoint E for neutral result
+uniform float INPUT_WHITE_BALANCE_TEMPERATURE = 5400;
+uniform float INPUT_WHITE_BALANCE_TINT = -15.5;
+uniform float INPUT_WHITE_BALANCE_INTENSITY = 1.0;
 uniform float PUNCH_EXPOSURE = 0.0;
 uniform float PUNCH_SATURATION = 1.0;
-uniform float PUNCH_GAMMA = 1.3;
-uniform bool USE_OCIO_LOG = false;
-uniform bool APPLY_OUTSET = true;
+uniform float PUNCH_GAMMA = 1.0;
+uniform float PUNCH_WHITE_BALANCE_TEMPERATURE = 5400;
+uniform float PUNCH_WHITE_BALANCE_TINT = -15.5;
+uniform float PUNCH_WHITE_BALANCE_INTENSITY = 1.0;
 
 // LUT AgX-default_contrast.lut.png
 uniform texture2d AgXLUT;
@@ -56,6 +64,7 @@ uniform texture2d AgXLUT;
 
 uniform int drt_id_none = 0;
 uniform int drt_id_agx = 1;
+uniform int drt_id_agx_outset = 2;
 
 /*=================
     OBS BOILERPLATE
@@ -87,6 +96,11 @@ struct PixelData
     float2 uv  : TEXCOORD0; // UV coordinates in the source picture
 };
 
+// order matters + need the constants defined above
+#include "lib_math.hlsl"
+#include "lib_colorscience.hlsl"
+#include "lib_grading.hlsl"
+#include "lib_agx.hlsl"
 
 /*=================
     Main processes
@@ -101,97 +115,27 @@ float3 applyInputTransform(float3 Image)
     return convertColorspaceToColorspace(Image, INPUT_COLORSPACE, colorspaceid_working_space);
 }
 
-float3 applyGrading(float3 Image)
+float3 applyOpenGrading(float3 Image)
 /*
-    Apply creative grading operations (pre-display-transform).
+    Apply creative grading on open-domain image state.
+
+    :param Image: expected to be in a open-domain state.
 */
 {
+    Image = white_balance(
+        Image,
+        INPUT_WHITE_BALANCE_TEMPERATURE,
+        INPUT_WHITE_BALANCE_TINT,
+        INPUT_WHITE_BALANCE_INTENSITY
+    );
 
-    float ImageLuma = powsafe(get_luminance(Image), INPUT_HIGHLIGHT_GAIN_GAMMA);
+    float ImageLuma = get_luminance(Image, colorspaceid_working_space);
+    ImageLuma = grade_gamma(ImageLuma, INPUT_HIGHLIGHT_GAIN_GAMMA);
     Image += Image * ImageLuma.xxx * INPUT_HIGHLIGHT_GAIN;
 
-    Image = saturation(Image, INPUT_SATURATION);
-    Image = powsafe(Image, INPUT_GAMMA);
-    Image *= powsafe(2.0, INPUT_EXPOSURE);
-    return Image;
-}
-
-float3 applyAgXLog(float3 Image)
-/*
-    Prepare the data for display encoding. Converted to log domain.
-*/
-{
-
-    float3x3 agx_compressed_matrix = {
-        0.84247906, 0.0784336, 0.07922375,
-        0.04232824, 0.87846864, 0.07916613,
-        0.04237565, 0.0784336, 0.87914297
-    };
-
-    Image = max(0.0, Image); // clamp negatives
-    // why this doesn't work ??
-    // Image = mul(agx_compressed_matrix, Image);
-	Image = apply_matrix(Image, agx_compressed_matrix);
-
-    if (USE_OCIO_LOG)
-        Image = cctf_log2_ocio_transform(Image);
-    else
-        Image = cctf_log2_normalized_from_open_domain(Image, -10.0, 6.5);
-
-    Image = clamp(Image, 0.0, 1.0);
-    return Image;
-}
-
-float3 applyAgXLUT(float3 Image)
-/*
-    Apply the AgX 1D curve on log encoded data.
-
-    The output is similar to AgX Base which is considered
-    sRGB - Display, but here we linearize it.
-
-    -- ref[3] for LUT implementation
-*/
-{
-
-    float3 lut3D = Image * (AgXLUT_BLOCK_SIZE-1);
-
-    float2 lut2D[2];
-    // Front
-    lut2D[0].x = floor(lut3D.z) * AgXLUT_BLOCK_SIZE+lut3D.x;
-    lut2D[0].y = lut3D.y;
-    // Back
-    lut2D[1].x = ceil(lut3D.z) * AgXLUT_BLOCK_SIZE+lut3D.x;
-    lut2D[1].y = lut3D.y;
-
-    // Convert from texel to texture coords
-    lut2D[0] = (lut2D[0]+0.5) * AgXLUT_PIXEL_SIZE;
-    lut2D[1] = (lut2D[1]+0.5) * AgXLUT_PIXEL_SIZE;
-
-    // Bicubic LUT interpolation
-    Image = lerp(
-        AgXLUT.Sample(LUTSampler, lut2D[0]).rgb, // Front Z
-        AgXLUT.Sample(LUTSampler, lut2D[1]).rgb, // Back Z
-        frac(lut3D.z)
-    );
-    // LUT apply the transfer function so we remove it to keep working on linear data.
-    Image = cctf_decoding_Power_2_2(Image);
-    return Image;
-}
-
-float3 applyOutset(float3 Image)
-/*
-    Outset is the inverse of the inset applied during `applyAgXLog`
-    and restore chroma.
-*/
-{
-
-    float3x3 agx_compressed_matrix_inverse = {
-        1.1968790, -0.09802088, -0.09902975,
-        -0.05289685, 1.15190313, -0.09896118,
-        -0.05297163, -0.09804345, 1.15107368
-    };
-	Image = apply_matrix(Image, agx_compressed_matrix_inverse);
-
+    Image = grade_saturation(Image, INPUT_SATURATION, colorspaceid_working_space);
+    Image = grade_gamma(Image, INPUT_GAMMA);
+    Image = grade_exposure(Image, INPUT_EXPOSURE);
     return Image;
 }
 
@@ -201,10 +145,10 @@ float3 applyDRT(float3 Image)
 */
 {
     if (DRT == drt_id_agx){
-        Image = applyAgXLog(Image);
-        Image = applyAgXLUT(Image);
-        if (APPLY_OUTSET)
-            Image = applyOutset(Image);
+        Image = applyAgX(Image);
+    }
+    if (DRT == drt_id_agx_outset){
+        Image = applyAgXOutset(Image);
     }
     return Image;
 
@@ -222,16 +166,23 @@ float3 applyODT(float3 Image)
 }
 
 
-float3 applyLookPunchy(float3 Image)
+float3 applyDisplayGrading(float3 Image)
 /*
-    Applies the post "Punchy" look to display-encoded data.
+    Apply creative grading on display-domain image state.
 
-    Input is expected to be in a display-state.
+    :param Image: expected to be in a display-state.
 */
 {
-    Image = powsafe(Image, PUNCH_GAMMA);
-    Image = saturation(Image, PUNCH_SATURATION);
-    Image *= powsafe(2.0, PUNCH_EXPOSURE);  // not part of initial cdl
+    Image = white_balance(
+        Image,
+        PUNCH_WHITE_BALANCE_TEMPERATURE,
+        PUNCH_WHITE_BALANCE_TINT,
+        PUNCH_WHITE_BALANCE_INTENSITY
+    );
+
+    Image = grade_gamma(Image, PUNCH_GAMMA);
+    Image = grade_saturation(Image, PUNCH_SATURATION, OUTPUT_COLORSPACE);
+    Image = grade_exposure(Image, PUNCH_EXPOSURE);  // not part of initial cdl
     return Image;
 
 }
@@ -250,10 +201,10 @@ float4 PIXELSHADER_AgX(PixelData pixel) : TARGET
     float4 OriginalImage = image.Sample(linear_clamp, pixel.uv);
     float3 Image = OriginalImage.rgb;
     Image = applyInputTransform(Image);
-    Image = applyGrading(Image);
+    Image = applyOpenGrading(Image);
     Image = applyDRT(Image);
     Image = applyODT(Image);
-    Image = applyLookPunchy(Image);
+    Image = applyDisplayGrading(Image);
 
     Image = convertColorspaceToColorspace(Image, 1, 4);
 

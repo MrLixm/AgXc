@@ -10,12 +10,14 @@ All data without explicit reference can assumed to be extracted/generated from `
 
 uniform int CAT_METHOD = 0; // See Chromatic Adapatation transform section for availables ids
 
-#include "colorscience/math.hlsl"
-#include "colorscience/cctf.hlsl"
-#include "colorscience/cctf-auto.hlsl"
-#include "colorscience/cat.hlsl"
-#include "colorscience/gamut.hlsl"
-#include "colorscience/colorspace.hlsl"
+#include "_lib_colorscience/cctf.hlsl"
+#include "_lib_colorscience/cctf-auto.hlsl"
+#include "_lib_colorscience/cat.hlsl"
+#include "_lib_colorscience/gamut.hlsl"
+#include "_lib_colorscience/colorspace.hlsl"
+#include "_lib_colorscience/coefficients.hlsl"
+#include "_lib_colorscience/temperature.hlsl"
+#include "_lib_colorscience/imaging.hlsl"
 
 
 float3 convertColorspaceToColorspace(float3 color, int sourceColorspaceId, int targetColorspaceId){

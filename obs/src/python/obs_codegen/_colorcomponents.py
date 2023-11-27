@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 
 @dataclasses.dataclass
 class BaseColorspaceDataclass:
-
     name: str
 
     def __post_init__(self):
@@ -26,6 +25,7 @@ class ColorspaceGamut(BaseColorspaceDataclass):
     Gamut/Primaries part of a specific colorspace.
     """
 
+    primaries: numpy.ndarray
     matrix_to_XYZ: numpy.ndarray
     matrix_from_XYZ: numpy.ndarray
 
@@ -38,6 +38,7 @@ class ColorspaceGamut(BaseColorspaceDataclass):
         ]
         return cls(
             colour_colorspace.name,
+            colour_colorspace.primaries.copy(),
             colour_colorspace.matrix_RGB_to_XYZ,
             colour_colorspace.matrix_XYZ_to_RGB,
         )
@@ -124,3 +125,15 @@ class AssemblyColorspace(BaseColorspaceDataclass):
     @property
     def id_variable_name(self):
         return f"colorspaceid_{self.safe_name}"
+
+    def get_luminance_coefficient(self) -> numpy.ndarray:
+        """
+        Returns:
+            3*1 ndarray of [R-G-B] values
+        """
+
+        npm = colour.normalised_primary_matrix(
+            self.gamut.primaries,
+            self.whitepoint.coordinates,
+        )
+        return numpy.ravel(npm)[3:6]
