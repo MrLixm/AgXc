@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "AgXc"
-version = "0.7.0"
+version = "0.8.0"
 description = "Fork of Troy.S AgX, a display rendering transform available via OCIO and more."
 authors = ["Liam Collod <monsieurlixm@gmail.com>"]
 readme = "README.md"
@@ -18,4 +18,3 @@ pytest = "*"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
