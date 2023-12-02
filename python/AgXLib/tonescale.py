@@ -56,20 +56,21 @@ def _equation_curve(
     x_pivot: Ndarray,
     y_pivot: Ndarray,
     slope_pivot: Ndarray,
-    power: Ndarray,
+    toe_power: Ndarray,
+    shoulder_power: Ndarray,
     scale: Ndarray,
 ) -> Ndarray:
     """
     All argument expected to be of the same last dimension.
     """
     a = _equation_hyperbolic(
-        _equation_term(array, x_pivot, slope_pivot, scale), power[..., 0]
+        _equation_term(array, x_pivot, slope_pivot, scale), toe_power
     )
     a *= scale
     a += y_pivot
 
     b = _equation_hyperbolic(
-        _equation_term(array, x_pivot, slope_pivot, scale), power[..., 1]
+        _equation_term(array, x_pivot, slope_pivot, scale), shoulder_power
     )
     b *= scale
     b += y_pivot
@@ -83,21 +84,36 @@ def _equation_full_curve(
     x_pivot: Ndarray,
     y_pivot: Ndarray,
     slope_pivot: Ndarray,
-    power: Ndarray,
+    toe_power: Ndarray,
+    shoulder_power: Ndarray,
 ) -> Ndarray:
     scale_x_pivot = numpy.where(array >= x_pivot, 1.0 - x_pivot, x_pivot)
     scale_y_pivot = numpy.where(array >= x_pivot, 1.0 - y_pivot, y_pivot)
 
     toe_scale = _equation_scale(
-        scale_x_pivot, scale_y_pivot, slope_pivot, power[..., 0]
+        scale_x_pivot,
+        scale_y_pivot,
+        slope_pivot,
+        toe_power,
     )
     shoulder_scale = _equation_scale(
-        scale_x_pivot, scale_y_pivot, slope_pivot, power[..., 1]
+        scale_x_pivot,
+        scale_y_pivot,
+        slope_pivot,
+        shoulder_power,
     )
 
     scale = numpy.where(array >= x_pivot, shoulder_scale, -toe_scale)
 
-    return _equation_curve(array, x_pivot, y_pivot, slope_pivot, power, scale)
+    return _equation_curve(
+        array,
+        x_pivot,
+        y_pivot,
+        slope_pivot,
+        toe_power,
+        shoulder_power,
+        scale,
+    )
 
 
 def apply_AgX_tonescale(
@@ -135,6 +151,7 @@ def apply_AgX_tonescale(
         AgX_x_pivot,
         AgX_y_pivot,
         general_contrast,
-        limits_contrast,
+        limits_contrast[0],
+        limits_contrast[1],
     )
     return converted
