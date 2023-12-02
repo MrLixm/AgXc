@@ -9,6 +9,8 @@ import numpy
 
 import colour
 
+from ._types import Ndarray
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -20,10 +22,10 @@ def _lerp(amount: float, a1: float, a2: float) -> float:
 
 
 def rotate_point_around(
-    src_point: numpy.ndarray,
-    center: numpy.ndarray,
+    src_point: Ndarray,
+    center: Ndarray,
     angle: float,
-) -> numpy.ndarray:
+) -> Ndarray:
     """
     References:
         - [1] https://stackoverflow.com/a/2259502/13806195
@@ -57,12 +59,12 @@ def rotate_point_around(
 
 
 def get_inset_gamut(
-    src_gamut: numpy.ndarray,
-    src_whitepoint: numpy.ndarray,
+    src_gamut: Ndarray,
+    src_whitepoint: Ndarray,
     inset_r: float,
     inset_g: float,
     inset_b: float,
-) -> numpy.ndarray:
+) -> Ndarray:
     """
     Create a smaller variant of the given gamut while keeping its whitepoint untouched.
 
@@ -89,12 +91,12 @@ def get_inset_gamut(
 
 
 def get_rotated_gamut(
-    src_gamut: numpy.ndarray,
-    src_whitepoint: numpy.ndarray,
+    src_gamut: Ndarray,
+    src_whitepoint: Ndarray,
     rotate_r: float,
     rotate_g: float,
     rotate_b: float,
-) -> numpy.ndarray:
+) -> Ndarray:
     """
     Rotate the given gamut primaries around the given whitepoint by the given amount for
     each primary.
@@ -134,15 +136,15 @@ def get_rotated_gamut(
 
 
 def get_reshaped_colorspace_matrix(
-    src_gamut: numpy.ndarray,
-    src_whitepoint: numpy.ndarray,
+    src_gamut: Ndarray,
+    src_whitepoint: Ndarray,
     inset_r: float,
     inset_g: float,
     inset_b: float,
     rotate_r: float,
     rotate_g: float,
     rotate_b: float,
-) -> numpy.ndarray:
+) -> Ndarray:
     """
     Get the normalised 3x3 primary matrix that allow to convert from the given src
     gamut/whitepoint to its reshaped variant.

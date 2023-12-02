@@ -4,12 +4,13 @@ import colour
 import numpy
 
 import AgXLib
+from ._types import Ndarray
 
 LOGGER = logging.getLogger(__name__)
 
 
 def convert_imagery_to_AgX_closeddomain(
-    src_array: numpy.ndarray,
+    src_array: Ndarray,
     src_colorspace: colour.RGB_Colourspace,
     workspace_colorspace: colour.RGB_Colourspace,
     inset: tuple[float, float, float],
@@ -18,7 +19,7 @@ def convert_imagery_to_AgX_closeddomain(
     tonescale_max_EV: float = +6.5,
     tonescale_contrast: float = 2.0,
     tonescale_limits: tuple[float, float] = (3.0, 3.25),
-) -> numpy.ndarray:
+) -> Ndarray:
     """
     Apply the AgX DRT on the given array and return a new array  encoded in
     the provided workspace colorspace.
