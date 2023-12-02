@@ -75,13 +75,20 @@ def convert_VLog_to_AgX(
 
     new_array = numpy.array(rgbarray)
 
+    new_array = colour.RGB_to_RGB(
+        new_array,
+        input_colourspace=colorspace_source,
+        output_colourspace=colorspace_workspace,
+        apply_cctf_decoding=True,
+        apply_cctf_encoding=True,
+    )
+
     if agx_config.pre_grading is not None:
         new_array = agx_config.pre_grading(new_array)
 
     new_array = AgXLib.convert_imagery_to_AgX_closeddomain(
         new_array,
         colorspace_source,
-        colorspace_workspace,
         inset=agx_config.inset,
         rotate=agx_config.rotate,
         tonescale_min_EV=agx_config.tonescale_min_EV,
