@@ -93,31 +93,6 @@ def _equation_full_curve(
     return _equation_curve(lut_array, x_pivot, y_pivot, slope_pivot, power, scale)
 
 
-def convert_open_domain_to_normalized_log2(
-    in_od: Ndarray,
-    minimum_ev: float = -10.0,
-    maximum_ev: float = +6.5,
-    in_midgrey: float = 0.18,
-) -> Ndarray:
-    """
-    Similar to OCIO lg2 AllocationTransform.
-
-    References:
-        - [1] https://github.com/sobotka/AgX-S2O3/blob/main/AgX.py
-
-    Args:
-        in_od: floating point image in open-domain state
-        minimum_ev:
-        maximum_ev:
-        in_midgrey:
-    """
-    in_od[in_od <= 0.0] = numpy.finfo(float).eps
-    output_log = numpy.clip(numpy.log2(in_od / in_midgrey), minimum_ev, maximum_ev)
-    total_exposure = maximum_ev - minimum_ev
-
-    return (output_log - minimum_ev) / total_exposure
-
-
 def apply_AgX_tonescale(
     rgbarray: Ndarray,
     min_EV: float = -10.0,
