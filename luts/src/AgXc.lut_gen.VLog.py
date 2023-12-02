@@ -3,6 +3,7 @@ import logging
 import sys
 from pathlib import Path
 from typing import Callable
+from typing import Optional
 
 import colour
 import numpy
@@ -52,7 +53,8 @@ class AgXConfig:
     tonescale_max_EV: float
     tonescale_contrast: float
     tonescale_limits: tuple[float, float]
-    post_gamma: float = 1.0
+    pre_grading: Optional[Callable[[numpy.ndarray], numpy.ndarray]] = None
+    post_grading: Optional[Callable[[numpy.ndarray], numpy.ndarray]] = None
     colorspace_workspace_name: str = "ITU-R BT.2020"
 
     def copy(self) -> "AgXConfig":
@@ -71,8 +73,13 @@ def convert_VLog_to_AgX(
     colorspace_workspace.cctf_decoding = colour.linear_function
     colorspace_workspace.cctf_encoding = colour.linear_function
 
+    new_array = numpy.array(rgbarray)
+
+    if agx_config.pre_grading is not None:
+        new_array = agx_config.pre_grading(new_array)
+
     new_array = AgXLib.convert_imagery_to_AgX_closeddomain(
-        rgbarray,
+        new_array,
         colorspace_source,
         colorspace_workspace,
         inset=agx_config.inset,
@@ -92,8 +99,8 @@ def convert_VLog_to_AgX(
         apply_cctf_encoding=True,
     )
 
-    # post-grading, originally called "Punchy"
-    new_array = colour.algebra.spow(new_array, 1 / agx_config.post_gamma)
+    if agx_config.post_grading is not None:
+        new_array = agx_config.post_grading(new_array)
 
     new_array = new_array.clip(0.0, 1.0)
     return new_array
@@ -105,6 +112,12 @@ USER EDITABLE
 
 """
 
+
+def post_grade1(array: numpy.ndarray):
+    array = colour.algebra.spow(array, 1 / 0.65)
+    return array
+
+
 # noinspection PyTypeChecker
 AGX_CONFIG_LOOK1 = AgXConfig(
     # (x + Z) where Z is global inset factor
@@ -114,15 +127,16 @@ AGX_CONFIG_LOOK1 = AgXConfig(
     tonescale_max_EV=+6.5,
     tonescale_contrast=2.0,
     tonescale_limits=(3.0, 3.25),
-    post_gamma=1.0,
+    post_grading=None,
+    pre_grading=None,
     colorspace_workspace_name="ITU-R BT.2020",
 )
 
 AGX_CONFIG_LOOK2 = AGX_CONFIG_LOOK1.copy()
-AGX_CONFIG_LOOK2.post_gamma = 0.65
+AGX_CONFIG_LOOK2.post_grading = post_grade1
 
 AGX_CONFIG_LOOK3 = AGX_CONFIG_LOOK1.copy()
-AGX_CONFIG_LOOK3.post_gamma = 0.65
+AGX_CONFIG_LOOK3.post_grading = post_grade1
 AGX_CONFIG_LOOK3.tonescale_contrast = 2.0
 
 
