@@ -7,10 +7,9 @@ import logging
 
 import numpy
 
-LOGGER = logging.getLogger(__name__)
+from ._types import Ndarray
 
-# shorter alias
-Ndarray = numpy.ndarray
+LOGGER = logging.getLogger(__name__)
 
 
 def _equation_scale(

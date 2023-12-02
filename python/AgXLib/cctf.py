@@ -3,10 +3,9 @@ import logging
 import colour.models
 import numpy
 
-LOGGER = logging.getLogger(__name__)
+from ._types import Ndarray
 
-# shorter alias
-Ndarray = numpy.ndarray
+LOGGER = logging.getLogger(__name__)
 
 
 def convert_open_domain_to_normalized_log2(

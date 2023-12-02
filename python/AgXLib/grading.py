@@ -3,6 +3,8 @@ from typing import Union
 
 import numpy
 
+from ._types import Ndarray
+
 LOGGER = logging.getLogger(__name__)
 
 RGBt = Union[tuple[float, float, float], numpy.ndarray]
@@ -16,7 +18,7 @@ Types that can be converted to a RGB array
 """
 
 
-def sigmoid_parabolic(array: numpy.ndarray, pivot: RGBable, t0: RGBable):
+def sigmoid_parabolic(array: Ndarray, pivot: RGBable, t0: RGBable):
     """
     Apply a sigmoid parabolic curve on the given array.
 
@@ -43,9 +45,9 @@ def sigmoid_parabolic(array: numpy.ndarray, pivot: RGBable, t0: RGBable):
 
 
 def spow(
-    array: numpy.ndarray,
+    array: Ndarray,
     power: RGBable,
-) -> numpy.ndarray:
+) -> Ndarray:
     """
     Power function safe for negatives.
 
@@ -58,10 +60,10 @@ def spow(
 
 
 def saturation(
-    array: numpy.ndarray,
+    array: Ndarray,
     amount: RGBable,
     coefs: RGBt = (0.2126, 0.7152, 0.0722),
-) -> numpy.ndarray:
+) -> Ndarray:
     """
     Increase color saturation (not the similarly named clamp operation).
 
