@@ -137,9 +137,15 @@ def transform2(array: numpy.ndarray) -> numpy.ndarray:
 
 
 def transform3(array: numpy.ndarray) -> numpy.ndarray:
+    def bt1886decoding(x):
+        return colour.algebra.spow(x, 1 / 2.4)
+
+    def bt1886encoding(x):
+        return colour.algebra.spow(x, 2.4)
+
     colorspace_dst = _get_colourspace("ITU-R BT.709")
-    colorspace_dst.cctf_decoding = colour.models.eotf_BT1886
-    colorspace_dst.cctf_encoding = colour.models.eotf_inverse_BT1886
+    colorspace_dst.cctf_decoding = bt1886decoding
+    colorspace_dst.cctf_encoding = bt1886encoding
     return convert_VLog_to_AgX(array, colorspace_dst, AGX_CONFIG_LOOK1)
 
 
