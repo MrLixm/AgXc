@@ -15,6 +15,11 @@ def test_convert_open_domain_to_normalized_log2():
     result = convert_open_domain_to_normalized_log2(source)
     numpy.testing.assert_allclose(result, expected)
 
+    source = numpy.array([[0.0, 0.0], [0.0, 0.0]])
+    expected = numpy.array([[0.0, 0.0], [0.0, 0.0]])
+    result = convert_open_domain_to_normalized_log2(source)
+    numpy.testing.assert_allclose(result, expected)
+
 
 def test_convert_normalized_log2_to_open_domain():
     source = numpy.array([0.333], dtype=numpy.float64)
