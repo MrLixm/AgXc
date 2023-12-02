@@ -13,12 +13,10 @@ def _make_linear(colorspace: colour.RGB_Colourspace) -> colour.RGB_Colourspace:
 def test_convert_imagery_to_AgX_closeddomain():
     source = numpy.array([0.0])
     source_colorspace = _make_linear(colour.RGB_COLOURSPACES["sRGB"])
-    workspace_colorspace = _make_linear(colour.RGB_COLOURSPACES["ITU-R BT.2020"])
     expected = numpy.array([0.0])
     result = convert_imagery_to_AgX_closeddomain(
         source,
         source_colorspace,
-        workspace_colorspace,
         inset=(0.0, 0.0, 0.0),
         rotate=(0.0, 0.0, 0.0),
     )

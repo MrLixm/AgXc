@@ -12,7 +12,6 @@ LOGGER = logging.getLogger(__name__)
 def convert_imagery_to_AgX_closeddomain(
     src_array: Ndarray,
     src_colorspace: colour.RGB_Colourspace,
-    workspace_colorspace: colour.RGB_Colourspace,
     inset: tuple[float, float, float],
     rotate: tuple[float, float, float],
     tonescale_min_EV: float = -10.0,
@@ -28,8 +27,9 @@ def convert_imagery_to_AgX_closeddomain(
 
     Args:
         src_array: R-G-B imagery data in any state
-        src_colorspace: colorspace the src_array is encoded in, INCLUDING transfer-function.
-        workspace_colorspace: colorspace to process AgX operations, INCLUDING transfer-function.
+        src_colorspace:
+            colorspace the src_array is encoded in, INCLUDING transfer-function.
+            Used as the workspace colorspace for inset.
         inset: amount of inset to apply per primary as [R, G, B], [-0,1] range.
         rotate: amount of rotation in degree to apply per primary as [R, G, B], [-0,360+] range.
         tonescale_min_EV:
@@ -40,19 +40,12 @@ def convert_imagery_to_AgX_closeddomain(
     Returns:
         new R-G-B image data array encoded in the provided workspace_colorspace
     """
-    wip_array = colour.RGB_to_RGB(
-        src_array,
-        input_colourspace=src_colorspace,
-        output_colourspace=workspace_colorspace,
-        apply_cctf_decoding=True,
-        apply_cctf_encoding=True,
-    )
     # anything outside the gamut of the working space is discarded as not valid
-    wip_array = wip_array.clip(min=0.0)
+    wip_array = src_array.clip(min=0.0)
 
     inset_matrix = AgXLib.get_reshaped_colorspace_matrix(
-        src_gamut=workspace_colorspace.primaries,
-        src_whitepoint=workspace_colorspace.whitepoint,
+        src_gamut=src_colorspace.primaries,
+        src_whitepoint=src_colorspace.whitepoint,
         inset_r=inset[0],
         inset_g=inset[1],
         inset_b=inset[2],
