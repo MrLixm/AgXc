@@ -125,6 +125,38 @@ def post_grade1(array: numpy.ndarray):
     return array
 
 
+def pre_grade1(array: numpy.ndarray):
+    """
+    Add contrast, blueish / green cast
+    """
+    wip = numpy.clip(array, 0.0, None)
+    wip = AgXLib.convert_open_domain_to_normalized_log2(wip)
+    wip = numpy.clip(wip, 0.0, 1.0)
+    wip = AgXLib.grading.sigmoid_parabolic(
+        wip,
+        (1.4, 1.25, 1.65),
+        (0.55, 0.49, 0.51),
+    )
+    wip = AgXLib.convert_normalized_log2_to_open_domain(wip)
+    return wip
+
+
+def pre_grade2(array: numpy.ndarray):
+    """
+    Add contrast, warm blue/yellow tint
+    """
+    wip = numpy.clip(array, 0.0, None)
+    wip = AgXLib.convert_open_domain_to_normalized_log2(wip)
+    wip = numpy.clip(wip, 0.0, 1.0)
+    wip = AgXLib.grading.sigmoid_parabolic(
+        wip,
+        (1.3, 1.25, 0.95),
+        (0.54, 0.53, 0.302),
+    )
+    wip = AgXLib.convert_normalized_log2_to_open_domain(wip)
+    return wip
+
+
 # noinspection PyTypeChecker
 AGX_CONFIG_LOOK1 = AgXConfig(
     # (x + Z) where Z is global inset factor
@@ -140,11 +172,10 @@ AGX_CONFIG_LOOK1 = AgXConfig(
 )
 
 AGX_CONFIG_LOOK2 = AGX_CONFIG_LOOK1.copy()
-AGX_CONFIG_LOOK2.post_grading = post_grade1
+AGX_CONFIG_LOOK2.pre_grading = pre_grade1
 
 AGX_CONFIG_LOOK3 = AGX_CONFIG_LOOK1.copy()
-AGX_CONFIG_LOOK3.post_grading = post_grade1
-AGX_CONFIG_LOOK3.tonescale_contrast = 2.0
+AGX_CONFIG_LOOK3.pre_grading = pre_grade2
 
 
 def transform1(array: numpy.ndarray) -> numpy.ndarray:
