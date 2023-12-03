@@ -14,7 +14,8 @@ kernel AgXTonescale : ImageComputationKernel<ePixelWise>
         float u_min_EV;
         float u_max_EV;
         float u_general_contrast;
-        float2 u_limits_contrast;
+        float u_toe_power;
+        float u_shoulder_power;
         bool u_log_convert;
         float u_log_midgrey;
 
@@ -26,7 +27,8 @@ kernel AgXTonescale : ImageComputationKernel<ePixelWise>
         defineParam(u_min_EV, "u_min_EV", -10.0f);
         defineParam(u_max_EV, "u_max_EV", 6.5f);
         defineParam(u_general_contrast, "u_general_contrast", 2.0f);
-        defineParam(u_limits_contrast, "u_limits_contrast", float2(3.0, 3.25));
+        defineParam(u_toe_power, "u_toe_power", 3.0f);
+        defineParam(u_shoulder_power, "u_shoulder_power", 3.25f);
         defineParam(u_log_midgrey, "u_log_midgrey", 0.18f);
     }
 
@@ -70,13 +72,13 @@ kernel AgXTonescale : ImageComputationKernel<ePixelWise>
     float equation_curve(float value, float scale){
         float a = equation_hyperbolic(
             equation_term(value, g_x_pivot, u_general_contrast, scale),
-            u_limits_contrast.x
+            u_toe_power
         );
         a = a * scale + g_y_pivot;
 
         float b = equation_hyperbolic(
             equation_term(value, g_x_pivot, u_general_contrast, scale),
-            u_limits_contrast.y
+            u_shoulder_power
         );
         b = b * scale + g_y_pivot;
 
@@ -92,14 +94,14 @@ kernel AgXTonescale : ImageComputationKernel<ePixelWise>
             scale_x_pivot,
             scale_y_pivot,
             u_general_contrast,
-            u_limits_contrast.x
+            u_toe_power
         );
 
         float shoulder_scale = equation_scale(
             scale_x_pivot,
             scale_y_pivot,
             u_general_contrast,
-            u_limits_contrast.y
+            u_shoulder_power
         );
 
         float scale = value >= g_x_pivot? shoulder_scale: -1.0 * toe_scale;
