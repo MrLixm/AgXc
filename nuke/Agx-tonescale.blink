@@ -16,8 +16,6 @@ kernel AgXTonescale : ImageComputationKernel<ePixelWise>
         float u_general_contrast;
         float u_toe_power;
         float u_shoulder_power;
-        bool u_log_convert;
-        float u_log_midgrey;
 
     local:
         float g_x_pivot;
@@ -29,28 +27,11 @@ kernel AgXTonescale : ImageComputationKernel<ePixelWise>
         defineParam(u_general_contrast, "u_general_contrast", 2.0f);
         defineParam(u_toe_power, "u_toe_power", 3.0f);
         defineParam(u_shoulder_power, "u_shoulder_power", 3.25f);
-        defineParam(u_log_midgrey, "u_log_midgrey", 0.18f);
     }
 
     void init() {
         g_x_pivot = fabs(u_min_EV / (u_max_EV - u_min_EV));
         g_y_pivot = 0.5;
-    }
-
-    float3 convert_open_domain_to_normalized_log2(float3 color){
-        // Similar to OCIO lg2 AllocationTransform.
-        // References:
-        //     - [1] https://github.com/sobotka/AgX-S2O3/blob/main/AgX.py
-        float3 mincolor(0.000001, 0.000001, 0.000001);
-        float3 out = max(color, mincolor);
-        float3 midgrey(u_log_midgrey, u_log_midgrey, u_log_midgrey);
-        out = log2(color / midgrey);
-        out = clamp(
-            out,
-            float3(u_min_EV, u_min_EV, u_min_EV),
-            float3(u_max_EV, u_max_EV, u_max_EV)
-        );
-        return (out - u_min_EV) / (u_max_EV - u_min_EV);
     }
 
     float equation_scale(
@@ -114,10 +95,6 @@ kernel AgXTonescale : ImageComputationKernel<ePixelWise>
         float4 rgba = src();
 
         float3 converted_rgb(rgba.x, rgba.y, rgba.z);
-
-        if (u_log_convert){
-            converted_rgb = convert_open_domain_to_normalized_log2(converted_rgb);
-        }
 
         // apply per-channel tonescale curve
         converted_rgb.x = equation_full_curve(converted_rgb.x);
