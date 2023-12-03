@@ -11,8 +11,8 @@ kernel AgXTonescale : ImageComputationKernel<ePixelWise>
     Image<eWrite> dst;
 
     param:
-        float u_min_EV;
-        float u_max_EV;
+        float u_x_pivot;
+        float u_y_pivot;
         float u_general_contrast;
         float u_toe_power;
         float u_shoulder_power;
@@ -22,16 +22,16 @@ kernel AgXTonescale : ImageComputationKernel<ePixelWise>
         float g_y_pivot;
 
     void define() {
-        defineParam(u_min_EV, "u_min_EV", -10.0f);
-        defineParam(u_max_EV, "u_max_EV", 6.5f);
+        defineParam(u_x_pivot, "u_x_pivot", 0.5f);
+        defineParam(u_y_pivot, "u_y_pivot", 0.5f);
         defineParam(u_general_contrast, "u_general_contrast", 2.0f);
         defineParam(u_toe_power, "u_toe_power", 3.0f);
         defineParam(u_shoulder_power, "u_shoulder_power", 3.25f);
     }
 
     void init() {
-        g_x_pivot = fabs(u_min_EV / (u_max_EV - u_min_EV));
-        g_y_pivot = 0.5;
+        g_x_pivot = u_x_pivot;
+        g_y_pivot = u_y_pivot;
     }
 
     float equation_scale(
