@@ -1,4 +1,4 @@
-// version 5
+// version 6
 // The tonescale curve for AgX
 // to apply on log-encoded imagery (unless u_log_convert is true)
 //
@@ -50,44 +50,67 @@ kernel AgXTonescale : ImageComputationKernel<ePixelWise>
         return (slope_pivot * (x - x_pivot)) / scale;
     }
 
-    float equation_curve(float value, float scale){
+    float equation_curve(
+        float value,
+        float scale,
+        float x_pivot,
+        float y_pivot,
+        float contrast,
+        float toe_power,
+        float shoulder_power
+    ){
         float a = equation_hyperbolic(
-            equation_term(value, g_x_pivot, u_general_contrast, scale),
-            u_toe_power
+            equation_term(value, x_pivot, contrast, scale),
+            toe_power
         );
-        a = a * scale + g_y_pivot;
+        a = a * scale + y_pivot;
 
         float b = equation_hyperbolic(
-            equation_term(value, g_x_pivot, u_general_contrast, scale),
-            u_shoulder_power
+            equation_term(value, x_pivot, contrast, scale),
+            shoulder_power
         );
-        b = b * scale + g_y_pivot;
+        b = b * scale + y_pivot;
 
         return scale < 0.0? a: b;
 
     }
 
-    float equation_full_curve(float value){
-        float scale_x_pivot = value >= g_x_pivot? 1.0 - g_x_pivot: g_x_pivot;
-        float scale_y_pivot = value >= g_x_pivot? 1.0 - g_y_pivot: g_y_pivot;
+    float equation_full_curve(
+        float value,
+        float x_pivot,
+        float y_pivot,
+        float contrast,
+        float toe_power,
+        float shoulder_power
+    ){
+        float scale_x_pivot = value >= x_pivot? 1.0 - x_pivot: x_pivot;
+        float scale_y_pivot = value >= x_pivot? 1.0 - y_pivot: y_pivot;
 
         float toe_scale = equation_scale(
             scale_x_pivot,
             scale_y_pivot,
-            u_general_contrast,
-            u_toe_power
+            contrast,
+            toe_power
         );
 
         float shoulder_scale = equation_scale(
             scale_x_pivot,
             scale_y_pivot,
-            u_general_contrast,
-            u_shoulder_power
+            contrast,
+            shoulder_power
         );
 
-        float scale = value >= g_x_pivot? shoulder_scale: -1.0 * toe_scale;
+        float scale = value >= x_pivot? shoulder_scale: -1.0 * toe_scale;
 
-        return equation_curve(value, scale);
+        return equation_curve(
+            value,
+            scale,
+            x_pivot,
+            y_pivot,
+            contrast,
+            toe_power,
+            shoulder_power
+        );
     }
 
     void process(int2 pos) {
@@ -97,9 +120,30 @@ kernel AgXTonescale : ImageComputationKernel<ePixelWise>
         float3 converted_rgb(rgba.x, rgba.y, rgba.z);
 
         // apply per-channel tonescale curve
-        converted_rgb.x = equation_full_curve(converted_rgb.x);
-        converted_rgb.y = equation_full_curve(converted_rgb.y);
-        converted_rgb.z = equation_full_curve(converted_rgb.z);
+        converted_rgb.x = equation_full_curve(
+            converted_rgb.x,
+            u_x_pivot,
+            u_y_pivot,
+            u_general_contrast,
+            u_toe_power,
+            u_shoulder_power
+        );
+        converted_rgb.y = equation_full_curve(
+            converted_rgb.y,
+            u_x_pivot,
+            u_y_pivot,
+            u_general_contrast,
+            u_toe_power,
+            u_shoulder_power
+        );
+        converted_rgb.z = equation_full_curve(
+            converted_rgb.z,
+            u_x_pivot,
+            u_y_pivot,
+            u_general_contrast,
+            u_toe_power,
+            u_shoulder_power
+        );
 
         dst() = float4(
             converted_rgb.x,
