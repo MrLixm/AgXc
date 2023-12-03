@@ -1,4 +1,4 @@
-// version 6
+// version 7
 // The tonescale curve for AgX
 // to apply on log-encoded imagery (unless u_log_convert is true)
 //
@@ -11,28 +11,21 @@ kernel AgXTonescale : ImageComputationKernel<ePixelWise>
     Image<eWrite> dst;
 
     param:
-        float u_x_pivot;
-        float u_y_pivot;
-        float u_general_contrast;
-        float u_toe_power;
-        float u_shoulder_power;
-
-    local:
-        float g_x_pivot;
-        float g_y_pivot;
+        float3 u_x_pivot;
+        float3 u_y_pivot;
+        float3 u_general_contrast;
+        float3 u_toe_power;
+        float3 u_shoulder_power;
 
     void define() {
-        defineParam(u_x_pivot, "u_x_pivot", 0.5f);
-        defineParam(u_y_pivot, "u_y_pivot", 0.5f);
-        defineParam(u_general_contrast, "u_general_contrast", 2.0f);
-        defineParam(u_toe_power, "u_toe_power", 3.0f);
-        defineParam(u_shoulder_power, "u_shoulder_power", 3.25f);
+        defineParam(u_x_pivot, "u_x_pivot", float3(0.5, 0.5, 0.5));
+        defineParam(u_y_pivot, "u_y_pivot", float3(0.5, 0.5, 0.5));
+        defineParam(u_general_contrast, "u_general_contrast", float3(2.0, 2.0, 2.0));
+        defineParam(u_toe_power, "u_toe_power", float3(3.0, 3.0, 3.0));
+        defineParam(u_shoulder_power, "u_shoulder_power", float3(3.25, 3.25, 3.25));
     }
 
-    void init() {
-        g_x_pivot = u_x_pivot;
-        g_y_pivot = u_y_pivot;
-    }
+    void init() {}
 
     float equation_scale(
         float x_pivot, float y_pivot, float slope_pivot, float power
@@ -122,27 +115,27 @@ kernel AgXTonescale : ImageComputationKernel<ePixelWise>
         // apply per-channel tonescale curve
         converted_rgb.x = equation_full_curve(
             converted_rgb.x,
-            u_x_pivot,
-            u_y_pivot,
-            u_general_contrast,
-            u_toe_power,
-            u_shoulder_power
+            u_x_pivot.x,
+            u_y_pivot.x,
+            u_general_contrast.x,
+            u_toe_power.x,
+            u_shoulder_power.x
         );
         converted_rgb.y = equation_full_curve(
             converted_rgb.y,
-            u_x_pivot,
-            u_y_pivot,
-            u_general_contrast,
-            u_toe_power,
-            u_shoulder_power
+            u_x_pivot.y,
+            u_y_pivot.y,
+            u_general_contrast.y,
+            u_toe_power.y,
+            u_shoulder_power.y
         );
         converted_rgb.z = equation_full_curve(
             converted_rgb.z,
-            u_x_pivot,
-            u_y_pivot,
-            u_general_contrast,
-            u_toe_power,
-            u_shoulder_power
+            u_x_pivot.z,
+            u_y_pivot.z,
+            u_general_contrast.z,
+            u_toe_power.z,
+            u_shoulder_power.z
         );
 
         dst() = float4(
