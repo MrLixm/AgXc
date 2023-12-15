@@ -55,6 +55,10 @@ and upper versions, and other operating systems.
 
 # Installation
 
+Instructions are also available as video :
+
+[![youtube video thumbnail](https://i.ytimg.com/vi/KD6tyyRXPHw/maxresdefault.jpg)](https://youtu.be/KD6tyyRXPHw)
+
 [Download](https://github.com/MrLixm/AgXc/archive/refs/heads/main.zip) this whole
 GitHub repository.
 
