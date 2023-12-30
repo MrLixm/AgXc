@@ -1,4 +1,4 @@
-// version 5
+// version 7
 // The tonescale curve for AgX
 // to apply on log-encoded imagery (unless u_log_convert is true)
 //
@@ -11,45 +11,21 @@ kernel AgXTonescale : ImageComputationKernel<ePixelWise>
     Image<eWrite> dst;
 
     param:
-        float u_min_EV;
-        float u_max_EV;
-        float u_general_contrast;
-        float2 u_limits_contrast;
-        bool u_log_convert;
-        float u_log_midgrey;
-
-    local:
-        float g_x_pivot;
-        float g_y_pivot;
+        float3 u_x_pivot;
+        float3 u_y_pivot;
+        float3 u_general_contrast;
+        float3 u_toe_power;
+        float3 u_shoulder_power;
 
     void define() {
-        defineParam(u_min_EV, "u_min_EV", -10.0f);
-        defineParam(u_max_EV, "u_max_EV", 6.5f);
-        defineParam(u_general_contrast, "u_general_contrast", 2.0f);
-        defineParam(u_limits_contrast, "u_limits_contrast", float2(3.0, 3.25));
-        defineParam(u_log_midgrey, "u_log_midgrey", 0.18f);
+        defineParam(u_x_pivot, "u_x_pivot", float3(0.5, 0.5, 0.5));
+        defineParam(u_y_pivot, "u_y_pivot", float3(0.5, 0.5, 0.5));
+        defineParam(u_general_contrast, "u_general_contrast", float3(2.0, 2.0, 2.0));
+        defineParam(u_toe_power, "u_toe_power", float3(3.0, 3.0, 3.0));
+        defineParam(u_shoulder_power, "u_shoulder_power", float3(3.25, 3.25, 3.25));
     }
 
-    void init() {
-        g_x_pivot = fabs(u_min_EV / (u_max_EV - u_min_EV));
-        g_y_pivot = 0.5;
-    }
-
-    float3 convert_open_domain_to_normalized_log2(float3 color){
-        // Similar to OCIO lg2 AllocationTransform.
-        // References:
-        //     - [1] https://github.com/sobotka/AgX-S2O3/blob/main/AgX.py
-        float3 mincolor(0.000001, 0.000001, 0.000001);
-        float3 out = max(color, mincolor);
-        float3 midgrey(u_log_midgrey, u_log_midgrey, u_log_midgrey);
-        out = log2(color / midgrey);
-        out = clamp(
-            out,
-            float3(u_min_EV, u_min_EV, u_min_EV),
-            float3(u_max_EV, u_max_EV, u_max_EV)
-        );
-        return (out - u_min_EV) / (u_max_EV - u_min_EV);
-    }
+    void init() {}
 
     float equation_scale(
         float x_pivot, float y_pivot, float slope_pivot, float power
@@ -67,44 +43,67 @@ kernel AgXTonescale : ImageComputationKernel<ePixelWise>
         return (slope_pivot * (x - x_pivot)) / scale;
     }
 
-    float equation_curve(float value, float scale){
+    float equation_curve(
+        float value,
+        float scale,
+        float x_pivot,
+        float y_pivot,
+        float contrast,
+        float toe_power,
+        float shoulder_power
+    ){
         float a = equation_hyperbolic(
-            equation_term(value, g_x_pivot, u_general_contrast, scale),
-            u_limits_contrast.x
+            equation_term(value, x_pivot, contrast, scale),
+            toe_power
         );
-        a = a * scale + g_y_pivot;
+        a = a * scale + y_pivot;
 
         float b = equation_hyperbolic(
-            equation_term(value, g_x_pivot, u_general_contrast, scale),
-            u_limits_contrast.y
+            equation_term(value, x_pivot, contrast, scale),
+            shoulder_power
         );
-        b = b * scale + g_y_pivot;
+        b = b * scale + y_pivot;
 
         return scale < 0.0? a: b;
 
     }
 
-    float equation_full_curve(float value){
-        float scale_x_pivot = value >= g_x_pivot? 1.0 - g_x_pivot: g_x_pivot;
-        float scale_y_pivot = value >= g_x_pivot? 1.0 - g_y_pivot: g_y_pivot;
+    float equation_full_curve(
+        float value,
+        float x_pivot,
+        float y_pivot,
+        float contrast,
+        float toe_power,
+        float shoulder_power
+    ){
+        float scale_x_pivot = value >= x_pivot? 1.0 - x_pivot: x_pivot;
+        float scale_y_pivot = value >= x_pivot? 1.0 - y_pivot: y_pivot;
 
         float toe_scale = equation_scale(
             scale_x_pivot,
             scale_y_pivot,
-            u_general_contrast,
-            u_limits_contrast.x
+            contrast,
+            toe_power
         );
 
         float shoulder_scale = equation_scale(
             scale_x_pivot,
             scale_y_pivot,
-            u_general_contrast,
-            u_limits_contrast.y
+            contrast,
+            shoulder_power
         );
 
-        float scale = value >= g_x_pivot? shoulder_scale: -1.0 * toe_scale;
+        float scale = value >= x_pivot? shoulder_scale: -1.0 * toe_scale;
 
-        return equation_curve(value, scale);
+        return equation_curve(
+            value,
+            scale,
+            x_pivot,
+            y_pivot,
+            contrast,
+            toe_power,
+            shoulder_power
+        );
     }
 
     void process(int2 pos) {
@@ -113,14 +112,31 @@ kernel AgXTonescale : ImageComputationKernel<ePixelWise>
 
         float3 converted_rgb(rgba.x, rgba.y, rgba.z);
 
-        if (u_log_convert){
-            converted_rgb = convert_open_domain_to_normalized_log2(converted_rgb);
-        }
-
         // apply per-channel tonescale curve
-        converted_rgb.x = equation_full_curve(converted_rgb.x);
-        converted_rgb.y = equation_full_curve(converted_rgb.y);
-        converted_rgb.z = equation_full_curve(converted_rgb.z);
+        converted_rgb.x = equation_full_curve(
+            converted_rgb.x,
+            u_x_pivot.x,
+            u_y_pivot.x,
+            u_general_contrast.x,
+            u_toe_power.x,
+            u_shoulder_power.x
+        );
+        converted_rgb.y = equation_full_curve(
+            converted_rgb.y,
+            u_x_pivot.y,
+            u_y_pivot.y,
+            u_general_contrast.y,
+            u_toe_power.y,
+            u_shoulder_power.y
+        );
+        converted_rgb.z = equation_full_curve(
+            converted_rgb.z,
+            u_x_pivot.z,
+            u_y_pivot.z,
+            u_general_contrast.z,
+            u_toe_power.z,
+            u_shoulder_power.z
+        );
 
         dst() = float4(
             converted_rgb.x,
