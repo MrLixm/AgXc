@@ -1,0 +1,87 @@
+Group {
+ name AgXcDRT
+ tile_color 0x3a755e00
+ note_font_color 0xefefefff
+ addUserKnob {20 User l AgXcDRT}
+ addUserKnob {26 txt_header l "" +STARTLINE T "<h1> AgXcDRT</h1>"}
+ addUserKnob {26 txt_header_d l "" +STARTLINE T "<i>Input is expected to be BT.2020 encoded.</i>"}
+ addUserKnob {6 plot_show l "Shot Plot" +STARTLINE}
+ addUserKnob {26 "" +STARTLIN}
+ addUserKnob {26 txt_tonescale l "" +STARTLINE T "<h2> Tonescale</h2>"}
+ addUserKnob {6 tonescale_apply_double l "Apply Double Tonescale" +STARTLINE}
+ addUserKnob {6 todisplay_apply l "Apply Display Conversion" +STARTLINE}
+ addUserKnob {20 About}
+ addUserKnob {26 toolName l name T AgXcDRT}
+ addUserKnob {26 toolVersion l version T 0.1.0}
+ addUserKnob {26 toolAuthor l author T "<a style=\"color: rgb(200,200,200);\" href=\"https://mrlixm.github.io/\">Liam Collod</a>"}
+ addUserKnob {26 toolDescription l description T "AgX(custom) Display Rendering Transform."}
+ addUserKnob {26 toolUrl l url T "<a style=\"color: rgb(200,200,200);\" href=\"https://github.com/MrLixm/AgXc\">https://github.com/MrLixm/AgXc</a>"}
+}
+ Input {
+  inputs 0
+  name image
+  xpos 0
+  ypos 0
+ }
+ Dot {
+  name DotDisplay
+  xpos 0
+  ypos 1000
+ }
+ set N23344020 [stack 0]
+  Colorspace {
+   name TO_DISPLAY_GAMUT
+   xpos 0
+   ypos 1100
+   primary_in "Rec.2020"
+  }
+  Grade {
+   name GRADE_DISPLAY_LINEAR
+   xpos 0
+   ypos 1150
+  }
+  Colorspace {
+   name TO_DISPLAY_EOTF
+   xpos 0
+   ypos 1200
+   colorspace_out "sRGB"
+  }
+ push $N23344020
+ Dot {
+  name DotDisplay1
+  xpos 100
+  ypos 1000
+ }
+ Dot {
+  name DotDisplay2
+  xpos 100
+  ypos 1300
+ }
+ Switch {
+  inputs 2
+  which {{parent.todisplay_apply}}
+  name SwitchDisplay
+  xpos 0
+  ypos 1300
+ }
+ Dot {
+  name DotPlotLast
+  xpos 0
+  ypos 1350
+ }
+ set N23344020 [stack 0]
+  %NODE_PLOT_SLICE:{"ypos": 1400, "xpos": 100,"name": "PlotSliceCurve"}%
+ push $N23344020
+ Switch {
+  inputs 2
+  which {{parent.plot_show}}
+  name SwitchPlotShow
+  xpos 0
+  ypos 1450
+ }
+ Output {
+  name Output1
+  xpos 0
+  ypos 1500
+ }
+end_group
