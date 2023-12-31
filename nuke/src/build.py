@@ -127,7 +127,7 @@ def _override_nuke_node_knobs(
             break
 
         for override_name, overrides_value in overrides.items():
-            if line.strip(" ").startswith(override_name):
+            if re.match(rf"\s*{override_name}\s", line.strip(" ")):
                 new_node[line_index] = f" {override_name} {overrides_value}"
                 # we cannot pop a dict we are iterating over, so pop the copy
                 _overrides.pop(override_name)
