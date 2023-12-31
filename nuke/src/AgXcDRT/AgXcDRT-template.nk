@@ -7,9 +7,13 @@ Group {
  addUserKnob {26 txt_header_d l "" +STARTLINE T "<i>Input is expected to be BT.2020 encoded.</i>"}
  addUserKnob {26 txt_space1 l "" +STARTLINE T "|"}
  addUserKnob {6 plot_show l "Show Plot" -STARTLINE}
+ addUserKnob {6 plot_show_ramp l "Show Plot Ramp" -STARTLINE}
  addUserKnob {26 "" +STARTLINE}
  addUserKnob {26 txt_tonescale l "" +STARTLINE T "<h2> Tonescale </h2>"}
  addUserKnob {6 tonescale_apply_double l "Apply Double Tonescale" -STARTLINE}
+ tonescale_apply_double true
+ addUserKnob {41 contrast_tonescale1 l "contrast first" +STARTLINE T AgXcTonescaleFirst.general_contrast}
+ addUserKnob {41 contrast_tonescale2 l "contrast second" t "only used when \"Apply Double Tonescale\" is checked" +STARTLINE T AgXcTonescaleSecond.general_contrast}
  addUserKnob {18 print_contrast l "print contrast" R 0.8 4}
  print_contrast {1.0 1.0 1.0}
  addUserKnob {18 print_contrast_pivot l "print contrast pivot" R 0.1 1.0}
@@ -138,6 +142,7 @@ Group {
    name GRADE_DISPLAY_LINEAR
    xpos 0
    ypos 1000
+   white 1.1
   }
   Colorspace {
    name TO_DISPLAY_EOTF
@@ -175,7 +180,50 @@ Group {
    xpos 200
    ypos 1200
   }
-  %NODE_PlotSlice:{"ypos": 1250, "xpos": 200,"name": "PlotSliceCurve"}%
+  set N5bf32400 [stack 0]
+   Expression {
+    name ExpressionFillBlack
+    xpos 300
+    ypos 1200
+    expr0 0
+    expr1 0
+    expr2 0
+    disable {{parent.plot_show_ramp}}
+   }
+   Grid {
+    name GridPlot1
+    xpos 300
+    ypos 1230
+    opacity 0.5
+    number {4 2}
+    size 3
+   }
+   Grid {
+    name GridPlot2
+    xpos 300
+    ypos 1270
+    opacity 0.15
+    number {8 0}
+    size 3
+   }
+  push $N5bf32400
+   %NODE_PlotSlice:{"ypos": 1230, "xpos": 200,"name": "PlotSliceCurve", "pos2": "{{width} {height}}", "antialias": 1}%
+   Grade {
+    name GradePlot
+    xpos 200
+    ypos 1270
+    channels rgba
+    white 4
+    white_clamp 1
+    gamma 5
+   }
+  Merge {
+   inputs 2
+   name MergePlotGrid
+   xpos 200
+   ypos 1320
+   operation under
+  }
   Dot {
    name DotPlotSlice
    xpos 200
