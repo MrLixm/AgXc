@@ -226,25 +226,25 @@ def build_AgXcDRT():
 
     LOGGER.info("downloading PlotSlice node")
     plotslice_node = _download_web_nukenode(
-        url="https://github.com/jedypod/nuke-colortools/raw/master/toolsets/visualize/PlotSlice.nk",
+        url="https://github.com/jedypod/nuke-colortools/raw/b0912ff8c9ffd0438d208847ef49d0ecc89655cf/toolsets/visualize/PlotSlice.nk",
         license_url="https://github.com/jedypod/nuke-colortools/raw/master/LICENSE.md",
     )
 
     LOGGER.info("downloading SigmoidParabolic node")
     sigmoidp_node = _download_web_nukenode(
-        url="https://github.com/jedypod/nuke-colortools/raw/master/toolsets/transfer_function/SigmoidParabolic.nk",
+        url="https://github.com/jedypod/nuke-colortools/raw/b0912ff8c9ffd0438d208847ef49d0ecc89655cf/toolsets/transfer_function/SigmoidParabolic.nk",
         license_url="https://github.com/jedypod/nuke-colortools/raw/master/LICENSE.md",
     )
 
     LOGGER.info("downloading Log2Shaper node")
     log2_node = _download_web_nukenode(
-        url="https://github.com/jedypod/nuke-colortools/raw/master/toolsets/transfer_function/Log2Shaper.nk",
+        url="https://github.com/jedypod/nuke-colortools/raw/b0912ff8c9ffd0438d208847ef49d0ecc89655cf/toolsets/transfer_function/Log2Shaper.nk",
         license_url="https://github.com/jedypod/nuke-colortools/raw/master/LICENSE.md",
     )
 
     LOGGER.info("downloading PrimariesInset node")
     primariesinset_node = _download_web_nukenode(
-        url="https://github.com/MrLixm/Foundry_Nuke/raw/main/src/primaries_inset/PrimariesInset.nk",
+        url="https://github.com/MrLixm/Foundry_Nuke/raw/2eaa71320d22b1bf407fe409e31d6ae03b4d4082/src/primaries_inset/PrimariesInset.nk",
     )
 
     tonescale_node = BuildPaths.dst_AgXcTonescale_node.read_text("utf-8")

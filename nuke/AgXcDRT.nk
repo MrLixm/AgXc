@@ -108,7 +108,7 @@ Group {
   xpos 0
   ypos 0
  }
- # startfrom: https://github.com/MrLixm/Foundry_Nuke/raw/main/src/primaries_inset/PrimariesInset.nk
+ # startfrom: https://github.com/MrLixm/Foundry_Nuke/raw/2eaa71320d22b1bf407fe409e31d6ae03b4d4082/src/primaries_inset/PrimariesInset.nk
  Group {
   name PrimariesInsetFirst
   tile_color 0x3a755e00
@@ -301,7 +301,7 @@ Group {
   }
  end_group
  # endfrom
- # startfrom: https://github.com/jedypod/nuke-colortools/raw/master/toolsets/transfer_function/Log2Shaper.nk
+ # startfrom: https://github.com/jedypod/nuke-colortools/raw/b0912ff8c9ffd0438d208847ef49d0ecc89655cf/toolsets/transfer_function/Log2Shaper.nk
  #MIT License
  #
  #Copyright 2020 Jedediah Smith
@@ -558,7 +558,7 @@ Group {
   ypos 500
  }
  set Nd28ed30 [stack 0]
-  # startfrom: https://github.com/MrLixm/Foundry_Nuke/raw/main/src/primaries_inset/PrimariesInset.nk
+  # startfrom: https://github.com/MrLixm/Foundry_Nuke/raw/2eaa71320d22b1bf407fe409e31d6ae03b4d4082/src/primaries_inset/PrimariesInset.nk
   Group {
    name PrimariesInsetSecond
    tile_color 0x3a755e00
@@ -749,7 +749,7 @@ Group {
    }
   end_group
   # endfrom
-  # startfrom: https://github.com/jedypod/nuke-colortools/raw/master/toolsets/transfer_function/Log2Shaper.nk
+  # startfrom: https://github.com/jedypod/nuke-colortools/raw/b0912ff8c9ffd0438d208847ef49d0ecc89655cf/toolsets/transfer_function/Log2Shaper.nk
   #MIT License
   #
   #Copyright 2020 Jedediah Smith
@@ -1008,7 +1008,7 @@ Group {
   xpos 0
   ypos 700
  }
- # startfrom: https://github.com/jedypod/nuke-colortools/raw/master/toolsets/transfer_function/SigmoidParabolic.nk
+ # startfrom: https://github.com/jedypod/nuke-colortools/raw/b0912ff8c9ffd0438d208847ef49d0ecc89655cf/toolsets/transfer_function/SigmoidParabolic.nk
  #MIT License
  #
  #Copyright 2020 Jedediah Smith
@@ -1124,7 +1124,7 @@ Group {
     size 3
    }
   push $N5bf32400
-   # startfrom: https://github.com/jedypod/nuke-colortools/raw/master/toolsets/visualize/PlotSlice.nk
+   # startfrom: https://github.com/jedypod/nuke-colortools/raw/b0912ff8c9ffd0438d208847ef49d0ecc89655cf/toolsets/visualize/PlotSlice.nk
    #MIT License
    #
    #Copyright 2020 Jedediah Smith
