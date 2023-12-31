@@ -48,6 +48,7 @@ def _download_web_nukenode(url: str, license_url: Optional[str] = None) -> str:
 
     src_node = _download_file(url, temp_file).read_text("utf-8")
     temp_file.unlink()
+    src_node = src_node.rstrip("\n")
 
     src_license = None
     if license_url:
