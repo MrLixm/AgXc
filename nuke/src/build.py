@@ -61,7 +61,7 @@ def _download_web_nukenode(url: str, license_url: Optional[str] = None) -> str:
     temp_file.unlink()
     src_node = src_node.rstrip("\n")
 
-    src_license = None
+    src_license = []
     if license_url:
         src_license = _download_file(license_url, temp_file).read_text("utf-8")
         temp_file.unlink()
@@ -199,6 +199,11 @@ def build_AgXcDRT():
         license_url="https://github.com/jedypod/nuke-colortools/raw/master/LICENSE.md",
     )
 
+    LOGGER.info("downloading PrimariesInset node")
+    primariesinset_node = _download_web_nukenode(
+        url="https://github.com/MrLixm/Foundry_Nuke/raw/main/src/primaries_inset/PrimariesInset.nk",
+    )
+
     tonescale_node = BuildPaths.dst_AgXcTonescale_node.read_text("utf-8")
 
     new_node = []
@@ -224,6 +229,11 @@ def build_AgXcDRT():
             line,
             name="NODE_Log2Shaper",
             new_lines=log2_node.split("\n"),
+        )
+        new_lines = new_lines or _replace_variable_in_line(
+            line,
+            name="NODE_PrimariesInset",
+            new_lines=primariesinset_node.split("\n"),
         )
         if new_lines:
             new_node += new_lines

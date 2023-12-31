@@ -38,10 +38,11 @@ Group {
   xpos 0
   ypos 600
  }
- set N1aabb660 [stack 0]
+ set Nd28ed30 [stack 0]
+  %NODE_PrimariesInset:{"ypos": 700, "xpos": 0,"name": "PrimariesInsetSecond"}%
   %NODE_Log2Shaper:{"ypos": 750, "xpos": 0,"name": "Log2ShaperTonescaleSecond"}%
   %NODE_AgXcTonescale:{"ypos": 800, "xpos": 0,"name": "AgXcTonescaleSecond"}%
- push $N1aabb660
+ push $Nd28ed30
  Dot {
   name Dot2ndTonescale1
   xpos 100
