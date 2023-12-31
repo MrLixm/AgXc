@@ -100,6 +100,56 @@ def _sanitize_nuke_script(script: str, convert_new_lines=True) -> str:
     return newscript
 
 
+def _get_nuke_syntax_topnode_lines(nuke_script: list[str]) -> tuple[int, int]:
+    """
+    From a nuke script return the line on that start and end the initialization of the
+    top node. Example::
+
+        0 # header comment
+        1 Group {
+        2  name myGroup
+        3  someKnob {{tcl expression}}
+        4 }
+        5 end_group
+        6 Dot {
+        7 }
+
+    will return (1,4)
+
+    Args:
+        nuke_script: nuke syntax as list of lines
+
+    Returns:
+        index of start line, index of end line
+    """
+    start_index = -1
+    end_index = -1
+    brack_open_count = 0
+
+    for line_index, line in list(enumerate(nuke_script)):
+        if line.strip(" ").startswith("#"):
+            continue
+
+        if "{" in line and start_index == -1:
+            start_index = line_index
+            brack_open_count = 1
+            continue
+
+        brack_open_count += line.count("{")
+        # remove escaped brackets that doesn't count
+        brack_open_count -= line.count(r"\{")
+
+        brack_open_count -= line.count("}")
+        # add back escaped brackets that doesn't count
+        brack_open_count += line.count(r"\}")
+
+        if brack_open_count == 0:
+            end_index = line_index
+            break
+
+    return start_index, end_index
+
+
 def _override_nuke_node_knobs(
     nuke_node: list[str],
     overrides: dict[str, str],
@@ -132,18 +182,11 @@ def _override_nuke_node_knobs(
                 # we cannot pop a dict we are iterating over, so pop the copy
                 _overrides.pop(override_name)
 
-    # the node as list[str] might have comment or additional first lines, so we find
-    # the index of the node initialization (ex the one with "Group {")
-    node_init_index = [
-        line_index
-        for line_index, line in enumerate(new_node)
-        if line.rstrip(" ").endswith("{")
-    ]
-    node_init_index = node_init_index[0]
+    _, node_end_init_index = _get_nuke_syntax_topnode_lines(new_node)
 
     # // we add leftover overrides that were not initally set on the node
     for override_name, overrides_value in _overrides.items():
-        new_node.insert(node_init_index + 1, f" {override_name} {overrides_value}")
+        new_node.insert(node_end_init_index, f" {override_name} {overrides_value}")
 
     return new_node
 
