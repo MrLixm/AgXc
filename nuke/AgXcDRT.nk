@@ -30,7 +30,7 @@ Group {
   Reformat {
     name ReformatPlotSquare
     xpos 200
-    ypos 400
+    ypos 200
     type "to box"
     box_width 2048
     box_height 2048
@@ -39,14 +39,14 @@ Group {
   Ramp {
    name PlotRampLinear
    xpos 200
-   ypos 450
+   ypos 250
    p0 {0 0}
    p1 {{width} 0}
   }
   Dot {
    name DotPlot
    xpos 200
-   ypos 500
+   ypos 300
   }
  set Nd9ce770 [stack 0]
  Input {
@@ -58,7 +58,7 @@ Group {
  # startfrom: https://github.com/MrLixm/Foundry_Nuke/raw/main/src/primaries_inset/PrimariesInset.nk
  Group {
   xpos 0
-  ypos 400
+  ypos 200
   name PrimariesInsetFirst
   tile_color 0x3a755e00
   note_font_color 0xefefefff
@@ -255,7 +255,7 @@ Group {
  #THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  Group {
   xpos 0
-  ypos 450
+  ypos 250
   name Log2ShaperTonescaleFirst
   addUserKnob {20 log2_to_lin_tab l "log2 to lin"}
   addUserKnob {35 presets l preset t "Presets for the exposure domain. \n\n48nits shaper small domain matches the log2 shaper used in the ACES 1.0.3 config. \n\nThe new 48nits shaper was expanded to match the acescc curve to reduce artifacts." M {"curve/48nits shaper" "knobs this \{mid_grey 0.18 min_exp -6.5 max_exp 6.5 label \"48nits shaper\"\}" "curve/48nits shaper acescc" "knobs this \{mid_grey 0.18 min_exp -7.246068811667588 max_exp 10.273931188332412 label \"48nits shaper acescc\"\}" "curve/LMT shaper" "knobs this \{mid_grey 0.18 min_exp -10 max_exp 6.5 label \"LMT shaper\"\}" "curve/108nits shaper" "knobs this \{mid_grey 0.18 min_exp -12 max_exp 8 label \"108nits shaper\"\}" "curve/1000nits shaper" "knobs this \{mid_grey 0.18 min_exp -12 max_exp 10 label \"1000nits shaper\"\}" "curve/2000nits shaper" "knobs this \{mid_grey 0.18 min_exp -12 max_exp 11 label \"2000nits shaper\"\}" "curve/4000nits shaper" "knobs this \{mid_grey 0.18 min_exp -12 max_exp 12 label \"4000nits shaper\"\}"}}
@@ -428,11 +428,11 @@ Group {
   which {{parent.plot_show}}
   name SwitchPlotShow1
   xpos 0
-  ypos 500
+  ypos 300
  }
  Group {
   xpos 0
-  ypos 550
+  ypos 350
   name AgXcTonescaleFirst
   tile_color 0x3a755e00
   note_font_color 0xefefefff
@@ -495,13 +495,13 @@ Group {
  Dot {
   name Dot2ndTonescale
   xpos 0
-  ypos 600
+  ypos 500
  }
  set Nd28ed30 [stack 0]
   # startfrom: https://github.com/MrLixm/Foundry_Nuke/raw/main/src/primaries_inset/PrimariesInset.nk
   Group {
    xpos 0
-   ypos 700
+   ypos 550
    name PrimariesInsetSecond
    tile_color 0x3a755e00
    note_font_color 0xefefefff
@@ -698,7 +698,7 @@ Group {
   #THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   Group {
    xpos 0
-   ypos 750
+   ypos 600
    name Log2ShaperTonescaleSecond
    addUserKnob {20 log2_to_lin_tab l "log2 to lin"}
    addUserKnob {35 presets l preset t "Presets for the exposure domain. \n\n48nits shaper small domain matches the log2 shaper used in the ACES 1.0.3 config. \n\nThe new 48nits shaper was expanded to match the acescc curve to reduce artifacts." M {"curve/48nits shaper" "knobs this \{mid_grey 0.18 min_exp -6.5 max_exp 6.5 label \"48nits shaper\"\}" "curve/48nits shaper acescc" "knobs this \{mid_grey 0.18 min_exp -7.246068811667588 max_exp 10.273931188332412 label \"48nits shaper acescc\"\}" "curve/LMT shaper" "knobs this \{mid_grey 0.18 min_exp -10 max_exp 6.5 label \"LMT shaper\"\}" "curve/108nits shaper" "knobs this \{mid_grey 0.18 min_exp -12 max_exp 8 label \"108nits shaper\"\}" "curve/1000nits shaper" "knobs this \{mid_grey 0.18 min_exp -12 max_exp 10 label \"1000nits shaper\"\}" "curve/2000nits shaper" "knobs this \{mid_grey 0.18 min_exp -12 max_exp 11 label \"2000nits shaper\"\}" "curve/4000nits shaper" "knobs this \{mid_grey 0.18 min_exp -12 max_exp 12 label \"4000nits shaper\"\}"}}
@@ -867,7 +867,7 @@ Group {
   # endfrom
   Group {
    xpos 0
-   ypos 800
+   ypos 650
    name AgXcTonescaleSecond
    tile_color 0x3a755e00
    note_font_color 0xefefefff
@@ -931,19 +931,19 @@ Group {
  Dot {
   name Dot2ndTonescale1
   xpos 100
-  ypos 600
+  ypos 500
  }
  Dot {
   name Dot2ndTonescale2
   xpos 100
-  ypos 850
+  ypos 700
  }
  Switch {
   inputs 2
   which {{parent.tonescale_apply_double}}
   name SwitchDoubleToneScale
   xpos 0
-  ypos 850
+  ypos 700
  }
  # startfrom: https://github.com/jedypod/nuke-colortools/raw/master/toolsets/transfer_function/SigmoidParabolic.nk
  #MIT License
@@ -958,7 +958,7 @@ Group {
  Expression {
   mix {{parent.print_contrast_amount}}
   xpos 0
-  ypos 900
+  ypos 750
   expr0 r<t0.r?t0.r*(r/t0.r)**p.r:1+(t0.r-1)*((r-1)/(t0.r-1))**p.r
   expr1 g<t0.g?t0.g*(g/t0.g)**p.g:1+(t0.g-1)*((g-1)/(t0.g-1))**p.g
   expr2 b<t0.b?t0.b*(b/t0.b)**p.b:1+(t0.b-1)*((b-1)/(t0.b-1))**p.b
@@ -974,59 +974,64 @@ Group {
  Colorspace {
   name LINEARIZE_TONESCALE
   xpos 0
-  ypos 950
+  ypos 800
   label "cctf: [value colorspace_in] > [value colorspace_out]"
   colorspace_in "2.40"
  }
  Dot {
   name DotDisplay
   xpos 0
-  ypos 1000
+  ypos 900
  }
  set N23344020 [stack 0]
   Colorspace {
    name TO_DISPLAY_GAMUT
    label "gamut: [value primary_in] > [value primary_out]"
    xpos 0
-   ypos 1100
+   ypos 950
    primary_in "Rec.2020"
   }
   Grade {
    name GRADE_DISPLAY_LINEAR
    xpos 0
-   ypos 1150
+   ypos 1000
   }
   Colorspace {
    name TO_DISPLAY_EOTF
    label "cctf: [value colorspace_in] > [value colorspace_out]"
    xpos 0
-   ypos 1200
+   ypos 1050
    colorspace_out "sRGB"
   }
  push $N23344020
  Dot {
   name DotDisplay1
-  xpos 100
-  ypos 1000
+  xpos 200
+  ypos 900
  }
  Dot {
   name DotDisplay2
-  xpos 100
-  ypos 1300
+  xpos 200
+  ypos 1100
  }
  Switch {
   inputs 2
   which {{parent.todisplay_apply}}
   name SwitchDisplay
   xpos 0
-  ypos 1300
+  ypos 1100
  }
  Dot {
   name DotPlotLast
   xpos 0
-  ypos 1350
+  ypos 1200
  }
  set N23344020 [stack 0]
+  Dot {
+   name DotPlotSlice
+   xpos 200
+   ypos 1200
+  }
   # startfrom: https://github.com/jedypod/nuke-colortools/raw/master/toolsets/visualize/PlotSlice.nk
   #MIT License
   #
@@ -1038,8 +1043,8 @@ Group {
   #
   #THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   Group {
-   xpos 100
-   ypos 1400
+   xpos 200
+   ypos 1300
    name PlotSliceCurve
    addUserKnob {20 PlotSlice_tab l PlotSlice}
    addUserKnob {41 useGPUIfAvailable l "Use GPU if available" T PlotSlice.useGPUIfAvailable}
@@ -1259,6 +1264,11 @@ Group {
    }
   end_group
   # endfrom
+  Dot {
+   name DotPlotSlice
+   xpos 200
+   ypos 1350
+  }
  push $N23344020
  Switch {
   inputs 2

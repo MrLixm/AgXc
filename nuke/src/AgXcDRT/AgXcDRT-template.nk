@@ -30,7 +30,7 @@ Group {
   Reformat {
     name ReformatPlotSquare
     xpos 200
-    ypos 400
+    ypos 200
     type "to box"
     box_width 2048
     box_height 2048
@@ -39,14 +39,14 @@ Group {
   Ramp {
    name PlotRampLinear
    xpos 200
-   ypos 450
+   ypos 250
    p0 {0 0}
    p1 {{width} 0}
   }
   Dot {
    name DotPlot
    xpos 200
-   ypos 500
+   ypos 300
   }
  set Nd9ce770 [stack 0]
  Input {
@@ -55,102 +55,112 @@ Group {
   xpos 0
   ypos 0
  }
- %NODE_PrimariesInset:{"ypos": 400, "xpos": 0, "name": "PrimariesInsetFirst"}%
- %NODE_Log2Shaper:{"ypos": 450, "xpos": 0, "name": "Log2ShaperTonescaleFirst"}%
+ %NODE_PrimariesInset:{"ypos": 200, "xpos": 0, "name": "PrimariesInsetFirst"}%
+ %NODE_Log2Shaper:{"ypos": 250, "xpos": 0, "name": "Log2ShaperTonescaleFirst"}%
  push $Nd9ce770
  Switch {
   inputs 2
   which {{parent.plot_show}}
   name SwitchPlotShow1
   xpos 0
-  ypos 500
+  ypos 300
  }
- %NODE_AgXcTonescale:{"ypos": 550, "xpos": 0,"name": "AgXcTonescaleFirst"}%
+ %NODE_AgXcTonescale:{"ypos": 350, "xpos": 0,"name": "AgXcTonescaleFirst"}%
  Dot {
   name Dot2ndTonescale
   xpos 0
-  ypos 600
+  ypos 500
  }
  set Nd28ed30 [stack 0]
-  %NODE_PrimariesInset:{"ypos": 700, "xpos": 0,"name": "PrimariesInsetSecond"}%
-  %NODE_Log2Shaper:{"ypos": 750, "xpos": 0,"name": "Log2ShaperTonescaleSecond"}%
-  %NODE_AgXcTonescale:{"ypos": 800, "xpos": 0,"name": "AgXcTonescaleSecond"}%
+  %NODE_PrimariesInset:{"ypos": 550, "xpos": 0,"name": "PrimariesInsetSecond"}%
+  %NODE_Log2Shaper:{"ypos": 600, "xpos": 0,"name": "Log2ShaperTonescaleSecond"}%
+  %NODE_AgXcTonescale:{"ypos": 650, "xpos": 0,"name": "AgXcTonescaleSecond"}%
  push $Nd28ed30
  Dot {
   name Dot2ndTonescale1
-  xpos 100
-  ypos 600
+  xpos 200
+  ypos 500
  }
  Dot {
   name Dot2ndTonescale2
-  xpos 100
-  ypos 850
+  xpos 200
+  ypos 700
  }
  Switch {
   inputs 2
   which {{parent.tonescale_apply_double}}
   name SwitchDoubleToneScale
   xpos 0
-  ypos 850
+  ypos 700
  }
- %NODE_SigmoidParabolic:{"ypos": 900, "xpos": 0, "name": "PRINT_CONTRAST_SigmoidParabolic", "mix": "{{parent.print_contrast_amount}}", "p": "{{parent.print_contrast} {parent.print_contrast} {parent.print_contrast}}", "t0": "{{parent.print_contrast_pivot} {parent.print_contrast_pivot} {parent.print_contrast_pivot}}"}%
+ %NODE_SigmoidParabolic:{"ypos": 750, "xpos": 0, "name": "PRINT_CONTRAST_SigmoidParabolic", "mix": "{{parent.print_contrast_amount}}", "p": "{{parent.print_contrast} {parent.print_contrast} {parent.print_contrast}}", "t0": "{{parent.print_contrast_pivot} {parent.print_contrast_pivot} {parent.print_contrast_pivot}}"}%
  Colorspace {
   name LINEARIZE_TONESCALE
   xpos 0
-  ypos 950
+  ypos 800
   label "cctf: [value colorspace_in] > [value colorspace_out]"
   colorspace_in "2.40"
  }
  Dot {
   name DotDisplay
   xpos 0
-  ypos 1000
+  ypos 900
  }
  set N23344020 [stack 0]
   Colorspace {
    name TO_DISPLAY_GAMUT
    label "gamut: [value primary_in] > [value primary_out]"
    xpos 0
-   ypos 1100
+   ypos 950
    primary_in "Rec.2020"
   }
   Grade {
    name GRADE_DISPLAY_LINEAR
    xpos 0
-   ypos 1150
+   ypos 1000
   }
   Colorspace {
    name TO_DISPLAY_EOTF
    label "cctf: [value colorspace_in] > [value colorspace_out]"
    xpos 0
-   ypos 1200
+   ypos 1050
    colorspace_out "sRGB"
   }
  push $N23344020
  Dot {
   name DotDisplay1
-  xpos 100
-  ypos 1000
+  xpos 200
+  ypos 900
  }
  Dot {
   name DotDisplay2
-  xpos 100
-  ypos 1300
+  xpos 200
+  ypos 1100
  }
  Switch {
   inputs 2
   which {{parent.todisplay_apply}}
   name SwitchDisplay
   xpos 0
-  ypos 1300
+  ypos 1100
  }
  Dot {
   name DotPlotLast
   xpos 0
-  ypos 1350
+  ypos 1200
  }
  set N23344020 [stack 0]
-  %NODE_PlotSlice:{"ypos": 1400, "xpos": 100,"name": "PlotSliceCurve"}%
+  Dot {
+   name DotPlotSlice
+   xpos 200
+   ypos 1200
+  }
+  %NODE_PlotSlice:{"ypos": 1250, "xpos": 200,"name": "PlotSliceCurve"}%
+  Dot {
+   name DotPlotSlice
+   xpos 200
+   ypos 1350
+  }
  push $N23344020
  Switch {
   inputs 2
