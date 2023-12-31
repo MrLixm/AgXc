@@ -5,11 +5,21 @@ Group {
  addUserKnob {20 User l AgXcDRT}
  addUserKnob {26 txt_header l "" +STARTLINE T "<h1> AgXcDRT</h1>"}
  addUserKnob {26 txt_header_d l "" +STARTLINE T "<i>Input is expected to be BT.2020 encoded.</i>"}
- addUserKnob {6 plot_show l "Shot Plot" +STARTLINE}
- addUserKnob {26 "" +STARTLIN}
- addUserKnob {26 txt_tonescale l "" +STARTLINE T "<h2> Tonescale</h2>"}
- addUserKnob {6 tonescale_apply_double l "Apply Double Tonescale" +STARTLINE}
- addUserKnob {6 todisplay_apply l "Apply Display Conversion" +STARTLINE}
+ addUserKnob {26 txt_space1 l "" +STARTLINE T "|"}
+ addUserKnob {6 plot_show l "Show Plot" -STARTLINE}
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {26 txt_tonescale l "" +STARTLINE T "<h2> Tonescale </h2>"}
+ addUserKnob {6 tonescale_apply_double l "Apply Double Tonescale" -STARTLINE}
+ addUserKnob {18 print_contrast l "print contrast" R 0.8 4}
+ print_contrast {1.0 1.0 1.0}
+ addUserKnob {18 print_contrast_pivot l "print contrast pivot" R 0.1 1.0}
+ print_contrast_pivot {0.65 0.65 0.65}
+ addUserKnob {7 print_contrast_amount l "print contrast amount" R 0 1}
+ print_contrast_amount 1.0
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {26 txt_display l "" +STARTLINE T "<h2> Display </h2>"}
+ addUserKnob {6 todisplay_apply l "Apply Display Conversion" -STARTLINE}
+ todisplay_apply true
  addUserKnob {20 About}
  addUserKnob {26 toolName l name T AgXcDRT}
  addUserKnob {26 toolVersion l version T 0.1.0}
@@ -23,6 +33,14 @@ Group {
   xpos 0
   ypos 0
  }
+ %NODE_SigmoidParabolic:{"ypos": 900, "xpos": 0, "name": "PRINT_CONTRAST_SigmoidParabolic", "mix": "{{parent.print_contrast_amount}}", "p": "{{parent.print_contrast} {parent.print_contrast} {parent.print_contrast}}", "t0": "{{parent.print_contrast_pivot} {parent.print_contrast_pivot} {parent.print_contrast_pivot}}"}%
+ Colorspace {
+  name LINEARIZE_TONESCALE
+  xpos 0
+  ypos 950
+  label "cctf: [value colorspace_in] > [value colorspace_out]"
+  colorspace_in "2.40"
+ }
  Dot {
   name DotDisplay
   xpos 0
@@ -31,6 +49,7 @@ Group {
  set N23344020 [stack 0]
   Colorspace {
    name TO_DISPLAY_GAMUT
+   label "gamut: [value primary_in] > [value primary_out]"
    xpos 0
    ypos 1100
    primary_in "Rec.2020"
@@ -42,6 +61,7 @@ Group {
   }
   Colorspace {
    name TO_DISPLAY_EOTF
+   label "cctf: [value colorspace_in] > [value colorspace_out]"
    xpos 0
    ypos 1200
    colorspace_out "sRGB"
@@ -70,7 +90,7 @@ Group {
   ypos 1350
  }
  set N23344020 [stack 0]
-  %NODE_PLOT_SLICE:{"ypos": 1400, "xpos": 100,"name": "PlotSliceCurve"}%
+  %NODE_PlotSlice:{"ypos": 1400, "xpos": 100,"name": "PlotSliceCurve"}%
  push $N23344020
  Switch {
   inputs 2

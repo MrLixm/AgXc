@@ -120,18 +120,20 @@ def _override_nuke_node_knobs(
     return new_node
 
 
-def _replace_variable_in_line(line: str, name: str, new_lines: list[str]) -> list[str]:
+def _replace_variable_in_line(
+    line: str, name: str, new_lines: list[str]
+) -> Optional[list[str]]:
     """
     Replace the given variable with the given lines.
 
-    If the variable is not in the line, just return the line as single list item.
+    If the variable is not in the line, None is returned.
 
     Also handle the system to override nuke knobs defined in the variable "suffix"::
 
         %VAR_NAME:{"knob name": "knob value", ...}%
     """
     if not line.strip(" ").startswith(f"%{name}"):
-        return [line]
+        return None
 
     new_lines = list(new_lines)  # make a copy
 
@@ -155,16 +157,30 @@ def build_AgXcDRT():
         url="https://github.com/jedypod/nuke-colortools/raw/master/toolsets/visualize/PlotSlice.nk",
         license_url="https://github.com/jedypod/nuke-colortools/raw/master/LICENSE.md",
     )
+    LOGGER.info("downloading SigmoidParabolic node")
+    sigmoidp_node = _download_web_nukenode(
+        url="https://github.com/jedypod/nuke-colortools/raw/master/toolsets/transfer_function/SigmoidParabolic.nk",
+        license_url="https://github.com/jedypod/nuke-colortools/raw/master/LICENSE.md",
+    )
 
     new_node = []
 
     for line in template_node.split("\n"):
+        # we can only have one variable defined per line
         new_lines = _replace_variable_in_line(
             line,
-            name="NODE_PLOT_SLICE",
+            name="NODE_PlotSlice",
             new_lines=plotslice_node.split("\n"),
         )
-        new_node += new_lines
+        new_lines = new_lines or _replace_variable_in_line(
+            line,
+            name="NODE_SigmoidParabolic",
+            new_lines=sigmoidp_node.split("\n"),
+        )
+        if new_lines:
+            new_node += new_lines
+        else:
+            new_node.append(line)
 
     new_node = "\n".join(new_node)
     LOGGER.info(f"writting <{BuildPaths.dst_AgXcDRT_node}>")
