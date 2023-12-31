@@ -19,7 +19,24 @@ Group {
  addUserKnob {26 "" +STARTLINE}
  addUserKnob {26 txt_display l "" +STARTLINE T "<h2> Display </h2>"}
  addUserKnob {6 todisplay_apply l "Apply Display Conversion" -STARTLINE}
+ addUserKnob {41 target_cctf l "target cctf" +STARTLINE T TO_DISPLAY_EOTF.colorspace_out}
+ addUserKnob {41 target_gamut l "target gamut" +STARTLINE T TO_DISPLAY_GAMUT.primary_out}
+ addUserKnob {41 target_whitepoint l "target whitepoint" +STARTLINE T TO_DISPLAY_GAMUT.illuminant_out}
  todisplay_apply true
+ addUserKnob {26 sep1 l " " +STARTLINE}
+ addUserKnob {26 txt_dg l " " +STARTLINE T "<h3>Display Grading</h3>"}
+ addUserKnob {26 txt_dg_desc l " " +STARTLINE T "applied on linear target gamut encoding"}
+ addUserKnob {41 dg_gain l "gain" +STARTLINE T GRADE_DISPLAY_LINEAR.white}
+ addUserKnob {41 dg_gamma l "gamma" +STARTLINE T GRADE_DISPLAY_LINEAR.gamma}
+ addUserKnob {41 dg_offset l "offset" +STARTLINE T GRADE_DISPLAY_LINEAR.add}
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {20 advanced_grp l "Advanced Options" n 1}
+ advanced_grp 0
+ addUserKnob {7 min_exposure l "min Exposure (EV)" R -15 0}
+ min_exposure -10
+ addUserKnob {7 max_exposure l "max Exposure (EV)" R 0 15}
+ max_exposure 6.5
+ addUserKnob {20 endGroup n -1}
  addUserKnob {20 About}
  addUserKnob {26 toolName l name T AgXcDRT}
  addUserKnob {26 toolVersion l version T 0.1.0}
@@ -55,8 +72,8 @@ Group {
   xpos 0
   ypos 0
  }
- %NODE_PrimariesInset:{"ypos": 200, "xpos": 0, "name": "PrimariesInsetFirst"}%
- %NODE_Log2Shaper:{"ypos": 250, "xpos": 0, "name": "Log2ShaperTonescaleFirst"}%
+ %NODE_PrimariesInset:{"ypos": 200, "xpos": 0, "name": "PrimariesInsetFirst", "colorspace_preset": "\"ITU-R BT.2020\"", "primary_r": "{0.708 0.292}", "primary_g": "{0.17 0.797}", "primary_b": "{0.131 0.046}", "whitepoint": "{0.3127 0.329}", "inset": 0.4, "u_inset_r": 0.125, "u_inset_b": 0.15, "rotate_r": 5, "rotate_b": -5}%
+ %NODE_Log2Shaper:{"ypos": 250, "xpos": 0, "name": "Log2ShaperTonescaleFirst", "min_exp": "{{parent.min_exposure}}", "max_exp": "{{parent.max_exposure}}"}%
  push $Nd9ce770
  Switch {
   inputs 2
@@ -65,16 +82,16 @@ Group {
   xpos 0
   ypos 300
  }
- %NODE_AgXcTonescale:{"ypos": 350, "xpos": 0,"name": "AgXcTonescaleFirst"}%
+ %NODE_AgXcTonescale:{"ypos": 350, "xpos": 0,"name": "AgXcTonescaleFirst", "min_exposure": "{{parent.min_exposure}}", "max_exposure": "{{parent.max_exposure}}"}%
  Dot {
   name Dot2ndTonescale
   xpos 0
   ypos 500
  }
  set Nd28ed30 [stack 0]
-  %NODE_PrimariesInset:{"ypos": 550, "xpos": 0,"name": "PrimariesInsetSecond"}%
-  %NODE_Log2Shaper:{"ypos": 600, "xpos": 0,"name": "Log2ShaperTonescaleSecond"}%
-  %NODE_AgXcTonescale:{"ypos": 650, "xpos": 0,"name": "AgXcTonescaleSecond"}%
+  %NODE_PrimariesInset:{"ypos": 550, "xpos": 0,"name": "PrimariesInsetSecond", "colorspace_preset": "\"ITU-R BT.2020\"", "primary_r": "{0.708 0.292}", "primary_g": "{0.17 0.797}", "primary_b": "{0.131 0.046}", "whitepoint": "{0.3127 0.329}", "inset": 0.05, "u_inset_r": 0.06, "u_inset_b": 0.35, "u_inset_b": 0.06}%
+  %NODE_Log2Shaper:{"ypos": 600, "xpos": 0,"name": "Log2ShaperTonescaleSecond", "min_exp": -5.4, "max_exp": 4}%
+  %NODE_AgXcTonescale:{"ypos": 650, "xpos": 0,"name": "AgXcTonescaleSecond", "min_exposure": -10.5, "max_exposure": 5.5}%
  push $Nd28ed30
  Dot {
   name Dot2ndTonescale1
@@ -113,6 +130,7 @@ Group {
    xpos 0
    ypos 950
    primary_in "Rec.2020"
+   bradford_matrix true
   }
   Grade {
    name GRADE_DISPLAY_LINEAR

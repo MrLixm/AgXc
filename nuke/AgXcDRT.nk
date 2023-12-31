@@ -19,7 +19,22 @@ Group {
  addUserKnob {26 "" +STARTLINE}
  addUserKnob {26 txt_display l "" +STARTLINE T "<h2> Display </h2>"}
  addUserKnob {6 todisplay_apply l "Apply Display Conversion" -STARTLINE}
+ addUserKnob {41 target_cctf l "target cctf" +STARTLINE T TO_DISPLAY_EOTF.colorspace_out}
+ addUserKnob {41 target_gamut l "target gamut" +STARTLINE T TO_DISPLAY_GAMUT.primary_out}
+ addUserKnob {41 target_whitepoint l "target whitepoint" +STARTLINE T TO_DISPLAY_GAMUT.illuminant_out}
  todisplay_apply true
+ addUserKnob {26 sep1 l " " +STARTLINE}
+ addUserKnob {26 txt_dg l " " +STARTLINE T "<h3>Display Grading</h3>"}
+ addUserKnob {26 txt_dg_desc l " " +STARTLINE T "applied on linear target gamut encoding"}
+ addUserKnob {41 dg_gain l "gain" +STARTLINE T GRADE_DISPLAY_LINEAR.white}
+ addUserKnob {41 dg_gamma l "gamma" +STARTLINE T GRADE_DISPLAY_LINEAR.gamma}
+ addUserKnob {41 dg_offset l "offset" +STARTLINE T GRADE_DISPLAY_LINEAR.add}
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {20 advanced_grp l "Advanced Options" n 1}
+ advanced_grp 0
+ addUserKnob {7 min_exposure l "min Exposure (EV)" R -15 0}
+ addUserKnob {7 max_exposure l "max Exposure (EV)" R 0 15}
+ addUserKnob {20 endGroup n -1}
  addUserKnob {20 About}
  addUserKnob {26 toolName l name T AgXcDRT}
  addUserKnob {26 toolVersion l version T 0.1.0}
@@ -57,8 +72,6 @@ Group {
  }
  # startfrom: https://github.com/MrLixm/Foundry_Nuke/raw/main/src/primaries_inset/PrimariesInset.nk
  Group {
-  xpos 0
-  ypos 200
   name PrimariesInsetFirst
   tile_color 0x3a755e00
   note_font_color 0xefefefff
@@ -67,15 +80,15 @@ Group {
   addUserKnob {26 txt_colorspace_d l "" +STARTLINE T "<i>Define the colorspace to inset.</i>"}
   addUserKnob {26 txt_sep1 l "" +STARTLINE T " "}
   addUserKnob {4 colorspace_preset l Preset M {ACES2065-1 ACEScg ACESproxy "ARRI Wide Gamut 3" "ARRI Wide Gamut 4" "Adobe RGB (1998)" "Adobe Wide Gamut RGB" "Blackmagic Wide Gamut" DCI-P3 DCI-P3-P "DJI D-Gamut" DRAGONcolor DRAGONcolor2 "DaVinci Wide Gamut" "Display P3" F-Gamut "FilmLight E-Gamut" "ITU-R BT.2020" "ITU-R BT.709" P3-D65 "ProPhoto RGB" REDWideGamutRGB REDcolor REDcolor2 REDcolor3 REDcolor4 S-Gamut S-Gamut3 S-Gamut3.Cine V-Gamut "Venice S-Gamut3" "Venice S-Gamut3.Cine" sRGB}}
-  colorspace_preset sRGB
+  colorspace_preset "ITU-R BT.2020"
   addUserKnob {22 preset_apply l apply -STARTLINE T "import logging\n\nimport nuke\n\nLOGGER = logging.getLogger(__name__)\n\nPRESETS = \{\n    \"ACES2065-1\": \{\n        \"chromaticities\": ((0.7347, 0.2653), (0.0, 1.0), (0.0001, -0.077)),\n        \"whitepoint\": (0.32168, 0.33767),\n    \},\n    \"ACEScg\": \{\n        \"chromaticities\": ((0.713, 0.293), (0.165, 0.83), (0.128, 0.044)),\n        \"whitepoint\": (0.32168, 0.33767),\n    \},\n    \"ACESproxy\": \{\n        \"chromaticities\": ((0.713, 0.293), (0.165, 0.83), (0.128, 0.044)),\n        \"whitepoint\": (0.32168, 0.33767),\n    \},\n    \"ARRI Wide Gamut 3\": \{\n        \"chromaticities\": ((0.684, 0.313), (0.221, 0.848), (0.0861, -0.102)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"ARRI Wide Gamut 4\": \{\n        \"chromaticities\": ((0.7347, 0.2653), (0.1424, 0.8576), (0.0991, -0.0308)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"Adobe RGB (1998)\": \{\n        \"chromaticities\": ((0.64, 0.33), (0.21, 0.71), (0.15, 0.06)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"Adobe Wide Gamut RGB\": \{\n        \"chromaticities\": ((0.7347, 0.2653), (0.1152, 0.8264), (0.1566, 0.0177)),\n        \"whitepoint\": (0.3457, 0.3585),\n    \},\n    \"Blackmagic Wide Gamut\": \{\n        \"chromaticities\": (\n            (0.717722, 0.317118),\n            (0.228041, 0.861569),\n            (0.100584, -0.082045),\n        ),\n        \"whitepoint\": (0.312717, 0.329031),\n    \},\n    \"DCI-P3\": \{\n        \"chromaticities\": ((0.68, 0.32), (0.265, 0.69), (0.15, 0.06)),\n        \"whitepoint\": (0.314, 0.351),\n    \},\n    \"DCI-P3-P\": \{\n        \"chromaticities\": ((0.74, 0.27), (0.22, 0.78), (0.09, -0.09)),\n        \"whitepoint\": (0.314, 0.351),\n    \},\n    \"DJI D-Gamut\": \{\n        \"chromaticities\": ((0.71, 0.31), (0.21, 0.88), (0.09, -0.08)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"DRAGONcolor\": \{\n        \"chromaticities\": (\n            (0.758656, 0.330355),\n            (0.294924, 0.708053),\n            (0.085962, -0.045879),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"DRAGONcolor2\": \{\n        \"chromaticities\": (\n            (0.758656, 0.330356),\n            (0.294924, 0.708053),\n            (0.144169, 0.050357),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"DaVinci Wide Gamut\": \{\n        \"chromaticities\": ((0.8, 0.313), (0.1682, 0.9877), (0.079, -0.1155)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"Display P3\": \{\n        \"chromaticities\": ((0.68, 0.32), (0.265, 0.69), (0.15, 0.06)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"F-Gamut\": \{\n        \"chromaticities\": ((0.708, 0.292), (0.17, 0.797), (0.131, 0.046)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"FilmLight E-Gamut\": \{\n        \"chromaticities\": ((0.8, 0.3177), (0.18, 0.9), (0.065, -0.0805)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"ITU-R BT.2020\": \{\n        \"chromaticities\": ((0.708, 0.292), (0.17, 0.797), (0.131, 0.046)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"ITU-R BT.709\": \{\n        \"chromaticities\": ((0.64, 0.33), (0.3, 0.6), (0.15, 0.06)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"P3-D65\": \{\n        \"chromaticities\": ((0.68, 0.32), (0.265, 0.69), (0.15, 0.06)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"ProPhoto RGB\": \{\n        \"chromaticities\": ((0.7347, 0.2653), (0.1596, 0.8404), (0.0366, 0.0001)),\n        \"whitepoint\": (0.3457, 0.3585),\n    \},\n    \"REDWideGamutRGB\": \{\n        \"chromaticities\": (\n            (0.780308, 0.304253),\n            (0.121595, 1.493994),\n            (0.095612, -0.084589),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"REDcolor\": \{\n        \"chromaticities\": (\n            (0.701059, 0.330181),\n            (0.298811, 0.625169),\n            (0.135039, 0.035262),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"REDcolor2\": \{\n        \"chromaticities\": (\n            (0.897407, 0.330776),\n            (0.296022, 0.684636),\n            (0.0998, -0.023001),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"REDcolor3\": \{\n        \"chromaticities\": (\n            (0.702599, 0.330186),\n            (0.295782, 0.689748),\n            (0.111091, -0.004332),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"REDcolor4\": \{\n        \"chromaticities\": (\n            (0.702598, 0.330185),\n            (0.295782, 0.689748),\n            (0.144459, 0.050838),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"S-Gamut\": \{\n        \"chromaticities\": ((0.73, 0.28), (0.14, 0.855), (0.1, -0.05)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"S-Gamut3\": \{\n        \"chromaticities\": ((0.73, 0.28), (0.14, 0.855), (0.1, -0.05)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"S-Gamut3.Cine\": \{\n        \"chromaticities\": ((0.766, 0.275), (0.225, 0.8), (0.089, -0.087)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"V-Gamut\": \{\n        \"chromaticities\": ((0.73, 0.28), (0.165, 0.84), (0.1, -0.03)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"Venice S-Gamut3\": \{\n        \"chromaticities\": (\n            (0.740464, 0.279364),\n            (0.089241, 0.89381),\n            (0.110488, -0.052579),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"Venice S-Gamut3.Cine\": \{\n        \"chromaticities\": (\n            (0.775902, 0.274502),\n            (0.188683, 0.828685),\n            (0.101337, -0.089188),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"sRGB\": \{\n        \"chromaticities\": ((0.64, 0.33), (0.3, 0.6), (0.15, 0.06)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n\}\n\n\ndef main(node, knob):\n    # type: (nuke.Node, nuke.Knob) -> None\n\n    logprefix = \"(node<\{\}>)\".format(node.name())\n\n    preset_name = node[\"colorspace_preset\"].value()  # type: str\n    if preset_name not in PRESETS:\n        raise ValueError(\n            \"Selected preset name \{\} is not supported. \"\n            \"This might be a developer mistake.\".format(preset_name)\n        )\n    preset = PRESETS[preset_name]\n    chromaticities = preset[\"chromaticities\"]\n    whitepoint = preset[\"whitepoint\"]\n\n    LOGGER.debug(\"\{\} asked preset \{\}\".format(logprefix, preset_name))\n    LOGGER.debug(\"\{\} setting chromaticities=\{\}\".format(logprefix, chromaticities))\n    LOGGER.debug(\"\{\} setting whitepoint=\{\}\".format(logprefix, whitepoint))\n\n    node[\"primary_r\"].setValue(list(chromaticities[0]))\n    node[\"primary_g\"].setValue(list(chromaticities[1]))\n    node[\"primary_b\"].setValue(list(chromaticities[2]))\n    node[\"whitepoint\"].setValue(list(whitepoint))\n\n\nmain(nuke.thisNode(), nuke.thisKnob())\n"}
   addUserKnob {26 "" +STARTLINE}
   addUserKnob {12 primary_r l "primary R" +STARTLINE +NO_HANDLES}
-  primary_r {0.64 0.33}
+  primary_r {0.708 0.292}
   addUserKnob {12 primary_g l "primary G" +STARTLINE +NO_HANDLES}
-  primary_g {0.3 0.6}
+  primary_g {0.17 0.797}
   addUserKnob {12 primary_b l "primary B" +STARTLINE +NO_HANDLES}
-  primary_b {0.15 0.06}
+  primary_b {0.131 0.046}
   addUserKnob {26 "" +STARTLINE}
   addUserKnob {12 whitepoint l "whitepoint" +STARTLINE +NO_HANDLES}
   whitepoint {0.3127 0.329}
@@ -121,6 +134,13 @@ Group {
   addUserKnob {26 toolAuthor l author T "<a style=\"color: rgb(200,200,200);\" href=\"https://mrlixm.github.io/\">Liam Collod</a>"}
   addUserKnob {26 toolDescription l description T "Reshape a colorspace gamut and plot it on the CIE xy space."}
   addUserKnob {26 toolUrl l url T "<a style=\"color: rgb(200,200,200);\" href=\"https://github.com/MrLixm/Foundry_Nuke\">https://github.com/MrLixm/Foundry_Nuke</a>"}
+  rotate_b -5
+  rotate_r 5
+  u_inset_b 0.15
+  u_inset_r 0.125
+  inset 0.4
+  xpos 0
+  ypos 200
  }
   Input {
    inputs 0
@@ -254,8 +274,6 @@ Group {
  #
  #THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  Group {
-  xpos 0
-  ypos 250
   name Log2ShaperTonescaleFirst
   addUserKnob {20 log2_to_lin_tab l "log2 to lin"}
   addUserKnob {35 presets l preset t "Presets for the exposure domain. \n\n48nits shaper small domain matches the log2 shaper used in the ACES 1.0.3 config. \n\nThe new 48nits shaper was expanded to match the acescc curve to reduce artifacts." M {"curve/48nits shaper" "knobs this \{mid_grey 0.18 min_exp -6.5 max_exp 6.5 label \"48nits shaper\"\}" "curve/48nits shaper acescc" "knobs this \{mid_grey 0.18 min_exp -7.246068811667588 max_exp 10.273931188332412 label \"48nits shaper acescc\"\}" "curve/LMT shaper" "knobs this \{mid_grey 0.18 min_exp -10 max_exp 6.5 label \"LMT shaper\"\}" "curve/108nits shaper" "knobs this \{mid_grey 0.18 min_exp -12 max_exp 8 label \"108nits shaper\"\}" "curve/1000nits shaper" "knobs this \{mid_grey 0.18 min_exp -12 max_exp 10 label \"1000nits shaper\"\}" "curve/2000nits shaper" "knobs this \{mid_grey 0.18 min_exp -12 max_exp 11 label \"2000nits shaper\"\}" "curve/4000nits shaper" "knobs this \{mid_grey 0.18 min_exp -12 max_exp 12 label \"4000nits shaper\"\}"}}
@@ -268,11 +286,13 @@ Group {
   addUserKnob {7 mid_grey l "mid grey" R 0.1 0.2}
   mid_grey 0.18
   addUserKnob {7 min_exp l "min exp" R -12 0}
-  min_exp -6.5
+  min_exp {{parent.min_exposure}}
   addUserKnob {7 max_exp l "max exp" R 0 12}
-  max_exp 6.5
+  max_exp {{parent.max_exposure}}
   addUserKnob {7 cut t "Transition from log curve to linear extension at cut value." R 0 0.1}
   cut 0.008
+  xpos 0
+  ypos 250
  }
   Input {
    inputs 0
@@ -431,8 +451,6 @@ Group {
   ypos 300
  }
  Group {
-  xpos 0
-  ypos 350
   name AgXcTonescaleFirst
   tile_color 0x363d5700
   note_font_color 0xefefefff
@@ -441,9 +459,9 @@ Group {
   addUserKnob {26 txt_header_d l "" +STARTLINE T "<i>Input is expected to be log encoded.</i>"}
   addUserKnob {26 "" +STARTLINE}
   addUserKnob {7 min_exposure l "min Exposure (EV)" R -15 0}
-  min_exposure -10.5
+  min_exposure {{parent.min_exposure}}
   addUserKnob {7 max_exposure l "max Exposure (EV)" R 0 15}
-  max_exposure 6.5
+  max_exposure {{parent.max_exposure}}
   addUserKnob {26 "" +STARTLINE}
   addUserKnob {18 x_pivot l "x pivot" R 0.1 0.9}
   x_pivot {{"fabs(min_exposure / (max_exposure - (min_exposure)))"}}
@@ -461,6 +479,8 @@ Group {
   addUserKnob {26 toolAuthor l author T "<a style=\"color: rgb(200,200,200);\" href=\"https://mrlixm.github.io/\">Liam Collod</a>"}
   addUserKnob {26 toolDescription l description T "AgX tonescale curve algorithm."}
   addUserKnob {26 toolUrl l url T "<a style=\"color: rgb(200,200,200);\" href=\"https://github.com/MrLixm/AgXc\">https://github.com/MrLixm/AgXc</a>"}
+  xpos 0
+  ypos 350
  }
   Input {
    inputs 0
@@ -500,8 +520,6 @@ Group {
  set Nd28ed30 [stack 0]
   # startfrom: https://github.com/MrLixm/Foundry_Nuke/raw/main/src/primaries_inset/PrimariesInset.nk
   Group {
-   xpos 0
-   ypos 550
    name PrimariesInsetSecond
    tile_color 0x3a755e00
    note_font_color 0xefefefff
@@ -510,15 +528,15 @@ Group {
    addUserKnob {26 txt_colorspace_d l "" +STARTLINE T "<i>Define the colorspace to inset.</i>"}
    addUserKnob {26 txt_sep1 l "" +STARTLINE T " "}
    addUserKnob {4 colorspace_preset l Preset M {ACES2065-1 ACEScg ACESproxy "ARRI Wide Gamut 3" "ARRI Wide Gamut 4" "Adobe RGB (1998)" "Adobe Wide Gamut RGB" "Blackmagic Wide Gamut" DCI-P3 DCI-P3-P "DJI D-Gamut" DRAGONcolor DRAGONcolor2 "DaVinci Wide Gamut" "Display P3" F-Gamut "FilmLight E-Gamut" "ITU-R BT.2020" "ITU-R BT.709" P3-D65 "ProPhoto RGB" REDWideGamutRGB REDcolor REDcolor2 REDcolor3 REDcolor4 S-Gamut S-Gamut3 S-Gamut3.Cine V-Gamut "Venice S-Gamut3" "Venice S-Gamut3.Cine" sRGB}}
-   colorspace_preset sRGB
+   colorspace_preset "ITU-R BT.2020"
    addUserKnob {22 preset_apply l apply -STARTLINE T "import logging\n\nimport nuke\n\nLOGGER = logging.getLogger(__name__)\n\nPRESETS = \{\n    \"ACES2065-1\": \{\n        \"chromaticities\": ((0.7347, 0.2653), (0.0, 1.0), (0.0001, -0.077)),\n        \"whitepoint\": (0.32168, 0.33767),\n    \},\n    \"ACEScg\": \{\n        \"chromaticities\": ((0.713, 0.293), (0.165, 0.83), (0.128, 0.044)),\n        \"whitepoint\": (0.32168, 0.33767),\n    \},\n    \"ACESproxy\": \{\n        \"chromaticities\": ((0.713, 0.293), (0.165, 0.83), (0.128, 0.044)),\n        \"whitepoint\": (0.32168, 0.33767),\n    \},\n    \"ARRI Wide Gamut 3\": \{\n        \"chromaticities\": ((0.684, 0.313), (0.221, 0.848), (0.0861, -0.102)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"ARRI Wide Gamut 4\": \{\n        \"chromaticities\": ((0.7347, 0.2653), (0.1424, 0.8576), (0.0991, -0.0308)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"Adobe RGB (1998)\": \{\n        \"chromaticities\": ((0.64, 0.33), (0.21, 0.71), (0.15, 0.06)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"Adobe Wide Gamut RGB\": \{\n        \"chromaticities\": ((0.7347, 0.2653), (0.1152, 0.8264), (0.1566, 0.0177)),\n        \"whitepoint\": (0.3457, 0.3585),\n    \},\n    \"Blackmagic Wide Gamut\": \{\n        \"chromaticities\": (\n            (0.717722, 0.317118),\n            (0.228041, 0.861569),\n            (0.100584, -0.082045),\n        ),\n        \"whitepoint\": (0.312717, 0.329031),\n    \},\n    \"DCI-P3\": \{\n        \"chromaticities\": ((0.68, 0.32), (0.265, 0.69), (0.15, 0.06)),\n        \"whitepoint\": (0.314, 0.351),\n    \},\n    \"DCI-P3-P\": \{\n        \"chromaticities\": ((0.74, 0.27), (0.22, 0.78), (0.09, -0.09)),\n        \"whitepoint\": (0.314, 0.351),\n    \},\n    \"DJI D-Gamut\": \{\n        \"chromaticities\": ((0.71, 0.31), (0.21, 0.88), (0.09, -0.08)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"DRAGONcolor\": \{\n        \"chromaticities\": (\n            (0.758656, 0.330355),\n            (0.294924, 0.708053),\n            (0.085962, -0.045879),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"DRAGONcolor2\": \{\n        \"chromaticities\": (\n            (0.758656, 0.330356),\n            (0.294924, 0.708053),\n            (0.144169, 0.050357),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"DaVinci Wide Gamut\": \{\n        \"chromaticities\": ((0.8, 0.313), (0.1682, 0.9877), (0.079, -0.1155)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"Display P3\": \{\n        \"chromaticities\": ((0.68, 0.32), (0.265, 0.69), (0.15, 0.06)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"F-Gamut\": \{\n        \"chromaticities\": ((0.708, 0.292), (0.17, 0.797), (0.131, 0.046)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"FilmLight E-Gamut\": \{\n        \"chromaticities\": ((0.8, 0.3177), (0.18, 0.9), (0.065, -0.0805)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"ITU-R BT.2020\": \{\n        \"chromaticities\": ((0.708, 0.292), (0.17, 0.797), (0.131, 0.046)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"ITU-R BT.709\": \{\n        \"chromaticities\": ((0.64, 0.33), (0.3, 0.6), (0.15, 0.06)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"P3-D65\": \{\n        \"chromaticities\": ((0.68, 0.32), (0.265, 0.69), (0.15, 0.06)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"ProPhoto RGB\": \{\n        \"chromaticities\": ((0.7347, 0.2653), (0.1596, 0.8404), (0.0366, 0.0001)),\n        \"whitepoint\": (0.3457, 0.3585),\n    \},\n    \"REDWideGamutRGB\": \{\n        \"chromaticities\": (\n            (0.780308, 0.304253),\n            (0.121595, 1.493994),\n            (0.095612, -0.084589),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"REDcolor\": \{\n        \"chromaticities\": (\n            (0.701059, 0.330181),\n            (0.298811, 0.625169),\n            (0.135039, 0.035262),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"REDcolor2\": \{\n        \"chromaticities\": (\n            (0.897407, 0.330776),\n            (0.296022, 0.684636),\n            (0.0998, -0.023001),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"REDcolor3\": \{\n        \"chromaticities\": (\n            (0.702599, 0.330186),\n            (0.295782, 0.689748),\n            (0.111091, -0.004332),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"REDcolor4\": \{\n        \"chromaticities\": (\n            (0.702598, 0.330185),\n            (0.295782, 0.689748),\n            (0.144459, 0.050838),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"S-Gamut\": \{\n        \"chromaticities\": ((0.73, 0.28), (0.14, 0.855), (0.1, -0.05)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"S-Gamut3\": \{\n        \"chromaticities\": ((0.73, 0.28), (0.14, 0.855), (0.1, -0.05)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"S-Gamut3.Cine\": \{\n        \"chromaticities\": ((0.766, 0.275), (0.225, 0.8), (0.089, -0.087)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"V-Gamut\": \{\n        \"chromaticities\": ((0.73, 0.28), (0.165, 0.84), (0.1, -0.03)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"Venice S-Gamut3\": \{\n        \"chromaticities\": (\n            (0.740464, 0.279364),\n            (0.089241, 0.89381),\n            (0.110488, -0.052579),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"Venice S-Gamut3.Cine\": \{\n        \"chromaticities\": (\n            (0.775902, 0.274502),\n            (0.188683, 0.828685),\n            (0.101337, -0.089188),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"sRGB\": \{\n        \"chromaticities\": ((0.64, 0.33), (0.3, 0.6), (0.15, 0.06)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n\}\n\n\ndef main(node, knob):\n    # type: (nuke.Node, nuke.Knob) -> None\n\n    logprefix = \"(node<\{\}>)\".format(node.name())\n\n    preset_name = node[\"colorspace_preset\"].value()  # type: str\n    if preset_name not in PRESETS:\n        raise ValueError(\n            \"Selected preset name \{\} is not supported. \"\n            \"This might be a developer mistake.\".format(preset_name)\n        )\n    preset = PRESETS[preset_name]\n    chromaticities = preset[\"chromaticities\"]\n    whitepoint = preset[\"whitepoint\"]\n\n    LOGGER.debug(\"\{\} asked preset \{\}\".format(logprefix, preset_name))\n    LOGGER.debug(\"\{\} setting chromaticities=\{\}\".format(logprefix, chromaticities))\n    LOGGER.debug(\"\{\} setting whitepoint=\{\}\".format(logprefix, whitepoint))\n\n    node[\"primary_r\"].setValue(list(chromaticities[0]))\n    node[\"primary_g\"].setValue(list(chromaticities[1]))\n    node[\"primary_b\"].setValue(list(chromaticities[2]))\n    node[\"whitepoint\"].setValue(list(whitepoint))\n\n\nmain(nuke.thisNode(), nuke.thisKnob())\n"}
    addUserKnob {26 "" +STARTLINE}
    addUserKnob {12 primary_r l "primary R" +STARTLINE +NO_HANDLES}
-   primary_r {0.64 0.33}
+   primary_r {0.708 0.292}
    addUserKnob {12 primary_g l "primary G" +STARTLINE +NO_HANDLES}
-   primary_g {0.3 0.6}
+   primary_g {0.17 0.797}
    addUserKnob {12 primary_b l "primary B" +STARTLINE +NO_HANDLES}
-   primary_b {0.15 0.06}
+   primary_b {0.131 0.046}
    addUserKnob {26 "" +STARTLINE}
    addUserKnob {12 whitepoint l "whitepoint" +STARTLINE +NO_HANDLES}
    whitepoint {0.3127 0.329}
@@ -564,6 +582,11 @@ Group {
    addUserKnob {26 toolAuthor l author T "<a style=\"color: rgb(200,200,200);\" href=\"https://mrlixm.github.io/\">Liam Collod</a>"}
    addUserKnob {26 toolDescription l description T "Reshape a colorspace gamut and plot it on the CIE xy space."}
    addUserKnob {26 toolUrl l url T "<a style=\"color: rgb(200,200,200);\" href=\"https://github.com/MrLixm/Foundry_Nuke\">https://github.com/MrLixm/Foundry_Nuke</a>"}
+   u_inset_b 0.06
+   u_inset_r 0.06
+   inset 0.05
+   xpos 0
+   ypos 550
   }
    Input {
     inputs 0
@@ -697,8 +720,6 @@ Group {
   #
   #THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   Group {
-   xpos 0
-   ypos 600
    name Log2ShaperTonescaleSecond
    addUserKnob {20 log2_to_lin_tab l "log2 to lin"}
    addUserKnob {35 presets l preset t "Presets for the exposure domain. \n\n48nits shaper small domain matches the log2 shaper used in the ACES 1.0.3 config. \n\nThe new 48nits shaper was expanded to match the acescc curve to reduce artifacts." M {"curve/48nits shaper" "knobs this \{mid_grey 0.18 min_exp -6.5 max_exp 6.5 label \"48nits shaper\"\}" "curve/48nits shaper acescc" "knobs this \{mid_grey 0.18 min_exp -7.246068811667588 max_exp 10.273931188332412 label \"48nits shaper acescc\"\}" "curve/LMT shaper" "knobs this \{mid_grey 0.18 min_exp -10 max_exp 6.5 label \"LMT shaper\"\}" "curve/108nits shaper" "knobs this \{mid_grey 0.18 min_exp -12 max_exp 8 label \"108nits shaper\"\}" "curve/1000nits shaper" "knobs this \{mid_grey 0.18 min_exp -12 max_exp 10 label \"1000nits shaper\"\}" "curve/2000nits shaper" "knobs this \{mid_grey 0.18 min_exp -12 max_exp 11 label \"2000nits shaper\"\}" "curve/4000nits shaper" "knobs this \{mid_grey 0.18 min_exp -12 max_exp 12 label \"4000nits shaper\"\}"}}
@@ -711,11 +732,13 @@ Group {
    addUserKnob {7 mid_grey l "mid grey" R 0.1 0.2}
    mid_grey 0.18
    addUserKnob {7 min_exp l "min exp" R -12 0}
-   min_exp -6.5
+   min_exp -5.4
    addUserKnob {7 max_exp l "max exp" R 0 12}
-   max_exp 6.5
+   max_exp 4
    addUserKnob {7 cut t "Transition from log curve to linear extension at cut value." R 0 0.1}
    cut 0.008
+   xpos 0
+   ypos 600
   }
    Input {
     inputs 0
@@ -866,8 +889,6 @@ Group {
   end_group
   # endfrom
   Group {
-   xpos 0
-   ypos 650
    name AgXcTonescaleSecond
    tile_color 0x363d5700
    note_font_color 0xefefefff
@@ -878,7 +899,7 @@ Group {
    addUserKnob {7 min_exposure l "min Exposure (EV)" R -15 0}
    min_exposure -10.5
    addUserKnob {7 max_exposure l "max Exposure (EV)" R 0 15}
-   max_exposure 6.5
+   max_exposure 5.5
    addUserKnob {26 "" +STARTLINE}
    addUserKnob {18 x_pivot l "x pivot" R 0.1 0.9}
    x_pivot {{"fabs(min_exposure / (max_exposure - (min_exposure)))"}}
@@ -896,6 +917,8 @@ Group {
    addUserKnob {26 toolAuthor l author T "<a style=\"color: rgb(200,200,200);\" href=\"https://mrlixm.github.io/\">Liam Collod</a>"}
    addUserKnob {26 toolDescription l description T "AgX tonescale curve algorithm."}
    addUserKnob {26 toolUrl l url T "<a style=\"color: rgb(200,200,200);\" href=\"https://github.com/MrLixm/AgXc\">https://github.com/MrLixm/AgXc</a>"}
+   xpos 0
+   ypos 650
   }
    Input {
     inputs 0
@@ -956,9 +979,6 @@ Group {
  #
  #THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  Expression {
-  mix {{parent.print_contrast_amount}}
-  xpos 0
-  ypos 750
   expr0 r<t0.r?t0.r*(r/t0.r)**p.r:1+(t0.r-1)*((r-1)/(t0.r-1))**p.r
   expr1 g<t0.g?t0.g*(g/t0.g)**p.g:1+(t0.g-1)*((g-1)/(t0.g-1))**p.g
   expr2 b<t0.b?t0.b*(b/t0.b)**p.b:1+(t0.b-1)*((b-1)/(t0.b-1))**p.b
@@ -969,6 +989,9 @@ Group {
   t0 {{parent.print_contrast_pivot} {parent.print_contrast_pivot} {parent.print_contrast_pivot}}
   addUserKnob {18 p R 0 4}
   p {{parent.print_contrast} {parent.print_contrast} {parent.print_contrast}}
+  mix {{parent.print_contrast_amount}}
+  xpos 0
+  ypos 750
  }
  # endfrom
  Colorspace {
@@ -990,6 +1013,7 @@ Group {
    xpos 0
    ypos 950
    primary_in "Rec.2020"
+   bradford_matrix true
   }
   Grade {
    name GRADE_DISPLAY_LINEAR
@@ -1043,8 +1067,6 @@ Group {
   #
   #THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   Group {
-   xpos 200
-   ypos 1250
    name PlotSliceCurve
    addUserKnob {20 PlotSlice_tab l PlotSlice}
    addUserKnob {41 useGPUIfAvailable l "Use GPU if available" T PlotSlice.useGPUIfAvailable}
@@ -1062,6 +1084,8 @@ Group {
    addUserKnob {18 lines_color l "lines color"}
    lines_color 0.1
    addUserKnob {6 lines_color_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+   xpos 200
+   ypos 1250
   }
    Input {
     inputs 0
