@@ -66,6 +66,8 @@ def _download_web_nukenode(url: str, license_url: Optional[str] = None) -> str:
     # append license on top as comment
     newnode = ["#" + line for line in src_license] + newnode
 
+    newnode = [f"# startfrom: {url}"] + newnode + ["# endfrom"]
+
     newnode = "\n".join(newnode)
     return newnode
 
