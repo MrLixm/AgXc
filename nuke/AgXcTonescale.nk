@@ -1,6 +1,6 @@
 Group {
  name AgXcTonescale
- tile_color 0x3a755e00
+ tile_color 0x363d5700
  note_font_color 0xefefefff
  addUserKnob {20 User l AgXcTonescale}
  addUserKnob {26 txt_header l "" +STARTLINE T "<h1> AgXcTonescale</h1>"}
