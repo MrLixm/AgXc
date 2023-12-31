@@ -180,14 +180,22 @@ def _replace_variable_in_line(
 
 def build_AgXcDRT():
     template_node = BuildPaths.src_AgXcDRT_node.read_text("utf-8")
+
     LOGGER.info("downloading PlotSlice node")
     plotslice_node = _download_web_nukenode(
         url="https://github.com/jedypod/nuke-colortools/raw/master/toolsets/visualize/PlotSlice.nk",
         license_url="https://github.com/jedypod/nuke-colortools/raw/master/LICENSE.md",
     )
+
     LOGGER.info("downloading SigmoidParabolic node")
     sigmoidp_node = _download_web_nukenode(
         url="https://github.com/jedypod/nuke-colortools/raw/master/toolsets/transfer_function/SigmoidParabolic.nk",
+        license_url="https://github.com/jedypod/nuke-colortools/raw/master/LICENSE.md",
+    )
+
+    LOGGER.info("downloading Log2Shaper node")
+    log2_node = _download_web_nukenode(
+        url="https://github.com/jedypod/nuke-colortools/raw/master/toolsets/transfer_function/Log2Shaper.nk",
         license_url="https://github.com/jedypod/nuke-colortools/raw/master/LICENSE.md",
     )
 
@@ -211,6 +219,11 @@ def build_AgXcDRT():
             line,
             name="NODE_AgXcTonescale",
             new_lines=tonescale_node.split("\n"),
+        )
+        new_lines = new_lines or _replace_variable_in_line(
+            line,
+            name="NODE_Log2Shaper",
+            new_lines=log2_node.split("\n"),
         )
         if new_lines:
             new_node += new_lines

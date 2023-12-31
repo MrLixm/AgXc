@@ -39,7 +39,8 @@ Group {
   ypos 600
  }
  set N1aabb660 [stack 0]
-  %NODE_AgXcTonescale:{"ypos": 800, "xpos": 0,"name": "AgXcTonescale_second"}%
+  %NODE_Log2Shaper:{"ypos": 750, "xpos": 0,"name": "Log2ShaperTonescaleSecond"}%
+  %NODE_AgXcTonescale:{"ypos": 800, "xpos": 0,"name": "AgXcTonescaleSecond"}%
  push $N1aabb660
  Dot {
   name Dot2ndTonescale1
