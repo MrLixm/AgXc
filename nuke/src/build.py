@@ -191,6 +191,8 @@ def build_AgXcDRT():
         license_url="https://github.com/jedypod/nuke-colortools/raw/master/LICENSE.md",
     )
 
+    tonescale_node = BuildPaths.dst_AgXcTonescale_node.read_text("utf-8")
+
     new_node = []
 
     for line in template_node.split("\n"):
@@ -204,6 +206,11 @@ def build_AgXcDRT():
             line,
             name="NODE_SigmoidParabolic",
             new_lines=sigmoidp_node.split("\n"),
+        )
+        new_lines = new_lines or _replace_variable_in_line(
+            line,
+            name="NODE_AgXcTonescale",
+            new_lines=tonescale_node.split("\n"),
         )
         if new_lines:
             new_node += new_lines

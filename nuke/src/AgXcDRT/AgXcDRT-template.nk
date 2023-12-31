@@ -33,6 +33,31 @@ Group {
   xpos 0
   ypos 0
  }
+ Dot {
+  name Dot2ndTonescale
+  xpos 0
+  ypos 600
+ }
+ set N1aabb660 [stack 0]
+  %NODE_AgXcTonescale:{"ypos": 800, "xpos": 0,"name": "AgXcTonescale_second"}%
+ push $N1aabb660
+ Dot {
+  name Dot2ndTonescale1
+  xpos 100
+  ypos 600
+ }
+ Dot {
+  name Dot2ndTonescale2
+  xpos 100
+  ypos 850
+ }
+ Switch {
+  inputs 2
+  which {{parent.tonescale_apply_double}}
+  name SwitchDoubleToneScale
+  xpos 0
+  ypos 850
+ }
  %NODE_SigmoidParabolic:{"ypos": 900, "xpos": 0, "name": "PRINT_CONTRAST_SigmoidParabolic", "mix": "{{parent.print_contrast_amount}}", "p": "{{parent.print_contrast} {parent.print_contrast} {parent.print_contrast}}", "t0": "{{parent.print_contrast_pivot} {parent.print_contrast_pivot} {parent.print_contrast_pivot}}"}%
  Colorspace {
   name LINEARIZE_TONESCALE
