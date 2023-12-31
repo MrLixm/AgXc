@@ -36,10 +36,42 @@ Group {
  addUserKnob {26 "" +STARTLINE}
  addUserKnob {20 advanced_grp l "Advanced Options" n 1}
  advanced_grp 0
- addUserKnob {7 min_exposure l "min Exposure (EV)" R -15 0}
- min_exposure -10
- addUserKnob {7 max_exposure l "max Exposure (EV)" R 0 15}
- max_exposure 6.5
+ addUserKnob {26 txt_advanced_note l " " +STARTLINE T "Note most knobs here are \"clones\"."}
+ addUserKnob {26 txt_advanced_tonescale1 l " " +STARTLINE T "<h3>First Pass</h3>"}
+ addUserKnob {41 inset1_inset +STARTLINE T PrimariesInsetFirst.inset}
+ addUserKnob {41 inset1_inset_r +STARTLINE T PrimariesInsetFirst.inset_r}
+ addUserKnob {41 inset1_inset_g +STARTLINE T PrimariesInsetFirst.inset_g}
+ addUserKnob {41 inset1_inset_b +STARTLINE T PrimariesInsetFirst.inset_b}
+ addUserKnob {41 inset1_rotate_r +STARTLINE T PrimariesInsetFirst.rotate_r}
+ addUserKnob {41 inset1_rotate_g +STARTLINE T PrimariesInsetFirst.rotate_g}
+ addUserKnob {41 inset1_rotate_b +STARTLINE T PrimariesInsetFirst.rotate_b}
+ addUserKnob {26 sep146 l " " +STARTLINE}
+ addUserKnob {7 tonescale1_min_exposure R -15 0}
+ tonescale1_min_exposure -10
+ addUserKnob {7 tonescale1_max_exposure R 0 15}
+ tonescale1_max_exposure 6.5
+ addUserKnob {41 tonescale1_xpivot +STARTLINE T AgXcTonescaleFirst.x_pivot}
+ addUserKnob {41 tonescale1_ypivot +STARTLINE T AgXcTonescaleFirst.y_pivot}
+ addUserKnob {41 tonescale1_toe_power +STARTLINE T AgXcTonescaleFirst.toe_power}
+ addUserKnob {41 tonescale1_shoulder_power +STARTLINE T AgXcTonescaleFirst.shoulder_power}
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {26 txt_advanced_tonescale2 l " " +STARTLINE T "<h3>Second Pass</h3>"}
+ addUserKnob {41 inset2_inset +STARTLINE T PrimariesInsetSecond.inset}
+ addUserKnob {41 inset2_inset_r +STARTLINE T PrimariesInsetSecond.inset_r}
+ addUserKnob {41 inset2_inset_g +STARTLINE T PrimariesInsetSecond.inset_g}
+ addUserKnob {41 inset2_inset_b +STARTLINE T PrimariesInsetSecond.inset_b}
+ addUserKnob {41 inset2_rotate_r +STARTLINE T PrimariesInsetSecond.rotate_r}
+ addUserKnob {41 inset2_rotate_g +STARTLINE T PrimariesInsetSecond.rotate_g}
+ addUserKnob {41 inset2_rotate_b +STARTLINE T PrimariesInsetSecond.rotate_b}
+ addUserKnob {26 sep354 l " " +STARTLINE}
+ addUserKnob {7 tonescale2_min_exposure R -15 0}
+ tonescale2_min_exposure -5.4
+ addUserKnob {7 tonescale2_max_exposure R 0 15}
+ tonescale2_max_exposure 4
+ addUserKnob {41 tonescale2_xpivot +STARTLINE T AgXcTonescaleSecond.x_pivot}
+ addUserKnob {41 tonescale2_ypivot +STARTLINE T AgXcTonescaleSecond.y_pivot}
+ addUserKnob {41 tonescale2_toe_power +STARTLINE T AgXcTonescaleSecond.toe_power}
+ addUserKnob {41 tonescale2_shoulder_power +STARTLINE T AgXcTonescaleSecond.shoulder_power}
  addUserKnob {20 endGroup n -1}
  addUserKnob {20 About}
  addUserKnob {26 toolName l name T AgXcDRT}
@@ -77,7 +109,7 @@ Group {
   ypos 0
  }
  %NODE_PrimariesInset:{"ypos": 200, "xpos": 0, "name": "PrimariesInsetFirst", "colorspace_preset": "\"ITU-R BT.2020\"", "primary_r": "{0.708 0.292}", "primary_g": "{0.17 0.797}", "primary_b": "{0.131 0.046}", "whitepoint": "{0.3127 0.329}", "inset": 0.4, "u_inset_r": 0.125, "u_inset_b": 0.15, "rotate_r": 5, "rotate_b": -5}%
- %NODE_Log2Shaper:{"ypos": 250, "xpos": 0, "name": "Log2ShaperTonescaleFirst", "min_exp": "{{parent.min_exposure}}", "max_exp": "{{parent.max_exposure}}"}%
+ %NODE_Log2Shaper:{"ypos": 250, "xpos": 0, "name": "Log2ShaperTonescaleFirst", "min_exp": "{{parent.tonescale1_min_exposure}}", "max_exp": "{{parent.tonescale1_max_exposure}}"}%
  set N543acf70 [stack 0]
  push $Nd9ce770
  push $N543acf70
@@ -88,7 +120,7 @@ Group {
   xpos 0
   ypos 300
  }
- %NODE_AgXcTonescale:{"ypos": 350, "xpos": 0,"name": "AgXcTonescaleFirst", "min_exposure": "{{parent.min_exposure}}", "max_exposure": "{{parent.max_exposure}}"}%
+ %NODE_AgXcTonescale:{"ypos": 350, "xpos": 0,"name": "AgXcTonescaleFirst", "min_exposure": "{{parent.tonescale1_min_exposure}}", "max_exposure": "{{parent.tonescale1_max_exposure}}"}%
  Dot {
   name Dot2ndTonescale
   xpos 0
@@ -96,8 +128,8 @@ Group {
  }
  set Nd28ed30 [stack 0]
   %NODE_PrimariesInset:{"ypos": 550, "xpos": 0,"name": "PrimariesInsetSecond", "colorspace_preset": "\"ITU-R BT.2020\"", "primary_r": "{0.708 0.292}", "primary_g": "{0.17 0.797}", "primary_b": "{0.131 0.046}", "whitepoint": "{0.3127 0.329}", "inset": 0.05, "u_inset_r": 0.06, "u_inset_b": 0.35, "u_inset_b": 0.06}%
-  %NODE_Log2Shaper:{"ypos": 600, "xpos": 0,"name": "Log2ShaperTonescaleSecond", "min_exp": -5.4, "max_exp": 4}%
-  %NODE_AgXcTonescale:{"ypos": 650, "xpos": 0,"name": "AgXcTonescaleSecond", "min_exposure": -10.5, "max_exposure": 5.5}%
+  %NODE_Log2Shaper:{"ypos": 600, "xpos": 0,"name": "Log2ShaperTonescaleSecond", "min_exp": "{{parent.tonescale2_min_exposure}}", "max_exp": "{{parent.tonescale2_max_exposure}}"}%
+  %NODE_AgXcTonescale:{"ypos": 650, "xpos": 0,"name": "AgXcTonescaleSecond", "min_exposure": "{{parent.tonescale2_min_exposure}}", "max_exposure": "{{parent.tonescale2_max_exposure}}"}%
  push $Nd28ed30
  Dot {
   name Dot2ndTonescale1

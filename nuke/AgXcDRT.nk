@@ -36,10 +36,42 @@ Group {
  addUserKnob {26 "" +STARTLINE}
  addUserKnob {20 advanced_grp l "Advanced Options" n 1}
  advanced_grp 0
- addUserKnob {7 min_exposure l "min Exposure (EV)" R -15 0}
- min_exposure -10
- addUserKnob {7 max_exposure l "max Exposure (EV)" R 0 15}
- max_exposure 6.5
+ addUserKnob {26 txt_advanced_note l " " +STARTLINE T "Note most knobs here are \"clones\"."}
+ addUserKnob {26 txt_advanced_tonescale1 l " " +STARTLINE T "<h3>First Pass</h3>"}
+ addUserKnob {41 inset1_inset +STARTLINE T PrimariesInsetFirst.inset}
+ addUserKnob {41 inset1_inset_r +STARTLINE T PrimariesInsetFirst.inset_r}
+ addUserKnob {41 inset1_inset_g +STARTLINE T PrimariesInsetFirst.inset_g}
+ addUserKnob {41 inset1_inset_b +STARTLINE T PrimariesInsetFirst.inset_b}
+ addUserKnob {41 inset1_rotate_r +STARTLINE T PrimariesInsetFirst.rotate_r}
+ addUserKnob {41 inset1_rotate_g +STARTLINE T PrimariesInsetFirst.rotate_g}
+ addUserKnob {41 inset1_rotate_b +STARTLINE T PrimariesInsetFirst.rotate_b}
+ addUserKnob {26 sep146 l " " +STARTLINE}
+ addUserKnob {7 tonescale1_min_exposure R -15 0}
+ tonescale1_min_exposure -10
+ addUserKnob {7 tonescale1_max_exposure R 0 15}
+ tonescale1_max_exposure 6.5
+ addUserKnob {41 tonescale1_xpivot +STARTLINE T AgXcTonescaleFirst.x_pivot}
+ addUserKnob {41 tonescale1_ypivot +STARTLINE T AgXcTonescaleFirst.y_pivot}
+ addUserKnob {41 tonescale1_toe_power +STARTLINE T AgXcTonescaleFirst.toe_power}
+ addUserKnob {41 tonescale1_shoulder_power +STARTLINE T AgXcTonescaleFirst.shoulder_power}
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {26 txt_advanced_tonescale2 l " " +STARTLINE T "<h3>Second Pass</h3>"}
+ addUserKnob {41 inset2_inset +STARTLINE T PrimariesInsetSecond.inset}
+ addUserKnob {41 inset2_inset_r +STARTLINE T PrimariesInsetSecond.inset_r}
+ addUserKnob {41 inset2_inset_g +STARTLINE T PrimariesInsetSecond.inset_g}
+ addUserKnob {41 inset2_inset_b +STARTLINE T PrimariesInsetSecond.inset_b}
+ addUserKnob {41 inset2_rotate_r +STARTLINE T PrimariesInsetSecond.rotate_r}
+ addUserKnob {41 inset2_rotate_g +STARTLINE T PrimariesInsetSecond.rotate_g}
+ addUserKnob {41 inset2_rotate_b +STARTLINE T PrimariesInsetSecond.rotate_b}
+ addUserKnob {26 sep354 l " " +STARTLINE}
+ addUserKnob {7 tonescale2_min_exposure R -15 0}
+ tonescale2_min_exposure -5.4
+ addUserKnob {7 tonescale2_max_exposure R 0 15}
+ tonescale2_max_exposure 4
+ addUserKnob {41 tonescale2_xpivot +STARTLINE T AgXcTonescaleSecond.x_pivot}
+ addUserKnob {41 tonescale2_ypivot +STARTLINE T AgXcTonescaleSecond.y_pivot}
+ addUserKnob {41 tonescale2_toe_power +STARTLINE T AgXcTonescaleSecond.toe_power}
+ addUserKnob {41 tonescale2_shoulder_power +STARTLINE T AgXcTonescaleSecond.shoulder_power}
  addUserKnob {20 endGroup n -1}
  addUserKnob {20 About}
  addUserKnob {26 toolName l name T AgXcDRT}
@@ -292,9 +324,9 @@ Group {
   addUserKnob {7 mid_grey l "mid grey" R 0.1 0.2}
   mid_grey 0.18
   addUserKnob {7 min_exp l "min exp" R -12 0}
-  min_exp {{parent.min_exposure}}
+  min_exp {{parent.tonescale1_min_exposure}}
   addUserKnob {7 max_exp l "max exp" R 0 12}
-  max_exp {{parent.max_exposure}}
+  max_exp {{parent.tonescale1_max_exposure}}
   addUserKnob {7 cut t "Transition from log curve to linear extension at cut value." R 0 0.1}
   cut 0.008
   xpos 0
@@ -467,9 +499,9 @@ Group {
   addUserKnob {26 txt_header_d l "" +STARTLINE T "<i>Input is expected to be log encoded.</i>"}
   addUserKnob {26 "" +STARTLINE}
   addUserKnob {7 min_exposure l "min Exposure (EV)" R -15 0}
-  min_exposure {{parent.min_exposure}}
+  min_exposure {{parent.tonescale1_min_exposure}}
   addUserKnob {7 max_exposure l "max Exposure (EV)" R 0 15}
-  max_exposure {{parent.max_exposure}}
+  max_exposure {{parent.tonescale1_max_exposure}}
   addUserKnob {26 "" +STARTLINE}
   addUserKnob {18 x_pivot l "x pivot" R 0.1 0.9}
   x_pivot {{"fabs(min_exposure / (max_exposure - (min_exposure)))"}}
@@ -740,9 +772,9 @@ Group {
    addUserKnob {7 mid_grey l "mid grey" R 0.1 0.2}
    mid_grey 0.18
    addUserKnob {7 min_exp l "min exp" R -12 0}
-   min_exp -5.4
+   min_exp {{parent.tonescale2_min_exposure}}
    addUserKnob {7 max_exp l "max exp" R 0 12}
-   max_exp 4
+   max_exp {{parent.tonescale2_max_exposure}}
    addUserKnob {7 cut t "Transition from log curve to linear extension at cut value." R 0 0.1}
    cut 0.008
    xpos 0
@@ -905,9 +937,9 @@ Group {
    addUserKnob {26 txt_header_d l "" +STARTLINE T "<i>Input is expected to be log encoded.</i>"}
    addUserKnob {26 "" +STARTLINE}
    addUserKnob {7 min_exposure l "min Exposure (EV)" R -15 0}
-   min_exposure -10.5
+   min_exposure {{parent.tonescale2_min_exposure}}
    addUserKnob {7 max_exposure l "max Exposure (EV)" R 0 15}
-   max_exposure 5.5
+   max_exposure {{parent.tonescale2_max_exposure}}
    addUserKnob {26 "" +STARTLINE}
    addUserKnob {18 x_pivot l "x pivot" R 0.1 0.9}
    x_pivot {{"fabs(min_exposure / (max_exposure - (min_exposure)))"}}
