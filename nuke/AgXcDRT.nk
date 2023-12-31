@@ -33,7 +33,9 @@ Group {
  addUserKnob {20 advanced_grp l "Advanced Options" n 1}
  advanced_grp 0
  addUserKnob {7 min_exposure l "min Exposure (EV)" R -15 0}
+ min_exposure -10
  addUserKnob {7 max_exposure l "max Exposure (EV)" R 0 15}
+ max_exposure 6.5
  addUserKnob {20 endGroup n -1}
  addUserKnob {20 About}
  addUserKnob {26 toolName l name T AgXcDRT}
@@ -442,7 +444,9 @@ Group {
   }
  end_group
  # endfrom
+ set N543acf70 [stack 0]
  push $Nd9ce770
+ push $N543acf70
  Switch {
   inputs 2
   which {{parent.plot_show}}

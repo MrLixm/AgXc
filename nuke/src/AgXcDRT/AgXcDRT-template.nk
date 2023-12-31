@@ -74,7 +74,9 @@ Group {
  }
  %NODE_PrimariesInset:{"ypos": 200, "xpos": 0, "name": "PrimariesInsetFirst", "colorspace_preset": "\"ITU-R BT.2020\"", "primary_r": "{0.708 0.292}", "primary_g": "{0.17 0.797}", "primary_b": "{0.131 0.046}", "whitepoint": "{0.3127 0.329}", "inset": 0.4, "u_inset_r": 0.125, "u_inset_b": 0.15, "rotate_r": 5, "rotate_b": -5}%
  %NODE_Log2Shaper:{"ypos": 250, "xpos": 0, "name": "Log2ShaperTonescaleFirst", "min_exp": "{{parent.min_exposure}}", "max_exp": "{{parent.max_exposure}}"}%
+ set N543acf70 [stack 0]
  push $Nd9ce770
+ push $N543acf70
  Switch {
   inputs 2
   which {{parent.plot_show}}
