@@ -20,8 +20,19 @@ class BuildPaths:
     src_AgXcDRT_node = THIS_DIR / "AgXcDRT" / "AgXcDRT-template.nk"
     assert src_AgXcDRT_node.exists()
 
+    src_AgXcTonescale_node = THIS_DIR / "AgXcTonescale" / "AgXcTonescale-template.nk"
+    assert src_AgXcTonescale_node.exists()
+
+    src_AgXcTonescale_blink_src = THIS_DIR / "AgXcTonescale" / "AgXcTonescale.blink.src"
+    assert src_AgXcTonescale_blink_src.exists()
+    src_AgXcTonescale_blink_desc = (
+        THIS_DIR / "AgXcTonescale" / "AgXcTonescale.blink.desc"
+    )
+    assert src_AgXcTonescale_blink_desc.exists()
+
     dst_dir = THIS_DIR.parent
     dst_AgXcDRT_node = dst_dir / "AgXcDRT.nk"
+    dst_AgXcTonescale_node = dst_dir / "AgXcTonescale.nk"
 
 
 def _download_file(url: str, target_file: Path) -> Path:
@@ -70,6 +81,23 @@ def _download_web_nukenode(url: str, license_url: Optional[str] = None) -> str:
 
     newnode = "\n".join(newnode)
     return newnode
+
+
+def _sanitize_nuke_script(script: str, convert_new_lines=True) -> str:
+    if convert_new_lines:
+        newscript = script.replace("\\", r"\\")
+        newscript = newscript.split("\n")
+        newscript = r"\n".join(newscript)
+    else:
+        newscript = script.split(r"\n")
+        newscript = [line.replace("\\", r"\\") for line in newscript]
+        newscript = r"\n".join(newscript)
+
+    newscript = newscript.replace('"', r"\"")
+    newscript = newscript.replace("{", r"\{")
+    newscript = newscript.replace("}", r"\}")
+    newscript = newscript.replace("[", r"\[")
+    return newscript
 
 
 def _override_nuke_node_knobs(
@@ -187,8 +215,44 @@ def build_AgXcDRT():
     BuildPaths.dst_AgXcDRT_node.write_text(new_node, "utf-8")
 
 
+def build_AgXcTonescale():
+    template_node = BuildPaths.src_AgXcTonescale_node.read_text("utf-8")
+
+    blink_source = BuildPaths.src_AgXcTonescale_blink_src.read_text("utf-8")
+    blink_source = _sanitize_nuke_script(blink_source, False)
+    blink_source = f'kernelSource "{blink_source}"'
+
+    blink_desc = BuildPaths.src_AgXcTonescale_blink_desc.read_text("utf-8")
+    blink_desc = _sanitize_nuke_script(blink_desc, False)
+    blink_desc = f'KernelDescription "{blink_desc}"'
+
+    new_node = []
+
+    for line in template_node.split("\n"):
+        # we can only have one variable defined per line
+        new_lines = _replace_variable_in_line(
+            line,
+            name="BLINK_SRC",
+            new_lines=[blink_source],
+        )
+        new_lines = new_lines or _replace_variable_in_line(
+            line,
+            name="BLINK_DESC",
+            new_lines=[blink_desc],
+        )
+        if new_lines:
+            new_node += new_lines
+        else:
+            new_node.append(line)
+
+    new_node = "\n".join(new_node)
+    LOGGER.info(f"writting <{BuildPaths.dst_AgXcDRT_node}>")
+    BuildPaths.dst_AgXcTonescale_node.write_text(new_node, "utf-8")
+
+
 def build():
     LOGGER.info(f"build started")
+    build_AgXcTonescale()
     build_AgXcDRT()
     LOGGER.info("build finished")
 

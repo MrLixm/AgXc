@@ -25,6 +25,8 @@ poetry.lock
 # log files
 *.log
 
-# personal stuff
+# project specific
 _uses/
 _outputs/
+*.blink.src
+*.blink.desc

@@ -1,0 +1,60 @@
+Group {
+ name AgXcTonescale
+ tile_color 0x3a755e00
+ note_font_color 0xefefefff
+ addUserKnob {20 User l AgXcTonescale}
+ addUserKnob {26 txt_header l "" +STARTLINE T "<h1> AgXcTonescale</h1>"}
+ addUserKnob {26 txt_header_d l "" +STARTLINE T "<i>Input is expected to be log encoded.</i>"}
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {7 min_exposure l "min Exposure (EV)" R -15 0}
+ min_exposure -10.5
+ addUserKnob {7 max_exposure l "max Exposure (EV)" R 0 15}
+ max_exposure 6.5
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {18 x_pivot l "x pivot" R 0.1 0.9}
+ x_pivot {{"fabs(min_exposure / (max_exposure - (min_exposure)))"}}
+ addUserKnob {18 y_pivot l "y pivot" R 0.1 0.9}
+ y_pivot 0.5
+ addUserKnob {18 general_contrast l "general contrast" R 1.01 5}
+ general_contrast 2.0
+ addUserKnob {18 toe_power l "toe power" R 0 5}
+ toe_power 3
+ addUserKnob {18 shoulder_power l "shoulder power" R 0 5}
+ shoulder_power 3.25
+ addUserKnob {20 About}
+ addUserKnob {26 toolName l name T AgXcTonescale}
+ addUserKnob {26 toolVersion l version T 0.7.0}
+ addUserKnob {26 toolAuthor l author T "<a style=\"color: rgb(200,200,200);\" href=\"https://mrlixm.github.io/\">Liam Collod</a>"}
+ addUserKnob {26 toolDescription l description T "AgX tonescale curve algorithm."}
+ addUserKnob {26 toolUrl l url T "<a style=\"color: rgb(200,200,200);\" href=\"https://github.com/MrLixm/AgXc\">https://github.com/MrLixm/AgXc</a>"}
+}
+ Input {
+  inputs 0
+  name image
+  xpos 0
+  ypos 0
+ }
+ BlinkScript {
+  inputs 1
+  recompileCount 2
+  ProgramGroup 1
+  %BLINK_DESC%
+  %BLINK_SRC%
+  rebuild ""
+  AgXTonescale_u_x_pivot {{parent.x_pivot} {parent.x_pivot} {parent.x_pivot}}
+  AgXTonescale_u_y_pivot {{parent.y_pivot} {parent.y_pivot} {parent.y_pivot}}
+  AgXTonescale_u_general_contrast {{parent.general_contrast} {parent.general_contrast} {parent.general_contrast}}
+  AgXTonescale_u_toe_power {{parent.toe_power} {parent.toe_power} {parent.toe_power}}
+  AgXTonescale_u_shoulder_power {{parent.shoulder_power} {parent.shoulder_power} {parent.shoulder_power}}
+  format "2048 2048 0 0 2048 2048 1 square_2K"
+  rebuild_finalise ""
+  name AgXTonescaleBlink
+  xpos 0
+  ypos 150
+ }
+ Output {
+  name Output1
+  xpos 0
+  ypos 300
+ }
+end_group
