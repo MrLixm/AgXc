@@ -27,12 +27,45 @@ Group {
  addUserKnob {26 toolDescription l description T "AgX(custom) Display Rendering Transform."}
  addUserKnob {26 toolUrl l url T "<a style=\"color: rgb(200,200,200);\" href=\"https://github.com/MrLixm/AgXc\">https://github.com/MrLixm/AgXc</a>"}
 }
+  Reformat {
+    name ReformatPlotSquare
+    xpos 200
+    ypos 400
+    type "to box"
+    box_width 2048
+    box_height 2048
+    box_fixed true
+  }
+  Ramp {
+   name PlotRampLinear
+   xpos 200
+   ypos 450
+   p0 {0 0}
+   p1 {{width} 0}
+  }
+  Dot {
+   name DotPlot
+   xpos 200
+   ypos 500
+  }
+ set Nd9ce770 [stack 0]
  Input {
   inputs 0
   name image
   xpos 0
   ypos 0
  }
+ %NODE_PrimariesInset:{"ypos": 400, "xpos": 0, "name": "PrimariesInsetFirst"}%
+ %NODE_Log2Shaper:{"ypos": 450, "xpos": 0, "name": "Log2ShaperTonescaleFirst"}%
+ push $Nd9ce770
+ Switch {
+  inputs 2
+  which {{parent.plot_show}}
+  name SwitchPlotShow1
+  xpos 0
+  ypos 500
+ }
+ %NODE_AgXcTonescale:{"ypos": 550, "xpos": 0,"name": "AgXcTonescaleFirst"}%
  Dot {
   name Dot2ndTonescale
   xpos 0
@@ -122,7 +155,7 @@ Group {
  Switch {
   inputs 2
   which {{parent.plot_show}}
-  name SwitchPlotShow
+  name SwitchPlotShow2
   xpos 0
   ypos 1450
  }
