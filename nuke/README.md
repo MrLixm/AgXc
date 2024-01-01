@@ -34,7 +34,17 @@ As of right now all tools are independent of each others and don't have external
 
 ## `AgXcTonescale.nk`
 
+The tonescale is the per-channel "s-curve" algorithm that is remapping the luminance
+range of its input data.
+
+The algorithm is the same as per originally defined by Troy:
+https://github.com/sobotka/AgX-S2O3/blob/daffcfa18edaa7172ce549cd25e80b7faadd8292/AgX.py#L192
+
+### input/output
+
 The tonescale expect log-encoded data as input. 
+
+### pivot
 
 The initial formula to calcule the x and y pivot specified by Troy was:
 
@@ -48,7 +58,18 @@ y_pivot = 0.50
 
 ## `AgXcDRT.nk`
 
+Encode "open-domain" data to display.
+
+Algorithm is based on the original Troy implementation with various additions,
+some personal, some from other AgX twinkerer (see credits).
+
+For a full breakdown see my post on [Blender-Artist AgX thread.](https://blenderartists.org/t/feedback-development-filmic-baby-step-to-a-v2/1361663/2316)
+
+
+### input/output
+
 Expect "open domain" data as input, with a `linear BT.2020 D65` encoding.
+
 Output a display-referred result bounds to the specified display that can be directly
 previewed or written to disk without any more processing (_example: make sure
 the nuke view-transform is disabled when viewing its output_).
@@ -84,5 +105,7 @@ Check the [src/](src) directory.
 
 # Credits
 
+* Troy Sobotka: of course for the original AgX algorithm
 * Jed Smith: [nuke-colortools](https://github.com/jedypod/nuke-colortools).
-* Troy Sobotka: of course for the AgX algorithm
+* flannelhead and other darktable developers: https://github.com/darktable-org/darktable/pull/15104
+* EaryChow and anyone involved in the development of the Blender variant: https://blenderartists.org/t/feedback-development-filmic-baby-step-to-a-v2/1361663/
