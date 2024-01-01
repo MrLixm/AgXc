@@ -8,6 +8,9 @@ Group {
  addUserKnob {26 txt_space1 l "" +STARTLINE T "|"}
  addUserKnob {6 plot_show l "Show Plot" -STARTLINE}
  addUserKnob {6 plot_show_ramp l "Show Plot Ramp" -STARTLINE}
+ addUserKnob {26 spacer326 l "" +STARTLINE T "|"}
+ addUserKnob {6 use_gpu l "Use GPU when available" -STARTLINE}
+ use_gpu true
  addUserKnob {26 "" +STARTLINE}
  addUserKnob {26 txt_tonescale l "" +STARTLINE T "<h2> Tonescale </h2>"}
  addUserKnob {6 tonescale_apply_double l "Apply Double Tonescale" -STARTLINE}
@@ -114,7 +117,7 @@ Group {
   xpos 0
   ypos 0
  }
- %NODE_PrimariesInset:{"ypos": 200, "xpos": 0, "name": "PrimariesInsetFirst", "colorspace_preset": "\"ITU-R BT.2020\"", "primary_r": "{0.708 0.292}", "primary_g": "{0.17 0.797}", "primary_b": "{0.131 0.046}", "whitepoint": "{0.3127 0.329}", "inset": "{{parent.inset1}}", "u_inset_r": 0.125, "u_inset_b": 0.15, "rotate_r": 5, "rotate_b": -5}%
+ %NODE_PrimariesInset:{"ypos": 200, "xpos": 0, "name": "PrimariesInsetFirst", "colorspace_preset": "\"ITU-R BT.2020\"", "primary_r": "{0.708 0.292}", "primary_g": "{0.17 0.797}", "primary_b": "{0.131 0.046}", "whitepoint": "{0.3127 0.329}", "inset": "{{parent.inset1}}", "u_inset_r": 0.125, "u_inset_b": 0.15, "rotate_r": 5, "rotate_b": -5, "use_gpu": "{{parent.use_gpu}}"}%
  %NODE_Log2Shaper:{"ypos": 250, "xpos": 0, "name": "Log2ShaperTonescaleFirst", "min_exp": "{{parent.tonescale1_min_exposure}}", "max_exp": "{{parent.tonescale1_max_exposure}}"}%
  set N543acf70 [stack 0]
  push $Nd9ce770
@@ -126,16 +129,16 @@ Group {
   xpos 0
   ypos 300
  }
- %NODE_AgXcTonescale:{"ypos": 350, "xpos": 0,"name": "AgXcTonescaleFirst", "min_exposure": "{{parent.tonescale1_min_exposure}}", "max_exposure": "{{parent.tonescale1_max_exposure}}", "general_contrast": "{{parent.contrast1}}"}%
+ %NODE_AgXcTonescale:{"ypos": 350, "xpos": 0,"name": "AgXcTonescaleFirst", "min_exposure": "{{parent.tonescale1_min_exposure}}", "max_exposure": "{{parent.tonescale1_max_exposure}}", "general_contrast": "{{parent.contrast1}}", "use_gpu": "{{parent.use_gpu}}"}%
  Dot {
   name Dot2ndTonescale
   xpos 0
   ypos 500
  }
  set Nd28ed30 [stack 0]
-  %NODE_PrimariesInset:{"ypos": 550, "xpos": 0,"name": "PrimariesInsetSecond", "colorspace_preset": "\"ITU-R BT.2020\"", "primary_r": "{0.708 0.292}", "primary_g": "{0.17 0.797}", "primary_b": "{0.131 0.046}", "whitepoint": "{0.3127 0.329}", "inset": 0.05, "u_inset_r": 0.06, "u_inset_b": 0.35, "u_inset_b": 0.06}%
+  %NODE_PrimariesInset:{"ypos": 550, "xpos": 0,"name": "PrimariesInsetSecond", "colorspace_preset": "\"ITU-R BT.2020\"", "primary_r": "{0.708 0.292}", "primary_g": "{0.17 0.797}", "primary_b": "{0.131 0.046}", "whitepoint": "{0.3127 0.329}", "inset": 0.05, "u_inset_r": 0.06, "u_inset_b": 0.35, "u_inset_b": 0.06, "use_gpu": "{{parent.use_gpu}}"}%
   %NODE_Log2Shaper:{"ypos": 600, "xpos": 0,"name": "Log2ShaperTonescaleSecond", "min_exp": "{{parent.tonescale2_min_exposure}}", "max_exp": "{{parent.tonescale2_max_exposure}}"}%
-  %NODE_AgXcTonescale:{"ypos": 650, "xpos": 0,"name": "AgXcTonescaleSecond", "min_exposure": "{{parent.tonescale2_min_exposure}}", "max_exposure": "{{parent.tonescale2_max_exposure}}", "x_pivot": 0.64, "general_contrast": "{{parent.contrast2}}"}%
+  %NODE_AgXcTonescale:{"ypos": 650, "xpos": 0,"name": "AgXcTonescaleSecond", "min_exposure": "{{parent.tonescale2_min_exposure}}", "max_exposure": "{{parent.tonescale2_max_exposure}}", "x_pivot": 0.64, "general_contrast": "{{parent.contrast2}}", "use_gpu": "{{parent.use_gpu}}"}%
  push $Nd28ed30
  Dot {
   name Dot2ndTonescale1

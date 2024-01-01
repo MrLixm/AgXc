@@ -244,7 +244,7 @@ def build_AgXcDRT():
 
     LOGGER.info("downloading PrimariesInset node")
     primariesinset_node = _download_web_nukenode(
-        url="https://github.com/MrLixm/Foundry_Nuke/raw/2eaa71320d22b1bf407fe409e31d6ae03b4d4082/src/primaries_inset/PrimariesInset.nk",
+        url="https://github.com/MrLixm/Foundry_Nuke/raw/823438ebda0d92614355932a2ecb7264774e2562/src/primaries_inset/PrimariesInset.nk",
     )
 
     tonescale_node = BuildPaths.dst_AgXcTonescale_node.read_text("utf-8")
