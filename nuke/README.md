@@ -64,7 +64,7 @@ y_pivot = 0.50
 Encode "open-domain" data to display.
 
 Algorithm is based on the original Troy implementation with various additions,
-some personal, some from other AgX twinkerer (see credits).
+some personal, some from other AgX tinkerers (see credits).
 
 For a full breakdown see my post on [Blender-Artist AgX thread.](https://blenderartists.org/t/feedback-development-filmic-baby-step-to-a-v2/1361663/2316)
 
@@ -100,6 +100,29 @@ and stayed, in lack of better term.
 Original AgX implementation applied the tonescale a single time. This one can apply
 it 2 times, producing an extra softness that can be comparable to the look
 of analog film.
+
+#### inset
+
+Control the amount of chroma purity in bright values where higher values will
+produce a less chroma-intense look.
+
+The default value of 0.4 might be a bit strong.
+
+#### contrast
+
+Control the contrast of the 2 tonescale curves. It is interesting to see them
+as working in tandem.
+
+The `contrast second` only works when `Apply Double Tonescale` is of course checked .
+
+#### print contrast
+
+The tonescale section offer a creative control called "print contrast" that allow
+to shift the tones of your image. The intended use is to use different R-G-B ratios
+on the `print contrast` control, with the additional pivot control to refine further
+the look (do not hesitate to check `Show Plot` to have an alternative representation
+of your changes).
+
 
 ### display
 
