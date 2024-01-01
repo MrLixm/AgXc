@@ -12,9 +12,12 @@ Group {
  addUserKnob {26 txt_tonescale l "" +STARTLINE T "<h2> Tonescale </h2>"}
  addUserKnob {6 tonescale_apply_double l "Apply Double Tonescale" -STARTLINE}
  tonescale_apply_double true
- addUserKnob {41 c_inset1_inset +STARTLINE l "inset" t "reduce chroma purity" T PrimariesInsetFirst.inset}
- addUserKnob {41 c_contrast_tonescale1 l "contrast first" +STARTLINE T AgXcTonescaleFirst.general_contrast}
- addUserKnob {41 c_contrast_tonescale2 l "contrast second" t "only used when \"Apply Double Tonescale\" is checked" +STARTLINE T AgXcTonescaleSecond.general_contrast}
+ addUserKnob {7 inset1 +STARTLINE l "inset" t "reduce chroma purity" R 0 1}
+ inset1 0.4
+ addUserKnob {7 contrast1 +STARTLINE l "contrast first" t "for first tonescale" R 1.01 5}
+ contrast1 2.6
+ addUserKnob {7 contrast2 +STARTLINE l "contrast second" t "for second tonescale. only used when \"Apply Double Tonescale\" is checked" R 1.01 5}
+ contrast2 2.2
  addUserKnob {18 print_contrast l "print contrast" R 0.8 4}
  print_contrast {1.0 1.0 1.0}
  addUserKnob {18 print_contrast_pivot l "print contrast pivot" R 0.1 1.0}
@@ -39,6 +42,7 @@ Group {
  advanced_grp 0
  addUserKnob {26 txt_advanced_note l " " +STARTLINE T "Note most knobs here are \"clones\"."}
  addUserKnob {26 txt_advanced_tonescale1 l " " +STARTLINE T "<h3>First Pass</h3>"}
+ addUserKnob {41 c_inset1_inset +STARTLINE l "inset" t "reduce chroma purity" T PrimariesInsetFirst.inset}
  addUserKnob {41 c_inset1_inset_r +STARTLINE T PrimariesInsetFirst.u_inset_r}
  addUserKnob {41 c_inset1_inset_g +STARTLINE T PrimariesInsetFirst.u_inset_g}
  addUserKnob {41 c_inset1_inset_b +STARTLINE T PrimariesInsetFirst.u_inset_b}
@@ -52,6 +56,7 @@ Group {
  tonescale1_max_exposure 6.5
  addUserKnob {41 c_tonescale1_xpivot +STARTLINE T AgXcTonescaleFirst.x_pivot}
  addUserKnob {41 c_tonescale1_ypivot +STARTLINE T AgXcTonescaleFirst.y_pivot}
+ addUserKnob {41 c_tonescale1_contrast +STARTLINE T AgXcTonescaleFirst.general_contrast}
  addUserKnob {41 c_tonescale1_toe_power +STARTLINE T AgXcTonescaleFirst.toe_power}
  addUserKnob {41 c_tonescale1_shoulder_power +STARTLINE T AgXcTonescaleFirst.shoulder_power}
  addUserKnob {26 "" +STARTLINE}
@@ -70,12 +75,13 @@ Group {
  tonescale2_max_exposure 4
  addUserKnob {41 c_tonescale2_xpivot +STARTLINE T AgXcTonescaleSecond.x_pivot}
  addUserKnob {41 c_tonescale2_ypivot +STARTLINE T AgXcTonescaleSecond.y_pivot}
+ addUserKnob {41 c_tonescale2_contrast +STARTLINE T AgXcTonescaleSecond.general_contrast}
  addUserKnob {41 c_tonescale2_toe_power +STARTLINE T AgXcTonescaleSecond.toe_power}
  addUserKnob {41 c_tonescale2_shoulder_power +STARTLINE T AgXcTonescaleSecond.shoulder_power}
  addUserKnob {20 endGroup n -1}
  addUserKnob {20 About}
  addUserKnob {26 toolName l name T AgXcDRT}
- addUserKnob {26 toolVersion l version T 1.0.3}
+ addUserKnob {26 toolVersion l version T 1.0.4}
  addUserKnob {26 toolAuthor l author T "<a style=\"color: rgb(200,200,200);\" href=\"https://mrlixm.github.io/\">Liam Collod</a>"}
  addUserKnob {26 toolDescription l description T "AgX(custom) Display Rendering Transform."}
  addUserKnob {26 toolUrl l url T "<a style=\"color: rgb(200,200,200);\" href=\"https://github.com/MrLixm/AgXc\">https://github.com/MrLixm/AgXc</a>"}
@@ -176,7 +182,7 @@ Group {
   rotate_r 5
   u_inset_b 0.15
   u_inset_r 0.125
-  inset 0.4
+  inset {{parent.inset1}}
   xpos 0
   ypos 200
  }
@@ -508,7 +514,7 @@ Group {
   addUserKnob {18 y_pivot l "y pivot" R 0.1 0.9}
   y_pivot 0.5
   addUserKnob {18 general_contrast l "general contrast" R 1.01 5}
-  general_contrast 2.6
+  general_contrast {{parent.contrast1}}
   addUserKnob {18 toe_power l "toe power" R 0 5}
   toe_power 3
   addUserKnob {18 shoulder_power l "shoulder power" R 0 5}
@@ -946,7 +952,7 @@ Group {
    addUserKnob {18 y_pivot l "y pivot" R 0.1 0.9}
    y_pivot 0.5
    addUserKnob {18 general_contrast l "general contrast" R 1.01 5}
-   general_contrast 2.2
+   general_contrast {{parent.contrast2}}
    addUserKnob {18 toe_power l "toe power" R 0 5}
    toe_power 3
    addUserKnob {18 shoulder_power l "shoulder power" R 0 5}
