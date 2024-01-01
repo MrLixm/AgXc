@@ -3,6 +3,24 @@
 This is the source "code" that must be compiled to produce the results that can
 be seen one level up.
 
+# developing
+
+All the `.nk` file are handwritten (no copy-paste from nuke).
+
+They incorporate a "variable syntax" that allow inserting nuke script at build
+time. Example:
+```
+Group {
+  name myGroup
+}
+ %GROUP_CONTENT:{"name": "innerNode", "ypos": 150}%
+end_group
+```
+In the above the variable `GROUP_CONTENT` is defined in the `build.py` and
+is assigned to the content it must be replaced with. Additionally everything after
+the smei colon `:` is a json dict of knobs overrides to apply on the top node.
+
+
 # build instructions
 
 # prerequisites
