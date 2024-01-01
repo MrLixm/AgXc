@@ -75,7 +75,7 @@ Group {
  addUserKnob {20 endGroup n -1}
  addUserKnob {20 About}
  addUserKnob {26 toolName l name T AgXcDRT}
- addUserKnob {26 toolVersion l version T 1.0.0}
+ addUserKnob {26 toolVersion l version T 1.0.1}
  addUserKnob {26 toolAuthor l author T "<a style=\"color: rgb(200,200,200);\" href=\"https://mrlixm.github.io/\">Liam Collod</a>"}
  addUserKnob {26 toolDescription l description T "AgX(custom) Display Rendering Transform."}
  addUserKnob {26 toolUrl l url T "<a style=\"color: rgb(200,200,200);\" href=\"https://github.com/MrLixm/AgXc\">https://github.com/MrLixm/AgXc</a>"}
@@ -120,7 +120,7 @@ Group {
   xpos 0
   ypos 300
  }
- %NODE_AgXcTonescale:{"ypos": 350, "xpos": 0,"name": "AgXcTonescaleFirst", "min_exposure": "{{parent.tonescale1_min_exposure}}", "max_exposure": "{{parent.tonescale1_max_exposure}}"}%
+ %NODE_AgXcTonescale:{"ypos": 350, "xpos": 0,"name": "AgXcTonescaleFirst", "min_exposure": "{{parent.tonescale1_min_exposure}}", "max_exposure": "{{parent.tonescale1_max_exposure}}", "general_contrast": 2.6}%
  Dot {
   name Dot2ndTonescale
   xpos 0
@@ -129,7 +129,7 @@ Group {
  set Nd28ed30 [stack 0]
   %NODE_PrimariesInset:{"ypos": 550, "xpos": 0,"name": "PrimariesInsetSecond", "colorspace_preset": "\"ITU-R BT.2020\"", "primary_r": "{0.708 0.292}", "primary_g": "{0.17 0.797}", "primary_b": "{0.131 0.046}", "whitepoint": "{0.3127 0.329}", "inset": 0.05, "u_inset_r": 0.06, "u_inset_b": 0.35, "u_inset_b": 0.06}%
   %NODE_Log2Shaper:{"ypos": 600, "xpos": 0,"name": "Log2ShaperTonescaleSecond", "min_exp": "{{parent.tonescale2_min_exposure}}", "max_exp": "{{parent.tonescale2_max_exposure}}"}%
-  %NODE_AgXcTonescale:{"ypos": 650, "xpos": 0,"name": "AgXcTonescaleSecond", "min_exposure": "{{parent.tonescale2_min_exposure}}", "max_exposure": "{{parent.tonescale2_max_exposure}}"}%
+  %NODE_AgXcTonescale:{"ypos": 650, "xpos": 0,"name": "AgXcTonescaleSecond", "min_exposure": "{{parent.tonescale2_min_exposure}}", "max_exposure": "{{parent.tonescale2_max_exposure}}", "x_pivot": 0.64, "general_contrast": 2.2}%
  push $Nd28ed30
  Dot {
   name Dot2ndTonescale1

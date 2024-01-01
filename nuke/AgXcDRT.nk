@@ -75,7 +75,7 @@ Group {
  addUserKnob {20 endGroup n -1}
  addUserKnob {20 About}
  addUserKnob {26 toolName l name T AgXcDRT}
- addUserKnob {26 toolVersion l version T 1.0.0}
+ addUserKnob {26 toolVersion l version T 1.0.1}
  addUserKnob {26 toolAuthor l author T "<a style=\"color: rgb(200,200,200);\" href=\"https://mrlixm.github.io/\">Liam Collod</a>"}
  addUserKnob {26 toolDescription l description T "AgX(custom) Display Rendering Transform."}
  addUserKnob {26 toolUrl l url T "<a style=\"color: rgb(200,200,200);\" href=\"https://github.com/MrLixm/AgXc\">https://github.com/MrLixm/AgXc</a>"}
@@ -508,7 +508,7 @@ Group {
   addUserKnob {18 y_pivot l "y pivot" R 0.1 0.9}
   y_pivot 0.5
   addUserKnob {18 general_contrast l "general contrast" R 1.01 5}
-  general_contrast 2.0
+  general_contrast 2.6
   addUserKnob {18 toe_power l "toe power" R 0 5}
   toe_power 3
   addUserKnob {18 shoulder_power l "shoulder power" R 0 5}
@@ -942,11 +942,11 @@ Group {
    max_exposure {{parent.tonescale2_max_exposure}}
    addUserKnob {26 "" +STARTLINE}
    addUserKnob {18 x_pivot l "x pivot" R 0.1 0.9}
-   x_pivot {{"fabs(min_exposure / (max_exposure - (min_exposure)))"}}
+   x_pivot 0.64
    addUserKnob {18 y_pivot l "y pivot" R 0.1 0.9}
    y_pivot 0.5
    addUserKnob {18 general_contrast l "general contrast" R 1.01 5}
-   general_contrast 2.0
+   general_contrast 2.2
    addUserKnob {18 toe_power l "toe power" R 0 5}
    toe_power 3
    addUserKnob {18 shoulder_power l "shoulder power" R 0 5}
