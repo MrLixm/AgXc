@@ -1,0 +1,286 @@
+Group {
+ name AgXcDRT
+ tile_color 0x3a755e00
+ note_font_color 0xefefefff
+ addUserKnob {20 User l AgXcDRT}
+ addUserKnob {26 txt_header l "" +STARTLINE T "<h1> AgXcDRT</h1>"}
+ addUserKnob {26 txt_header_d l "" +STARTLINE T "<i>Input is expected to be BT.2020 encoded.</i>"}
+ addUserKnob {26 txt_space1 l "" +STARTLINE T "|"}
+ addUserKnob {6 plot_show l "Show Plot" -STARTLINE}
+ addUserKnob {6 plot_show_ramp l "Show Plot Ramp" -STARTLINE}
+ addUserKnob {26 spacer326 l "" +STARTLINE T "|"}
+ addUserKnob {6 use_gpu l "Use GPU when available" -STARTLINE}
+ use_gpu true
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {26 txt_tonescale l "" +STARTLINE T "<h2> Tonescale </h2>"}
+ addUserKnob {6 tonescale_apply_double l "Apply Double Tonescale" -STARTLINE}
+ tonescale_apply_double true
+ addUserKnob {7 inset1 +STARTLINE l "inset" t "reduce chroma purity" R 0 1}
+ inset1 0.4
+ addUserKnob {7 contrast1 +STARTLINE l "contrast first" t "for first tonescale" R 1.01 5}
+ contrast1 2.6
+ addUserKnob {7 contrast2 +STARTLINE l "contrast second" t "for second tonescale. only used when \"Apply Double Tonescale\" is checked" R 1.01 5}
+ contrast2 2.2
+ addUserKnob {18 print_contrast l "print contrast" R 0.8 4}
+ print_contrast {1.0 1.0 1.0}
+ addUserKnob {18 print_contrast_pivot l "print contrast pivot" R 0.1 1.0}
+ print_contrast_pivot {0.65 0.65 0.65}
+ addUserKnob {7 print_contrast_amount l "print contrast amount" R 0 1}
+ print_contrast_amount 1.0
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {26 txt_display l "" +STARTLINE T "<h2> Display </h2>"}
+ addUserKnob {6 todisplay_apply l "Apply Display Conversion" -STARTLINE}
+ addUserKnob {41 c_target_cctf l "target cctf" +STARTLINE T TO_DISPLAY_EOTF.colorspace_out}
+ addUserKnob {41 c_target_gamut l "target gamut" +STARTLINE T TO_DISPLAY_GAMUT.primary_out}
+ addUserKnob {41 c_target_whitepoint l "target whitepoint" +STARTLINE T TO_DISPLAY_GAMUT.illuminant_out}
+ todisplay_apply true
+ addUserKnob {26 sep1 l " " +STARTLINE}
+ addUserKnob {26 txt_dg l " " +STARTLINE T "<h3>Display Grading</h3>"}
+ addUserKnob {26 txt_dg_desc l " " +STARTLINE T "applied on linear target gamut encoding"}
+ addUserKnob {41 c_dg_gain l "gain" +STARTLINE T GRADE_DISPLAY_LINEAR.white}
+ addUserKnob {41 c_dg_gamma l "gamma" +STARTLINE T GRADE_DISPLAY_LINEAR.gamma}
+ addUserKnob {41 c_dg_offset l "offset" +STARTLINE T GRADE_DISPLAY_LINEAR.add}
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {20 advanced_grp l "Advanced Options" n 1}
+ advanced_grp 0
+ addUserKnob {26 txt_advanced_note l " " +STARTLINE T "Note most knobs here are \"clones\"."}
+ addUserKnob {26 txt_advanced_tonescale1 l " " +STARTLINE T "<h3>First Pass</h3>"}
+ addUserKnob {41 c_inset1_inset l "inset"  +STARTLINE t "reduce chroma purity" T PrimariesInsetFirst.inset}
+ addUserKnob {41 c_inset1_inset_r l "inset r" +STARTLINE  T PrimariesInsetFirst.u_inset_r}
+ addUserKnob {41 c_inset1_inset_g l "inset g" +STARTLINE  T PrimariesInsetFirst.u_inset_g}
+ addUserKnob {41 c_inset1_inset_b l "inset b" +STARTLINE  T PrimariesInsetFirst.u_inset_b}
+ addUserKnob {41 c_inset1_rotate_r l "rotate r" +STARTLINE  T PrimariesInsetFirst.rotate_r}
+ addUserKnob {41 c_inset1_rotate_g l "rotate g" +STARTLINE  T PrimariesInsetFirst.rotate_g}
+ addUserKnob {41 c_inset1_rotate_b l "rotate b" +STARTLINE  T PrimariesInsetFirst.rotate_b}
+ addUserKnob {26 sep146 l " " +STARTLINE}
+ addUserKnob {7 tonescale1_min_exposure R -15 0}
+ tonescale1_min_exposure -10
+ addUserKnob {7 tonescale1_max_exposure R 0 15}
+ tonescale1_max_exposure 6.5
+ addUserKnob {41 c_tonescale1_xpivot l "xpivot" +STARTLINE T AgXcTonescaleFirst.x_pivot}
+ addUserKnob {41 c_tonescale1_ypivot l "ypivot" +STARTLINE T AgXcTonescaleFirst.y_pivot}
+ addUserKnob {41 c_tonescale1_contrast l "contrast" +STARTLINE T AgXcTonescaleFirst.general_contrast}
+ addUserKnob {41 c_tonescale1_toe_power l "toe power" +STARTLINE T AgXcTonescaleFirst.toe_power}
+ addUserKnob {41 c_tonescale1_shoulder_power l "shoulder power" +STARTLINE T AgXcTonescaleFirst.shoulder_power}
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {26 txt_advanced_tonescale2 l " " +STARTLINE T "<h3>Second Pass</h3>"}
+ addUserKnob {41 c_inset2_inset l "inset" +STARTLINE T PrimariesInsetSecond.inset}
+ addUserKnob {41 c_inset2_inset_r l "inset r" +STARTLINE T PrimariesInsetSecond.u_inset_r}
+ addUserKnob {41 c_inset2_inset_g l "inset g" +STARTLINE T PrimariesInsetSecond.u_inset_g}
+ addUserKnob {41 c_inset2_inset_b l "inset b" +STARTLINE T PrimariesInsetSecond.u_inset_b}
+ addUserKnob {41 c_inset2_rotate_r l "rotate r" +STARTLINE T PrimariesInsetSecond.rotate_r}
+ addUserKnob {41 c_inset2_rotate_g l "rotate g" +STARTLINE T PrimariesInsetSecond.rotate_g}
+ addUserKnob {41 c_inset2_rotate_b l "rotate b" +STARTLINE T PrimariesInsetSecond.rotate_b}
+ addUserKnob {26 sep354 l " " +STARTLINE}
+ addUserKnob {7 tonescale2_min_exposure R -15 0}
+ tonescale2_min_exposure -5.4
+ addUserKnob {7 tonescale2_max_exposure R 0 15}
+ tonescale2_max_exposure 4
+ addUserKnob {41 c_tonescale2_xpivot l "xpivot" +STARTLINE T AgXcTonescaleSecond.x_pivot}
+ addUserKnob {41 c_tonescale2_ypivot l "ypivot" +STARTLINE T AgXcTonescaleSecond.y_pivot}
+ addUserKnob {41 c_tonescale2_contrast l "contrast" +STARTLINE T AgXcTonescaleSecond.general_contrast}
+ addUserKnob {41 c_tonescale2_toe_power l "toe power" +STARTLINE T AgXcTonescaleSecond.toe_power}
+ addUserKnob {41 c_tonescale2_shoulder_power l "shoulder power" +STARTLINE T AgXcTonescaleSecond.shoulder_power}
+ addUserKnob {20 endGroup n -1}
+ addUserKnob {20 About}
+ addUserKnob {26 toolName l name T AgXcDRT}
+ addUserKnob {26 toolVersion l version T 1.0.5}
+ addUserKnob {26 toolAuthor l author T "<a style=\"color: rgb(200,200,200);\" href=\"https://mrlixm.github.io/\">Liam Collod</a>"}
+ addUserKnob {26 toolDescription l description T "AgX(custom) Display Rendering Transform."}
+ addUserKnob {26 toolUrl l url T "<a style=\"color: rgb(200,200,200);\" href=\"https://github.com/MrLixm/AgXc\">https://github.com/MrLixm/AgXc</a>"}
+}
+  Reformat {
+    name ReformatPlotSquare
+    xpos 200
+    ypos 200
+    type "to box"
+    box_width 2048
+    box_height 2048
+    box_fixed true
+  }
+  Ramp {
+   name PlotRampLinear
+   xpos 200
+   ypos 250
+   p0 {0 0}
+   p1 {{width} 0}
+  }
+  Dot {
+   name DotPlot
+   xpos 200
+   ypos 300
+  }
+ set Nd9ce770 [stack 0]
+ Input {
+  inputs 0
+  name image
+  xpos 0
+  ypos 0
+ }
+ %NODE_PrimariesInset:{"ypos": 200, "xpos": 0, "name": "PrimariesInsetFirst", "colorspace_preset": "\"ITU-R BT.2020\"", "primary_r": "{0.708 0.292}", "primary_g": "{0.17 0.797}", "primary_b": "{0.131 0.046}", "whitepoint": "{0.3127 0.329}", "inset": "{{parent.inset1}}", "u_inset_r": 0.125, "u_inset_b": 0.15, "rotate_r": 5, "rotate_b": -5, "use_gpu": "{{parent.use_gpu}}"}%
+ %NODE_Log2Shaper:{"ypos": 250, "xpos": 0, "name": "Log2ShaperTonescaleFirst", "min_exp": "{{parent.tonescale1_min_exposure}}", "max_exp": "{{parent.tonescale1_max_exposure}}"}%
+ set N543acf70 [stack 0]
+ push $Nd9ce770
+ push $N543acf70
+ Switch {
+  inputs 2
+  which {{parent.plot_show}}
+  name SwitchPlotShow1
+  xpos 0
+  ypos 300
+ }
+ %NODE_AgXcTonescale:{"ypos": 350, "xpos": 0,"name": "AgXcTonescaleFirst", "min_exposure": "{{parent.tonescale1_min_exposure}}", "max_exposure": "{{parent.tonescale1_max_exposure}}", "general_contrast": "{{parent.contrast1}}", "use_gpu": "{{parent.use_gpu}}"}%
+ Dot {
+  name Dot2ndTonescale
+  xpos 0
+  ypos 500
+ }
+ set Nd28ed30 [stack 0]
+  %NODE_PrimariesInset:{"ypos": 550, "xpos": 0,"name": "PrimariesInsetSecond", "colorspace_preset": "\"ITU-R BT.2020\"", "primary_r": "{0.708 0.292}", "primary_g": "{0.17 0.797}", "primary_b": "{0.131 0.046}", "whitepoint": "{0.3127 0.329}", "inset": 0.05, "u_inset_r": 0.06, "u_inset_b": 0.35, "u_inset_b": 0.06, "use_gpu": "{{parent.use_gpu}}"}%
+  %NODE_Log2Shaper:{"ypos": 600, "xpos": 0,"name": "Log2ShaperTonescaleSecond", "min_exp": "{{parent.tonescale2_min_exposure}}", "max_exp": "{{parent.tonescale2_max_exposure}}"}%
+  %NODE_AgXcTonescale:{"ypos": 650, "xpos": 0,"name": "AgXcTonescaleSecond", "min_exposure": "{{parent.tonescale2_min_exposure}}", "max_exposure": "{{parent.tonescale2_max_exposure}}", "x_pivot": 0.64, "general_contrast": "{{parent.contrast2}}", "use_gpu": "{{parent.use_gpu}}"}%
+ push $Nd28ed30
+ Dot {
+  name Dot2ndTonescale1
+  xpos 200
+  ypos 500
+ }
+ Dot {
+  name Dot2ndTonescale2
+  xpos 200
+  ypos 700
+ }
+ Switch {
+  inputs 2
+  which {{parent.tonescale_apply_double}}
+  name SwitchDoubleToneScale
+  xpos 0
+  ypos 700
+ }
+ %NODE_SigmoidParabolic:{"ypos": 750, "xpos": 0, "name": "PRINT_CONTRAST_SigmoidParabolic", "mix": "{{parent.print_contrast_amount}}", "p": "{{parent.print_contrast} {parent.print_contrast} {parent.print_contrast}}", "t0": "{{parent.print_contrast_pivot} {parent.print_contrast_pivot} {parent.print_contrast_pivot}}"}%
+ Colorspace {
+  name LINEARIZE_TONESCALE
+  xpos 0
+  ypos 800
+  label "cctf: [value colorspace_in] > [value colorspace_out]"
+  colorspace_in "2.40"
+ }
+ Dot {
+  name DotDisplay
+  xpos 0
+  ypos 900
+ }
+ set N23344020 [stack 0]
+  Colorspace {
+   name TO_DISPLAY_GAMUT
+   label "gamut: [value primary_in] > [value primary_out]"
+   xpos 0
+   ypos 950
+   primary_in "Rec.2020"
+   bradford_matrix true
+  }
+  Grade {
+   name GRADE_DISPLAY_LINEAR
+   xpos 0
+   ypos 1000
+   white 1.1
+  }
+  Colorspace {
+   name TO_DISPLAY_EOTF
+   label "cctf: [value colorspace_in] > [value colorspace_out]"
+   xpos 0
+   ypos 1050
+   colorspace_out "sRGB"
+  }
+ push $N23344020
+ Dot {
+  name DotDisplay1
+  xpos 200
+  ypos 900
+ }
+ Dot {
+  name DotDisplay2
+  xpos 200
+  ypos 1100
+ }
+ Switch {
+  inputs 2
+  which {{parent.todisplay_apply}}
+  name SwitchDisplay
+  xpos 0
+  ypos 1100
+ }
+ Dot {
+  name DotPlotLast
+  xpos 0
+  ypos 1200
+ }
+ set N23344020 [stack 0]
+  Dot {
+   name DotPlotSlice
+   xpos 200
+   ypos 1200
+  }
+  set N5bf32400 [stack 0]
+   Expression {
+    name ExpressionFillBlack
+    xpos 300
+    ypos 1200
+    expr0 0
+    expr1 0
+    expr2 0
+    disable {{parent.plot_show_ramp}}
+   }
+   Grid {
+    name GridPlot1
+    xpos 300
+    ypos 1230
+    opacity 0.5
+    number {4 2}
+    size 3
+   }
+   Grid {
+    name GridPlot2
+    xpos 300
+    ypos 1270
+    opacity 0.15
+    number {8 0}
+    size 3
+   }
+  push $N5bf32400
+   %NODE_PlotSlice:{"ypos": 1230, "xpos": 200,"name": "PlotSliceCurve", "pos2": "{{width} {height}}", "antialias": 1}%
+   Grade {
+    name GradePlot
+    xpos 200
+    ypos 1270
+    channels rgba
+    white 4
+    white_clamp 1
+    gamma 5
+   }
+  Merge {
+   inputs 2
+   name MergePlotGrid
+   xpos 200
+   ypos 1320
+   operation under
+  }
+  Dot {
+   name DotPlotSlice
+   xpos 200
+   ypos 1350
+  }
+ push $N23344020
+ Switch {
+  inputs 2
+  which {{parent.plot_show}}
+  name SwitchPlotShow2
+  xpos 0
+  ypos 1450
+ }
+ Output {
+  name Output1
+  xpos 0
+  ypos 1500
+ }
+end_group

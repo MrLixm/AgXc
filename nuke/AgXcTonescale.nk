@@ -1,0 +1,64 @@
+Group {
+ name AgXcTonescale
+ tile_color 0x363d5700
+ note_font_color 0xefefefff
+ addUserKnob {20 User l AgXcTonescale}
+ addUserKnob {26 txt_header l "" +STARTLINE T "<h1> AgXcTonescale</h1>"}
+ addUserKnob {26 txt_header_d l "" +STARTLINE T "<i>Input is expected to be log encoded.</i>"}
+ addUserKnob {26 spacer1 l "" +STARTLINE T "|"}
+ addUserKnob {6 use_gpu l "Use GPU when available" -STARTLINE}
+ use_gpu true
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {7 min_exposure l "min Exposure (EV)" R -15 0}
+ min_exposure -10.5
+ addUserKnob {7 max_exposure l "max Exposure (EV)" R 0 15}
+ max_exposure 6.5
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {18 x_pivot l "x pivot" R 0.1 0.9}
+ x_pivot {{"fabs(min_exposure / (max_exposure - (min_exposure)))"}}
+ addUserKnob {18 y_pivot l "y pivot" R 0.1 0.9}
+ y_pivot 0.5
+ addUserKnob {18 general_contrast l "general contrast" R 1.01 5}
+ general_contrast 2.0
+ addUserKnob {18 toe_power l "toe power" R 0 5}
+ toe_power 3
+ addUserKnob {18 shoulder_power l "shoulder power" R 0 5}
+ shoulder_power 3.25
+ addUserKnob {20 About}
+ addUserKnob {26 toolName l name T AgXcTonescale}
+ addUserKnob {26 toolVersion l version T 0.7.1}
+ addUserKnob {26 toolAuthor l author T "<a style=\"color: rgb(200,200,200);\" href=\"https://mrlixm.github.io/\">Liam Collod</a>"}
+ addUserKnob {26 toolDescription l description T "AgX tonescale curve algorithm."}
+ addUserKnob {26 toolUrl l url T "<a style=\"color: rgb(200,200,200);\" href=\"https://github.com/MrLixm/AgXc\">https://github.com/MrLixm/AgXc</a>"}
+}
+ Input {
+  inputs 0
+  name image
+  xpos 0
+  ypos 0
+ }
+ BlinkScript {
+  inputs 1
+  recompileCount 2
+  ProgramGroup 1
+  KernelDescription "3 \"AgXTonescale\" iterate pixelWise 62d49b8fffe0e146cd680fd19017775b5375d9bfc4300747f537c54139d68f98 2 \"src\" Read Point \"dst\" Write Point 5 \"u_x_pivot\" Float 3 AAAAPwAAAD8AAAA/AAAAAA== \"u_y_pivot\" Float 3 AAAAPwAAAD8AAAA/AAAAAA== \"u_general_contrast\" Float 3 AAAAQAAAAEAAAABAAAAAAA== \"u_toe_power\" Float 3 AABAQAAAQEAAAEBAAAAAAA== \"u_shoulder_power\" Float 3 AABQQAAAUEAAAFBAAAAAAA== 5 \"u_x_pivot\" 3 1 Default \"u_y_pivot\" 3 1 Default \"u_general_contrast\" 3 1 Default \"u_toe_power\" 3 1 Default \"u_shoulder_power\" 3 1 Default 0"
+  kernelSource "// version 7\n// The tonescale curve for AgX\n// to apply on log-encoded imagery (unless u_log_convert is true)\n//\n// All equations are from Troy Sobotka and Jed Smith work :\n// https://github.com/sobotka/AgX-S2O3/blob/main/AgX.py\n\nkernel AgXTonescale : ImageComputationKernel<ePixelWise>\n\{\n    Image<eRead, eAccessPoint, eEdgeClamped> src;\n    Image<eWrite> dst;\n\n    param:\n        float3 u_x_pivot;\n        float3 u_y_pivot;\n        float3 u_general_contrast;\n        float3 u_toe_power;\n        float3 u_shoulder_power;\n\n    void define() \{\n        defineParam(u_x_pivot, \"u_x_pivot\", float3(0.5, 0.5, 0.5));\n        defineParam(u_y_pivot, \"u_y_pivot\", float3(0.5, 0.5, 0.5));\n        defineParam(u_general_contrast, \"u_general_contrast\", float3(2.0, 2.0, 2.0));\n        defineParam(u_toe_power, \"u_toe_power\", float3(3.0, 3.0, 3.0));\n        defineParam(u_shoulder_power, \"u_shoulder_power\", float3(3.25, 3.25, 3.25));\n    \}\n\n    void init() \{\}\n\n    float equation_scale(\n        float x_pivot, float y_pivot, float slope_pivot, float power\n    )\{\n        float a = pow(slope_pivot * x_pivot, -1.0 * power);\n        float b = pow(slope_pivot * (x_pivot / y_pivot), power) - 1.0;\n        return pow(a * b, -1.0 / power);\n    \}\n\n    float equation_hyperbolic(float x, float power)\{\n        return x / pow(1.0 + pow(x, power), 1.0 / power);\n    \}\n\n    float equation_term(float x, float x_pivot, float slope_pivot, float scale)\{\n        return (slope_pivot * (x - x_pivot)) / scale;\n    \}\n\n    float equation_curve(\n        float value,\n        float scale,\n        float x_pivot,\n        float y_pivot,\n        float contrast,\n        float toe_power,\n        float shoulder_power\n    )\{\n        float a = equation_hyperbolic(\n            equation_term(value, x_pivot, contrast, scale),\n            toe_power\n        );\n        a = a * scale + y_pivot;\n\n        float b = equation_hyperbolic(\n            equation_term(value, x_pivot, contrast, scale),\n            shoulder_power\n        );\n        b = b * scale + y_pivot;\n\n        return scale < 0.0? a: b;\n\n    \}\n\n    float equation_full_curve(\n        float value,\n        float x_pivot,\n        float y_pivot,\n        float contrast,\n        float toe_power,\n        float shoulder_power\n    )\{\n        float scale_x_pivot = value >= x_pivot? 1.0 - x_pivot: x_pivot;\n        float scale_y_pivot = value >= x_pivot? 1.0 - y_pivot: y_pivot;\n\n        float toe_scale = equation_scale(\n            scale_x_pivot,\n            scale_y_pivot,\n            contrast,\n            toe_power\n        );\n\n        float shoulder_scale = equation_scale(\n            scale_x_pivot,\n            scale_y_pivot,\n            contrast,\n            shoulder_power\n        );\n\n        float scale = value >= x_pivot? shoulder_scale: -1.0 * toe_scale;\n\n        return equation_curve(\n            value,\n            scale,\n            x_pivot,\n            y_pivot,\n            contrast,\n            toe_power,\n            shoulder_power\n        );\n    \}\n\n    void process(int2 pos) \{\n\n        float4 rgba = src();\n\n        float3 converted_rgb(rgba.x, rgba.y, rgba.z);\n\n        // apply per-channel tonescale curve\n        converted_rgb.x = equation_full_curve(\n            converted_rgb.x,\n            u_x_pivot.x,\n            u_y_pivot.x,\n            u_general_contrast.x,\n            u_toe_power.x,\n            u_shoulder_power.x\n        );\n        converted_rgb.y = equation_full_curve(\n            converted_rgb.y,\n            u_x_pivot.y,\n            u_y_pivot.y,\n            u_general_contrast.y,\n            u_toe_power.y,\n            u_shoulder_power.y\n        );\n        converted_rgb.z = equation_full_curve(\n            converted_rgb.z,\n            u_x_pivot.z,\n            u_y_pivot.z,\n            u_general_contrast.z,\n            u_toe_power.z,\n            u_shoulder_power.z\n        );\n\n        dst() = float4(\n            converted_rgb.x,\n            converted_rgb.y,\n            converted_rgb.z,\n            rgba.w\n        );\n    \}\n\};"
+  rebuild ""
+  AgXTonescale_u_x_pivot {{parent.x_pivot} {parent.x_pivot} {parent.x_pivot}}
+  AgXTonescale_u_y_pivot {{parent.y_pivot} {parent.y_pivot} {parent.y_pivot}}
+  AgXTonescale_u_general_contrast {{parent.general_contrast} {parent.general_contrast} {parent.general_contrast}}
+  AgXTonescale_u_toe_power {{parent.toe_power} {parent.toe_power} {parent.toe_power}}
+  AgXTonescale_u_shoulder_power {{parent.shoulder_power} {parent.shoulder_power} {parent.shoulder_power}}
+  format "2048 2048 0 0 2048 2048 1 square_2K"
+  rebuild_finalise ""
+  useGPUIfAvailable {{parent.use_gpu}}
+  name AgXTonescaleBlink
+  xpos 0
+  ypos 150
+ }
+ Output {
+  name Output1
+  xpos 0
+  ypos 300
+ }
+end_group
