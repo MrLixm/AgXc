@@ -40,6 +40,9 @@ range of its input data.
 The algorithm is the same as per originally defined by Troy:
 https://github.com/sobotka/AgX-S2O3/blob/daffcfa18edaa7172ce549cd25e80b7faadd8292/AgX.py#L192
 
+![screenshot of a 2D plot of AgXcTonescale in Nuke](doc/img/AgXcTonescale-plot.png)
+> PlotSlice node by Jed Smith
+
 ### input/output
 
 The tonescale expect log-encoded data as input. 
@@ -65,6 +68,7 @@ some personal, some from other AgX twinkerer (see credits).
 
 For a full breakdown see my post on [Blender-Artist AgX thread.](https://blenderartists.org/t/feedback-development-filmic-baby-step-to-a-v2/1361663/2316)
 
+![screenshot of AgXcDRT result in Nuke](doc/img/AgXcDRT-main.png)
 
 ### input/output
 
@@ -83,6 +87,8 @@ and other grading operations.
 * The y axis is in [0-1] range and represent pixel "intensity".
 * The x axis is a 2D slice of the ramp where lower values represent dark values
 of the input and high values the white ones.
+
+![screenshot of AgXcDRT plot option result in Nuke](doc/img/AgXcDRT-plot.png)
 
 ### tonescale
 
