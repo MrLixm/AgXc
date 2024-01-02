@@ -87,7 +87,7 @@ Group {
  addUserKnob {20 endGroup n -1}
  addUserKnob {20 About}
  addUserKnob {26 toolName l name T AgXcDRT}
- addUserKnob {26 toolVersion l version T 1.1.0}
+ addUserKnob {26 toolVersion l version T 1.1.1}
  addUserKnob {26 toolAuthor l author T "<a style=\"color: rgb(200,200,200);\" href=\"https://mrlixm.github.io/\">Liam Collod</a>"}
  addUserKnob {26 toolDescription l description T "AgX(custom) Display Rendering Transform."}
  addUserKnob {26 toolUrl l url T "<a style=\"color: rgb(200,200,200);\" href=\"https://github.com/MrLixm/AgXc\">https://github.com/MrLixm/AgXc</a>"}
@@ -133,60 +133,74 @@ Group {
   ypos 300
  }
  %NODE_AgXcTonescale:{"ypos": 350, "xpos": 0,"name": "AgXcTonescaleFirst", "min_exposure": "{{parent.tonescale1_min_exposure}}", "max_exposure": "{{parent.tonescale1_max_exposure}}", "general_contrast": "{{parent.contrast1}}", "use_gpu": "{{parent.use_gpu}}"}%
- Dot {
-  name Dot2ndTonescale
-  xpos 0
-  ypos 500
- }
- set Nd28ed30 [stack 0]
-  %NODE_PrimariesInset:{"ypos": 550, "xpos": 0,"name": "PrimariesInsetSecond", "colorspace_preset": "\"ITU-R BT.2020\"", "primary_r": "{0.708 0.292}", "primary_g": "{0.17 0.797}", "primary_b": "{0.131 0.046}", "whitepoint": "{0.3127 0.329}", "inset": 0.05, "u_inset_r": 0.06, "u_inset_b": 0.35, "u_inset_b": 0.06, "use_gpu": "{{parent.use_gpu}}"}%
-  %NODE_Log2Shaper:{"ypos": 600, "xpos": 0,"name": "Log2ShaperTonescaleSecond", "min_exp": "{{parent.tonescale2_min_exposure}}", "max_exp": "{{parent.tonescale2_max_exposure}}"}%
-  %NODE_AgXcTonescale:{"ypos": 650, "xpos": 0,"name": "AgXcTonescaleSecond", "min_exposure": "{{parent.tonescale2_min_exposure}}", "max_exposure": "{{parent.tonescale2_max_exposure}}", "x_pivot": 0.64, "general_contrast": "{{parent.contrast2}}", "use_gpu": "{{parent.use_gpu}}"}%
- push $Nd28ed30
- Dot {
-  name Dot2ndTonescale1
-  xpos 200
-  ypos 500
- }
- Dot {
-  name Dot2ndTonescale2
-  xpos 200
-  ypos 700
- }
- Switch {
-  inputs 2
-  which {{parent.tonescale_apply_double}}
-  name SwitchDoubleToneScale
-  xpos 0
-  ypos 700
- }
- %NODE_SigmoidParabolic:{"ypos": 750, "xpos": 0, "name": "PRINT_CONTRAST_SigmoidParabolic", "mix": "{{parent.print_contrast_amount}}", "p": "{{parent.print_contrast} {parent.print_contrast} {parent.print_contrast}}", "t0": "{{parent.print_contrast_pivot} {parent.print_contrast_pivot} {parent.print_contrast_pivot}}"}%
  Colorspace {
-  name LINEARIZE_TONESCALE
+  name LINEARIZE_TONESCALE_OUTSET
   xpos 0
-  ypos 800
+  ypos 400
   label "cctf: [value colorspace_in] > [value colorspace_out]"
   colorspace_in "2.40"
  }
  Dot {
   name DotPurityInput
   xpos 0
-  ypos 850
+  ypos 450
  }
  set N23344020 [stack 0]
-  %NODE_PrimariesInset:{"ypos": 900, "xpos": 0, "name": "Outset", "colorspace_preset": "\"ITU-R BT.2020\"", "primary_r": "{0.708 0.292}", "primary_g": "{0.17 0.797}", "primary_b": "{0.131 0.046}", "whitepoint": "{0.3127 0.329}", "invert_inset": 1, "inset": "{{parent.inset1}}", "u_inset_r": "{{PrimariesInset.u_inset_r}}", "u_inset_g": "{{PrimariesInset.u_inset_g}}", "u_inset_b": "{{PrimariesInset.u_inset_b}}", "rotate_r": 0, "rotate_g": 0, "rotate_b": 0, "use_gpu": "{{parent.use_gpu}}"}%
+  %NODE_PrimariesInset:{"ypos": 500, "xpos": 0, "name": "Outset", "colorspace_preset": "\"ITU-R BT.2020\"", "primary_r": "{0.708 0.292}", "primary_g": "{0.17 0.797}", "primary_b": "{0.131 0.046}", "whitepoint": "{0.3127 0.329}", "invert_inset": 1, "inset": "{{parent.inset1}}", "u_inset_r": "{{PrimariesInsetFirst.u_inset_r}}", "u_inset_g": "{{PrimariesInsetFirst.u_inset_g}}", "u_inset_b": "{{PrimariesInsetFirst.u_inset_b}}", "rotate_r": 0, "rotate_g": 0, "rotate_b": 0, "use_gpu": "{{parent.use_gpu}}"}%
  push $N23344020
   Dot {
    name DotPurityNone
    xpos 100
-   ypos 900
+   ypos 500
   }
  NodeWrapper {
    inputs 2
    name PurityAmount
    xpos 0
-   ypos 950
+   ypos 550
    mix {{parent.purity_amount}}
+ }
+ Colorspace {
+  name UNLINEARIZE_TONESCALE_OUTSET
+  xpos 0
+  ypos 600
+  label "cctf: [value colorspace_in] > [value colorspace_out]"
+  colorspace_out "2.40"
+ }
+ Dot {
+  name Dot2ndTonescale
+  xpos 0
+  ypos 650
+ }
+ set Nd28ed30 [stack 0]
+  %NODE_PrimariesInset:{"ypos": 700, "xpos": 0,"name": "PrimariesInsetSecond", "colorspace_preset": "\"ITU-R BT.2020\"", "primary_r": "{0.708 0.292}", "primary_g": "{0.17 0.797}", "primary_b": "{0.131 0.046}", "whitepoint": "{0.3127 0.329}", "inset": 0.05, "u_inset_r": 0.06, "u_inset_b": 0.35, "u_inset_b": 0.06, "use_gpu": "{{parent.use_gpu}}"}%
+  %NODE_Log2Shaper:{"ypos": 750, "xpos": 0,"name": "Log2ShaperTonescaleSecond", "min_exp": "{{parent.tonescale2_min_exposure}}", "max_exp": "{{parent.tonescale2_max_exposure}}"}%
+  %NODE_AgXcTonescale:{"ypos": 800, "xpos": 0,"name": "AgXcTonescaleSecond", "min_exposure": "{{parent.tonescale2_min_exposure}}", "max_exposure": "{{parent.tonescale2_max_exposure}}", "x_pivot": 0.64, "general_contrast": "{{parent.contrast2}}", "use_gpu": "{{parent.use_gpu}}"}%
+ push $Nd28ed30
+ Dot {
+  name Dot2ndTonescale1
+  xpos 200
+  ypos 650
+ }
+ Dot {
+  name Dot2ndTonescale2
+  xpos 200
+  ypos 850
+ }
+ Switch {
+  inputs 2
+  which {{parent.tonescale_apply_double}}
+  name SwitchDoubleToneScale
+  xpos 0
+  ypos 850
+ }
+ %NODE_SigmoidParabolic:{"ypos": 900, "xpos": 0, "name": "PRINT_CONTRAST_SigmoidParabolic", "mix": "{{parent.print_contrast_amount}}", "p": "{{parent.print_contrast} {parent.print_contrast} {parent.print_contrast}}", "t0": "{{parent.print_contrast_pivot} {parent.print_contrast_pivot} {parent.print_contrast_pivot}}"}%
+ Colorspace {
+  name LINEARIZE_TONESCALE
+  xpos 0
+  ypos 950
+  label "cctf: [value colorspace_in] > [value colorspace_out]"
+  colorspace_in "2.40"
  }
  Dot {
   name DotDisplay
