@@ -12,11 +12,14 @@ Group {
  addUserKnob {6 use_gpu l "Use GPU when available" -STARTLINE}
  use_gpu true
  addUserKnob {26 "" +STARTLINE}
+ addUserKnob {26 txt_purity l "" +STARTLINE T "<h2> Purity </h2>"}
+ addUserKnob {7 inset1 +STARTLINE l "inset" t "reduce chroma purity" R 0 1}
+ inset1 0.4
+ addUserKnob {7 purity_amount +STARTLINE l "purity amount" t "higher values restore chroma purity using an outset" R 0 1}
+ addUserKnob {26 "" +STARTLINE}
  addUserKnob {26 txt_tonescale l "" +STARTLINE T "<h2> Tonescale </h2>"}
  addUserKnob {6 tonescale_apply_double l "Apply Double Tonescale" -STARTLINE}
  tonescale_apply_double true
- addUserKnob {7 inset1 +STARTLINE l "inset" t "reduce chroma purity" R 0 1}
- inset1 0.4
  addUserKnob {7 contrast1 +STARTLINE l "contrast first" t "for first tonescale" R 1.01 5}
  contrast1 2.6
  addUserKnob {7 contrast2 +STARTLINE l "contrast second" t "for second tonescale. only used when \"Apply Double Tonescale\" is checked" R 1.01 5}
@@ -84,7 +87,7 @@ Group {
  addUserKnob {20 endGroup n -1}
  addUserKnob {20 About}
  addUserKnob {26 toolName l name T AgXcDRT}
- addUserKnob {26 toolVersion l version T 1.0.5}
+ addUserKnob {26 toolVersion l version T 1.1.0}
  addUserKnob {26 toolAuthor l author T "<a style=\"color: rgb(200,200,200);\" href=\"https://mrlixm.github.io/\">Liam Collod</a>"}
  addUserKnob {26 toolDescription l description T "AgX(custom) Display Rendering Transform."}
  addUserKnob {26 toolUrl l url T "<a style=\"color: rgb(200,200,200);\" href=\"https://github.com/MrLixm/AgXc\">https://github.com/MrLixm/AgXc</a>"}
@@ -166,66 +169,86 @@ Group {
   colorspace_in "2.40"
  }
  Dot {
+  name DotPurityInput
+  xpos 0
+  ypos 850
+ }
+ set N23344020 [stack 0]
+  %NODE_PrimariesInset:{"ypos": 900, "xpos": 0, "name": "Outset", "colorspace_preset": "\"ITU-R BT.2020\"", "primary_r": "{0.708 0.292}", "primary_g": "{0.17 0.797}", "primary_b": "{0.131 0.046}", "whitepoint": "{0.3127 0.329}", "invert_inset": 1, "inset": "{{parent.inset1}}", "u_inset_r": "{{PrimariesInset.u_inset_r}}", "u_inset_g": "{{PrimariesInset.u_inset_g}}", "u_inset_b": "{{PrimariesInset.u_inset_b}}", "rotate_r": 0, "rotate_g": 0, "rotate_b": 0, "use_gpu": "{{parent.use_gpu}}"}%
+ push $N23344020
+  Dot {
+   name DotPurityNone
+   xpos 100
+   ypos 900
+  }
+ NodeWrapper {
+   inputs 2
+   name PurityAmount
+   xpos 0
+   ypos 950
+   mix {{parent.purity_amount}}
+ }
+ Dot {
   name DotDisplay
   xpos 0
-  ypos 900
+  ypos 1050
  }
  set N23344020 [stack 0]
   Colorspace {
    name TO_DISPLAY_GAMUT
    label "gamut: [value primary_in] > [value primary_out]"
    xpos 0
-   ypos 950
+   ypos 1100
    primary_in "Rec.2020"
    bradford_matrix true
   }
   Grade {
    name GRADE_DISPLAY_LINEAR
    xpos 0
-   ypos 1000
+   ypos 1150
    white 1.1
   }
   Colorspace {
    name TO_DISPLAY_EOTF
    label "cctf: [value colorspace_in] > [value colorspace_out]"
    xpos 0
-   ypos 1050
+   ypos 1200
    colorspace_out "sRGB"
   }
  push $N23344020
  Dot {
   name DotDisplay1
   xpos 200
-  ypos 900
+  ypos 1050
  }
  Dot {
   name DotDisplay2
   xpos 200
-  ypos 1100
+  ypos 1250
  }
  Switch {
   inputs 2
   which {{parent.todisplay_apply}}
   name SwitchDisplay
   xpos 0
-  ypos 1100
+  ypos 1250
  }
  Dot {
   name DotPlotLast
   xpos 0
-  ypos 1200
+  ypos 1280
  }
  set N23344020 [stack 0]
   Dot {
-   name DotPlotSlice
+   name DotPlotSlice1
    xpos 200
-   ypos 1200
+   ypos 1280
   }
   set N5bf32400 [stack 0]
    Expression {
     name ExpressionFillBlack
     xpos 300
-    ypos 1200
+    ypos 1280
     expr0 0
     expr1 0
     expr2 0
@@ -234,7 +257,7 @@ Group {
    Grid {
     name GridPlot1
     xpos 300
-    ypos 1230
+    ypos 1320
     opacity 0.5
     number {4 2}
     size 3
@@ -242,17 +265,17 @@ Group {
    Grid {
     name GridPlot2
     xpos 300
-    ypos 1270
+    ypos 1360
     opacity 0.15
     number {8 0}
     size 3
    }
   push $N5bf32400
-   %NODE_PlotSlice:{"ypos": 1230, "xpos": 200,"name": "PlotSliceCurve", "pos2": "{{width} {height}}", "antialias": 1}%
+   %NODE_PlotSlice:{"ypos": 1320, "xpos": 200,"name": "PlotSliceCurve", "pos2": "{{width} {height}}", "antialias": 1}%
    Grade {
     name GradePlot
     xpos 200
-    ypos 1270
+    ypos 1360
     channels rgba
     white 4
     white_clamp 1
@@ -262,13 +285,13 @@ Group {
    inputs 2
    name MergePlotGrid
    xpos 200
-   ypos 1320
+   ypos 1400
    operation under
   }
   Dot {
-   name DotPlotSlice
+   name DotPlotSlice2
    xpos 200
-   ypos 1350
+   ypos 1450
   }
  push $N23344020
  Switch {

@@ -12,11 +12,14 @@ Group {
  addUserKnob {6 use_gpu l "Use GPU when available" -STARTLINE}
  use_gpu true
  addUserKnob {26 "" +STARTLINE}
+ addUserKnob {26 txt_purity l "" +STARTLINE T "<h2> Purity </h2>"}
+ addUserKnob {7 inset1 +STARTLINE l "inset" t "reduce chroma purity" R 0 1}
+ inset1 0.4
+ addUserKnob {7 purity_amount +STARTLINE l "purity amount" t "higher values restore chroma purity using an outset" R 0 1}
+ addUserKnob {26 "" +STARTLINE}
  addUserKnob {26 txt_tonescale l "" +STARTLINE T "<h2> Tonescale </h2>"}
  addUserKnob {6 tonescale_apply_double l "Apply Double Tonescale" -STARTLINE}
  tonescale_apply_double true
- addUserKnob {7 inset1 +STARTLINE l "inset" t "reduce chroma purity" R 0 1}
- inset1 0.4
  addUserKnob {7 contrast1 +STARTLINE l "contrast first" t "for first tonescale" R 1.01 5}
  contrast1 2.6
  addUserKnob {7 contrast2 +STARTLINE l "contrast second" t "for second tonescale. only used when \"Apply Double Tonescale\" is checked" R 1.01 5}
@@ -84,7 +87,7 @@ Group {
  addUserKnob {20 endGroup n -1}
  addUserKnob {20 About}
  addUserKnob {26 toolName l name T AgXcDRT}
- addUserKnob {26 toolVersion l version T 1.0.6}
+ addUserKnob {26 toolVersion l version T 1.1.0}
  addUserKnob {26 toolAuthor l author T "<a style=\"color: rgb(200,200,200);\" href=\"https://mrlixm.github.io/\">Liam Collod</a>"}
  addUserKnob {26 toolDescription l description T "AgX(custom) Display Rendering Transform."}
  addUserKnob {26 toolUrl l url T "<a style=\"color: rgb(200,200,200);\" href=\"https://github.com/MrLixm/AgXc\">https://github.com/MrLixm/AgXc</a>"}
@@ -1069,66 +1072,286 @@ Group {
   colorspace_in "2.40"
  }
  Dot {
+  name DotPurityInput
+  xpos 0
+  ypos 850
+ }
+ set N23344020 [stack 0]
+  # startfrom: https://github.com/MrLixm/Foundry_Nuke/raw/823438ebda0d92614355932a2ecb7264774e2562/src/primaries_inset/PrimariesInset.nk
+  Group {
+   name Outset
+   tile_color 0x3a755e00
+   note_font_color 0xefefefff
+   addUserKnob {20 User l GamutPlot}
+   addUserKnob {26 txt_colorspace l "" +STARTLINE T "<h1> Colorspace</h1>"}
+   addUserKnob {26 txt_colorspace_d l "" +STARTLINE T "<i>Define the colorspace to inset.</i>"}
+   addUserKnob {26 spacer326 l "" +STARTLINE T "|"}
+   addUserKnob {6 use_gpu l "Use GPU when available" -STARTLINE}
+   use_gpu {{parent.use_gpu}}
+   addUserKnob {26 txt_sep1 l "" +STARTLINE T " "}
+   addUserKnob {4 colorspace_preset l Preset M {ACES2065-1 ACEScg ACESproxy "ARRI Wide Gamut 3" "ARRI Wide Gamut 4" "Adobe RGB (1998)" "Adobe Wide Gamut RGB" "Blackmagic Wide Gamut" DCI-P3 DCI-P3-P "DJI D-Gamut" DRAGONcolor DRAGONcolor2 "DaVinci Wide Gamut" "Display P3" F-Gamut "FilmLight E-Gamut" "ITU-R BT.2020" "ITU-R BT.709" P3-D65 "ProPhoto RGB" REDWideGamutRGB REDcolor REDcolor2 REDcolor3 REDcolor4 S-Gamut S-Gamut3 S-Gamut3.Cine V-Gamut "Venice S-Gamut3" "Venice S-Gamut3.Cine" sRGB}}
+   colorspace_preset "ITU-R BT.2020"
+   addUserKnob {22 preset_apply l apply -STARTLINE T "import logging\n\nimport nuke\n\nLOGGER = logging.getLogger(__name__)\n\nPRESETS = \{\n    \"ACES2065-1\": \{\n        \"chromaticities\": ((0.7347, 0.2653), (0.0, 1.0), (0.0001, -0.077)),\n        \"whitepoint\": (0.32168, 0.33767),\n    \},\n    \"ACEScg\": \{\n        \"chromaticities\": ((0.713, 0.293), (0.165, 0.83), (0.128, 0.044)),\n        \"whitepoint\": (0.32168, 0.33767),\n    \},\n    \"ACESproxy\": \{\n        \"chromaticities\": ((0.713, 0.293), (0.165, 0.83), (0.128, 0.044)),\n        \"whitepoint\": (0.32168, 0.33767),\n    \},\n    \"ARRI Wide Gamut 3\": \{\n        \"chromaticities\": ((0.684, 0.313), (0.221, 0.848), (0.0861, -0.102)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"ARRI Wide Gamut 4\": \{\n        \"chromaticities\": ((0.7347, 0.2653), (0.1424, 0.8576), (0.0991, -0.0308)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"Adobe RGB (1998)\": \{\n        \"chromaticities\": ((0.64, 0.33), (0.21, 0.71), (0.15, 0.06)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"Adobe Wide Gamut RGB\": \{\n        \"chromaticities\": ((0.7347, 0.2653), (0.1152, 0.8264), (0.1566, 0.0177)),\n        \"whitepoint\": (0.3457, 0.3585),\n    \},\n    \"Blackmagic Wide Gamut\": \{\n        \"chromaticities\": (\n            (0.717722, 0.317118),\n            (0.228041, 0.861569),\n            (0.100584, -0.082045),\n        ),\n        \"whitepoint\": (0.312717, 0.329031),\n    \},\n    \"DCI-P3\": \{\n        \"chromaticities\": ((0.68, 0.32), (0.265, 0.69), (0.15, 0.06)),\n        \"whitepoint\": (0.314, 0.351),\n    \},\n    \"DCI-P3-P\": \{\n        \"chromaticities\": ((0.74, 0.27), (0.22, 0.78), (0.09, -0.09)),\n        \"whitepoint\": (0.314, 0.351),\n    \},\n    \"DJI D-Gamut\": \{\n        \"chromaticities\": ((0.71, 0.31), (0.21, 0.88), (0.09, -0.08)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"DRAGONcolor\": \{\n        \"chromaticities\": (\n            (0.758656, 0.330355),\n            (0.294924, 0.708053),\n            (0.085962, -0.045879),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"DRAGONcolor2\": \{\n        \"chromaticities\": (\n            (0.758656, 0.330356),\n            (0.294924, 0.708053),\n            (0.144169, 0.050357),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"DaVinci Wide Gamut\": \{\n        \"chromaticities\": ((0.8, 0.313), (0.1682, 0.9877), (0.079, -0.1155)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"Display P3\": \{\n        \"chromaticities\": ((0.68, 0.32), (0.265, 0.69), (0.15, 0.06)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"F-Gamut\": \{\n        \"chromaticities\": ((0.708, 0.292), (0.17, 0.797), (0.131, 0.046)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"FilmLight E-Gamut\": \{\n        \"chromaticities\": ((0.8, 0.3177), (0.18, 0.9), (0.065, -0.0805)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"ITU-R BT.2020\": \{\n        \"chromaticities\": ((0.708, 0.292), (0.17, 0.797), (0.131, 0.046)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"ITU-R BT.709\": \{\n        \"chromaticities\": ((0.64, 0.33), (0.3, 0.6), (0.15, 0.06)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"P3-D65\": \{\n        \"chromaticities\": ((0.68, 0.32), (0.265, 0.69), (0.15, 0.06)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"ProPhoto RGB\": \{\n        \"chromaticities\": ((0.7347, 0.2653), (0.1596, 0.8404), (0.0366, 0.0001)),\n        \"whitepoint\": (0.3457, 0.3585),\n    \},\n    \"REDWideGamutRGB\": \{\n        \"chromaticities\": (\n            (0.780308, 0.304253),\n            (0.121595, 1.493994),\n            (0.095612, -0.084589),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"REDcolor\": \{\n        \"chromaticities\": (\n            (0.701059, 0.330181),\n            (0.298811, 0.625169),\n            (0.135039, 0.035262),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"REDcolor2\": \{\n        \"chromaticities\": (\n            (0.897407, 0.330776),\n            (0.296022, 0.684636),\n            (0.0998, -0.023001),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"REDcolor3\": \{\n        \"chromaticities\": (\n            (0.702599, 0.330186),\n            (0.295782, 0.689748),\n            (0.111091, -0.004332),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"REDcolor4\": \{\n        \"chromaticities\": (\n            (0.702598, 0.330185),\n            (0.295782, 0.689748),\n            (0.144459, 0.050838),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"S-Gamut\": \{\n        \"chromaticities\": ((0.73, 0.28), (0.14, 0.855), (0.1, -0.05)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"S-Gamut3\": \{\n        \"chromaticities\": ((0.73, 0.28), (0.14, 0.855), (0.1, -0.05)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"S-Gamut3.Cine\": \{\n        \"chromaticities\": ((0.766, 0.275), (0.225, 0.8), (0.089, -0.087)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"V-Gamut\": \{\n        \"chromaticities\": ((0.73, 0.28), (0.165, 0.84), (0.1, -0.03)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"Venice S-Gamut3\": \{\n        \"chromaticities\": (\n            (0.740464, 0.279364),\n            (0.089241, 0.89381),\n            (0.110488, -0.052579),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"Venice S-Gamut3.Cine\": \{\n        \"chromaticities\": (\n            (0.775902, 0.274502),\n            (0.188683, 0.828685),\n            (0.101337, -0.089188),\n        ),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n    \"sRGB\": \{\n        \"chromaticities\": ((0.64, 0.33), (0.3, 0.6), (0.15, 0.06)),\n        \"whitepoint\": (0.3127, 0.329),\n    \},\n\}\n\n\ndef main(node, knob):\n    # type: (nuke.Node, nuke.Knob) -> None\n\n    logprefix = \"(node<\{\}>)\".format(node.name())\n\n    preset_name = node[\"colorspace_preset\"].value()  # type: str\n    if preset_name not in PRESETS:\n        raise ValueError(\n            \"Selected preset name \{\} is not supported. \"\n            \"This might be a developer mistake.\".format(preset_name)\n        )\n    preset = PRESETS[preset_name]\n    chromaticities = preset[\"chromaticities\"]\n    whitepoint = preset[\"whitepoint\"]\n\n    LOGGER.debug(\"\{\} asked preset \{\}\".format(logprefix, preset_name))\n    LOGGER.debug(\"\{\} setting chromaticities=\{\}\".format(logprefix, chromaticities))\n    LOGGER.debug(\"\{\} setting whitepoint=\{\}\".format(logprefix, whitepoint))\n\n    node[\"primary_r\"].setValue(list(chromaticities[0]))\n    node[\"primary_g\"].setValue(list(chromaticities[1]))\n    node[\"primary_b\"].setValue(list(chromaticities[2]))\n    node[\"whitepoint\"].setValue(list(whitepoint))\n\n\nmain(nuke.thisNode(), nuke.thisKnob())\n"}
+   addUserKnob {26 "" +STARTLINE}
+   addUserKnob {12 primary_r l "primary R" +STARTLINE +NO_HANDLES}
+   primary_r {0.708 0.292}
+   addUserKnob {12 primary_g l "primary G" +STARTLINE +NO_HANDLES}
+   primary_g {0.17 0.797}
+   addUserKnob {12 primary_b l "primary B" +STARTLINE +NO_HANDLES}
+   primary_b {0.131 0.046}
+   addUserKnob {26 "" +STARTLINE}
+   addUserKnob {12 whitepoint l "whitepoint" +STARTLINE +NO_HANDLES}
+   whitepoint {0.3127 0.329}
+   addUserKnob {26 "" +STARTLINE}
+   addUserKnob {26 txt_options l "" +STARTLINE T "<h1> Options</h1>"}
+   addUserKnob {6 invert_inset l "Invert Inset (Outset)" +STARTLINE}
+   addUserKnob {7 inset l "inset" t "inset all primaries towards whitepoint"}
+   addUserKnob {7 u_inset_r l "inset R" t "inset red primary towards whitepoint"}
+   addUserKnob {7 u_inset_g l "inset G" t "inset green primary towards whitepoint"}
+   addUserKnob {7 u_inset_b l "inset B" t "inset blue primary towards whitepoint"}
+   addUserKnob {7 rotate_r l "rotate R" t "rotate the red primary around the whitepoint; in degrees." R -90 90}
+   addUserKnob {7 rotate_g l "rotate G" t "rotate the green primary around the whitepoint; in degrees." R -90 90}
+   addUserKnob {7 rotate_b l "rotate B" t "rotate the blue primary around the whitepoint; in degrees." R -90 90}
+   addUserKnob {26 txt_whitepoint l "" +STARTLINE T "<h2> Whitepoint</h2>"}
+   addUserKnob {7 whitepoint_pre_offset_x l "pre offset x" t "creative shift of the whitepoint; affect inset" R -0.5 0.5}
+   addUserKnob {7 whitepoint_pre_offset_y l "pre offset y" t "creative shift of the whitepoint; affect inset" R -0.5 0.5}
+   addUserKnob {7 whitepoint_post_offset_x l "post offset x" t "creative shift of the whitepoint; does NOT affect inset and might lead to hue shifts" R -0.5 0.5}
+   addUserKnob {7 whitepoint_post_offset_y l "post offset y" t "creative shift of the whitepoint; does NOT affect inset and might lead to hue shifts" R -0.5 0.5}
+   addUserKnob {26 "" +STARTLINE}
+   addUserKnob {26 txt_plot l "" +STARTLINE T "<h1> Plot </h1>"}
+   addUserKnob {6 plot_show l "show"}
+   addUserKnob {7 point_size l "point size" R 0 100}
+   point_size 15
+   addUserKnob {7 point_outline_scale l "outline scale" R 0 1}
+   point_outline_scale 0.75
+   addUserKnob {7 plot_margins l "margins" R 0 500}
+   plot_margins 150
+   addUserKnob {6 plot_show_spectral_locus l "show spectral locus" +STARTLINE}
+   plot_show_spectral_locus 1
+   addUserKnob {6 plot_show_daylight_locus l "show daylight locus" +STARTLINE}
+   plot_show_daylight_locus 1
+   addUserKnob {6 plot_show_space_borders l "show CIExy limits" +STARTLINE}
+   addUserKnob {20 _Private}
+   addUserKnob {7 inset_r}
+   inset_r {{"min(u_inset_r + inset, 1)"}}
+   addUserKnob {7 inset_g}
+   inset_g {{"min(u_inset_g + inset, 1)"}}
+   addUserKnob {7 inset_b}
+   inset_b {{"min(u_inset_b + inset, 1)"}}
+   addUserKnob {20 About}
+   addUserKnob {26 toolName l name T PrimariesInset}
+   addUserKnob {26 toolVersion l version T 0.6.2}
+   addUserKnob {26 toolAuthor l author T "<a style=\"color: rgb(200,200,200);\" href=\"https://mrlixm.github.io/\">Liam Collod</a>"}
+   addUserKnob {26 toolDescription l description T "Reshape a colorspace gamut and plot it on the CIE xy space."}
+   addUserKnob {26 toolUrl l url T "<a style=\"color: rgb(200,200,200);\" href=\"https://github.com/MrLixm/Foundry_Nuke\">https://github.com/MrLixm/Foundry_Nuke</a>"}
+   rotate_b 0
+   rotate_g 0
+   rotate_r 0
+   u_inset_b {{PrimariesInset.u_inset_b}}
+   u_inset_g {{PrimariesInset.u_inset_g}}
+   u_inset_r {{PrimariesInset.u_inset_r}}
+   inset {{parent.inset1}}
+   invert_inset 1
+   xpos 0
+   ypos 900
+  }
+   Input {
+    inputs 0
+    name image
+    xpos 0
+    ypos 0
+   }
+   set N1aabb660 [stack 0]
+    Constant {
+     format "1024 1024 0 0 1024 1024 1 square_1K"
+     name GraphArea
+     xpos 200
+     ypos 0
+     postage_stamp false
+    }
+    BlinkScript {
+     inputs 1
+     recompileCount 1
+     KernelDescription "3 \"InsetPrimariesPlot\" iterate pixelWise 69f95bb19b7c6023342544d9a8eb44e299fcc3fcfafd47bf311499098cbeeb28 2 \"src\" Read Point \"dst\" Write Point 19 \"u_src_primary_r\" Float 2 AAAAAAAAAAA= \"u_src_primary_g\" Float 2 AAAAAAAAAAA= \"u_src_primary_b\" Float 2 AAAAAAAAAAA= \"u_src_whitepoint\" Float 2 AAAAAAAAAAA= \"u_inset_r\" Float 1 AAAAAA== \"u_inset_g\" Float 1 AAAAAA== \"u_inset_b\" Float 1 AAAAAA== \"u_rotate_r\" Float 1 AAAAAA== \"u_rotate_g\" Float 1 AAAAAA== \"u_rotate_b\" Float 1 AAAAAA== \"u_invert\" Bool 1 AA== \"u_whitepoint_pre_offset\" Float 2 AAAAAAAAAAA= \"u_whitepoint_post_offset\" Float 2 AAAAAAAAAAA= \"u_point_scale\" Float 1 AABwQQ== \"u_outline_scale\" Float 1 AABAPw== \"u_margins\" Float 1 AABIQg== \"u_show_spectral_locus\" Bool 1 AA== \"u_show_daylight_locus\" Bool 1 AA== \"u_show_space_borders\" Bool 1 AA== 19 \"u_src_primary_r\" 2 1 Default \"u_src_primary_g\" 2 1 Default \"u_src_primary_b\" 2 1 Default \"u_src_whitepoint\" 2 1 Default \"u_inset_r\" 1 1 Default \"u_inset_g\" 1 1 Default \"u_inset_b\" 1 1 Default \"u_rotate_r\" 1 1 Default \"u_rotate_g\" 1 1 Default \"u_rotate_b\" 1 1 Default \"u_invert\" 1 1 Default \"u_whitepoint_pre_offset\" 2 1 Default \"u_whitepoint_post_offset\" 2 1 Default \"u_point_scale\" 1 1 Default \"u_outline_scale\" 1 1 Default \"u_margins\" 1 1 Default \"u_show_spectral_locus\" 1 1 Default \"u_show_daylight_locus\" 1 1 Default \"u_show_space_borders\" 1 1 Default 4 \"pi\" Float 1 1 AAAAAA== \"workspace_scale\" Float 2 1 AAAAAAAAAAA= \"spectral_locus\" Float 2 127 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA= \"daylight_locus\" Float 2 105 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
+     kernelSource "// version 8\nkernel InsetPrimariesPlot : ImageComputationKernel<ePixelWise>\n\{\n    Image<eRead, eAccessPoint, eEdgeClamped> src;\n    Image<eWrite> dst;\n\n    param:\n        float2 u_src_primary_r;\n        float2 u_src_primary_g;\n        float2 u_src_primary_b;\n        float2 u_src_whitepoint;\n        float u_inset_r;\n        float u_inset_g;\n        float u_inset_b;\n        float u_rotate_r;\n        float u_rotate_g;\n        float u_rotate_b;\n        bool u_invert;\n        float2 u_whitepoint_pre_offset;\n        float2 u_whitepoint_post_offset;\n        float u_point_scale;\n        float u_outline_scale;\n        float u_margins;\n        bool u_show_spectral_locus;\n        bool u_show_daylight_locus;\n        bool u_show_space_borders;\n\n    local:\n        float pi;\n        float2 workspace_scale;\n        float2 spectral_locus[127];\n        float2 daylight_locus[105];\n\n    void define()\{\n        defineParam(u_point_scale, \"u_point_scale\", 15.0f);\n        defineParam(u_outline_scale, \"u_outline_scale\", 0.75f);\n        defineParam(u_margins, \"u_margins\", 50.0f);\n    \}\n\n    float lerp(float a1, float a2, float amount)\{\n        // linear interpolation between 2 values\n        return (1.0 - amount) * a1 + amount * a2;\n    \}\n\n    float2 rotate_point_around(float2 point, float angle, float2 center)\{\n        // angle: in radians\n        // https://stackoverflow.com/a/2259502/13806195\n\n        float s = sin(angle);\n        float c = cos(angle);\n\n        // translate point back to origin:\n        point.x -= center.x;\n        point.y -= center.y;\n\n        // rotate point\n        float xnew = point.x * c - point.y * s;\n        float ynew = point.x * s + point.y * c;\n\n        // translate point back:\n        point.x = xnew + center.x;\n        point.y = ynew + center.y;\n        return point;\n    \}\n\n    float3x3 get_inset_colorspace(\n        float2 primary_r,\n        float2 primary_g,\n        float2 primary_b,\n        float2 whitepoint,\n        float inset_r,\n        float inset_g,\n        float inset_b\n    )\{\n        float2 new_primary_r;\n        float2 new_primary_g;\n        float2 new_primary_b;\n\n        new_primary_r.x = lerp(primary_r.x, whitepoint.x, inset_r);\n        new_primary_r.y = lerp(primary_r.y, whitepoint.y, inset_r);\n        new_primary_g.x = lerp(primary_g.x, whitepoint.x, inset_g);\n        new_primary_g.y = lerp(primary_g.y, whitepoint.y, inset_g);\n        new_primary_b.x = lerp(primary_b.x, whitepoint.x, inset_b);\n        new_primary_b.y = lerp(primary_b.y, whitepoint.y, inset_b);\n\n        float3x3 out;\n        out[0][0] = new_primary_r.x;\n        out[0][1] = new_primary_r.y;\n        out[1][0] = new_primary_g.x;\n        out[1][1] = new_primary_g.y;\n        out[2][0] = new_primary_b.x;\n        out[2][1] = new_primary_b.y;\n        return out;\n\n    \}\n\n    float draw_point(float2 center, float radius)\{\n        // all units in pixel space\n        float point = radius - sqrt(pow(center.x, 2) + pow(center.y, 2));\n        return clamp(point, 0.0f, 1.0f);\n    \}\n\n    float draw_torus(float2 center, float radius, float inner_radius)\{\n        // all units in pixel space\n        return draw_point(center, radius) * (1 - draw_point(center, inner_radius));\n    \}\n\n    float draw_borders(float2 pos)\{\n        // draw a rectangle representing the limit of the CIE xy space.\n        float border_width = 2.0;\n        float2 borders_out_bl = convert_CIExy_to_workspace(float2(0.0, 0.0));\n        float2 borders_out_tr = convert_CIExy_to_workspace(float2(1.0, 1.0));\n        float2 borders_in_bl = borders_out_bl + float2(border_width, border_width);\n        float2 borders_in_tr = borders_out_tr - float2(border_width, border_width);\n        float weight = 0.0;\n        if (\n            pos.x >= borders_out_bl.x &&\n            pos.y >= borders_out_bl.y &&\n            pos.x <= borders_out_tr.x &&\n            pos.y <= borders_out_tr.y &&\n            !(\n                pos.x >= borders_in_bl.x &&\n                pos.y >= borders_in_bl.y &&\n                pos.x <= borders_in_tr.x &&\n                pos.y <= borders_in_tr.y\n            )\n        )\{weight = 1.0;\}\n        return weight;\n    \}\n\n    float draw_spectral_locus(float2 pos)\{\n        // iterate through the spectral locus dataset to check if each of its\n        // point need to be drawn at the current pos\n        float2 point;\n        float point_alpha;\n        for (int i = 0; i < 127; i++)\{\n            point = convert_CIExy_to_workspace(spectral_locus[i]);\n            point = float2(pos.x, pos.y) - point;\n            point_alpha = draw_point(point, 3);\n            if (point_alpha > 0.0)\{\n                return point_alpha;\n            \}\n        \}\n        return 0.0;\n    \}\n\n    float draw_daylight_locus(float2 pos)\{\n        // iterate through the daylight locus dataset to check if each of its\n        // point need to be drawn at the current pos\n        float2 point;\n        float point_alpha;\n        for (int i = 0; i < 105; i++)\{\n            point = convert_CIExy_to_workspace(daylight_locus[i]);\n            point = float2(pos.x, pos.y) - point;\n            point_alpha = draw_point(point, 3);\n            if (point_alpha > 0.0)\{\n                return point_alpha;\n            \}\n        \}\n        return 0.0;\n    \}\n\n    float2 convert_CIExy_to_workspace(float2 CIExy)\{\n        // CIExy is 0-1 range\n        // output in pixel space based on workspace_scale\n        return (\n            CIExy * workspace_scale + float2(u_margins, u_margins)\n        );\n    \}\n\n    void init(int2 pos) \{\n        workspace_scale = float2(\n            src.bounds.width() - u_margins * 2,\n            src.bounds.height() - u_margins * 2\n        );\n        pi = 3.1415926535f;\n        // retrieved using colour library :\n        //   cmfs = colour.colorimetry.MSDS_CMFS_STANDARD_OBSERVER[\"CIE 1931 2 Degree Standard Observer\"]\n        //   xy = colour.XYZ_to_xy(cmfs.values)\n        //   print(xy[::4])\n        spectral_locus[0] = float2(0.17556023, 0.00529384);\n        spectral_locus[1] = float2(0.17523674, 0.00526349);\n        spectral_locus[2] = float2(0.17494519, 0.00522616);\n        spectral_locus[3] = float2(0.17472204, 0.00523752);\n        spectral_locus[4] = float2(0.17440925, 0.00512676);\n        spectral_locus[5] = float2(0.17411223, 0.00496373);\n        spectral_locus[6] = float2(0.17403627, 0.00498596);\n        spectral_locus[7] = float2(0.17388904, 0.00492605);\n        spectral_locus[8] = float2(0.17370535, 0.0049371 );\n        spectral_locus[9] = float2(0.17351445, 0.00489545);\n        spectral_locus[10] = float2(0.17333687, 0.00479674);\n        spectral_locus[11] = float2(0.17310101, 0.00477403);\n        spectral_locus[12] = float2(0.17275115, 0.00479876);\n        spectral_locus[13] = float2(0.1723956,  0.00479612);\n        spectral_locus[14] = float2(0.17198245, 0.00485501);\n        spectral_locus[15] = float2(0.17140743, 0.00510217);\n        spectral_locus[16] = float2(0.17054066, 0.00562097);\n        spectral_locus[17] = float2(0.1695046,  0.00639804);\n        spectral_locus[18] = float2(0.16814615, 0.00749068);\n        spectral_locus[19] = float2(0.16644633, 0.0089644 );\n        spectral_locus[20] = float2(0.16441176, 0.01085756);\n        spectral_locus[21] = float2(0.16185144, 0.01313731);\n        spectral_locus[22] = float2(0.15857311, 0.01601516);\n        spectral_locus[23] = float2(0.15452461, 0.0195557 );\n        spectral_locus[24] = float2(0.14969056, 0.02395033);\n        spectral_locus[25] = float2(0.1439604,  0.02970297);\n        spectral_locus[26] = float2(0.13736376, 0.03740309);\n        spectral_locus[27] = float2(0.12908579, 0.04944981);\n        spectral_locus[28] = float2(0.11870128, 0.06783044);\n        spectral_locus[29] = float2(0.10626074, 0.09448607);\n        spectral_locus[30] = float2(0.09129351, 0.13270204);\n        spectral_locus[31] = float2(0.07343726, 0.18503188);\n        spectral_locus[32] = float2(0.05466652, 0.25409559);\n        spectral_locus[33] = float2(0.03619511, 0.33989993);\n        spectral_locus[34] = float2(0.01970464, 0.43775589);\n        spectral_locus[35] = float2(0.00816803, 0.53842307);\n        spectral_locus[36] = float2(0.00363638, 0.63301138);\n        spectral_locus[37] = float2(0.0079884,  0.71534152);\n        spectral_locus[38] = float2(0.02224421, 0.77962992);\n        spectral_locus[39] = float2(0.04532798, 0.8193908 );\n        spectral_locus[40] = float2(0.07430242, 0.83380309);\n        spectral_locus[41] = float2(0.10602111, 0.82917819);\n        spectral_locus[42] = float2(0.13870235, 0.81477438);\n        spectral_locus[43] = float2(0.1702372,  0.79651854);\n        spectral_locus[44] = float2(0.2003088,  0.77639942);\n        spectral_locus[45] = float2(0.22961967, 0.75432909);\n        spectral_locus[46] = float2(0.25857751, 0.7305066 );\n        spectral_locus[47] = float2(0.28729241, 0.70531627);\n        spectral_locus[48] = float2(0.31591439, 0.67906348);\n        spectral_locus[49] = float2(0.3445132,  0.65202821);\n        spectral_locus[50] = float2(0.37310154, 0.62445086);\n        spectral_locus[51] = float2(0.40162592, 0.59659242);\n        spectral_locus[52] = float2(0.42998863, 0.56864889);\n        spectral_locus[53] = float2(0.45804067, 0.54083663);\n        spectral_locus[54] = float2(0.48561159, 0.51338866);\n        spectral_locus[55] = float2(0.51248637, 0.48659079);\n        spectral_locus[56] = float2(0.53846276, 0.46072525);\n        spectral_locus[57] = float2(0.56326931, 0.43605806);\n        spectral_locus[58] = float2(0.58665019, 0.41275842);\n        spectral_locus[59] = float2(0.60803511, 0.39140915);\n        spectral_locus[60] = float2(0.6270366,  0.37249115);\n        spectral_locus[61] = float2(0.64427296, 0.35533137);\n        spectral_locus[62] = float2(0.65916613, 0.34055323);\n        spectral_locus[63] = float2(0.67185867, 0.32794707);\n        spectral_locus[64] = float2(0.68258157, 0.31724871);\n        spectral_locus[65] = float2(0.69150397, 0.30834226);\n        spectral_locus[66] = float2(0.69894391, 0.30095042);\n        spectral_locus[67] = float2(0.70516285, 0.29477029);\n        spectral_locus[68] = float2(0.71050039, 0.28945294);\n        spectral_locus[69] = float2(0.71511705, 0.28484511);\n        spectral_locus[70] = float2(0.71903294, 0.28093495);\n        spectral_locus[71] = float2(0.72231492, 0.27766187);\n        spectral_locus[72] = float2(0.72491441, 0.27507818);\n        spectral_locus[73] = float2(0.72697497, 0.27302503);\n        spectral_locus[74] = float2(0.72865649, 0.27134351);\n        spectral_locus[75] = float2(0.72996901, 0.27003099);\n        spectral_locus[76] = float2(0.73089625, 0.26910375);\n        spectral_locus[77] = float2(0.73164997, 0.26835003);\n        spectral_locus[78] = float2(0.73229983, 0.26770017);\n        spectral_locus[79] = float2(0.73285865, 0.26714135);\n        spectral_locus[80] = float2(0.73341697, 0.26658303);\n        spectral_locus[81] = float2(0.73393569, 0.26606431);\n        spectral_locus[82] = float2(0.73428645, 0.26571355);\n        spectral_locus[83] = float2(0.73448217, 0.26551783);\n        spectral_locus[84] = float2(0.73462109, 0.26537891);\n        spectral_locus[85] = float2(0.73469002, 0.26530998);\n        spectral_locus[86] = float2(0.73469,    0.26531   );\n        spectral_locus[87] = float2(0.73469,    0.26531   );\n        spectral_locus[88] = float2(0.73469002, 0.26530998);\n        spectral_locus[89] = float2(0.73469002, 0.26530998);\n        spectral_locus[90] = float2(0.73469,    0.26531   );\n        spectral_locus[91] = float2(0.73468996, 0.26531004);\n        spectral_locus[92] = float2(0.73469003, 0.26530997);\n        spectral_locus[93] = float2(0.73468996, 0.26531004);\n        spectral_locus[94] = float2(0.73468999, 0.26531001);\n        spectral_locus[95] = float2(0.73469001, 0.26530999);\n        spectral_locus[96] = float2(0.73468999, 0.26531001);\n        spectral_locus[97] = float2(0.73468999, 0.26531001);\n        spectral_locus[98] = float2(0.73469003, 0.26530997);\n        spectral_locus[99] = float2(0.73468997, 0.26531003);\n        spectral_locus[100] = float2(0.73468995, 0.26531005);\n        spectral_locus[101] = float2(0.73468996, 0.26531004);\n        spectral_locus[102] = float2(0.73469001, 0.26530999);\n        spectral_locus[103] = float2(0.73469001, 0.26530999);\n        spectral_locus[104] = float2(0.73469,    0.26531   );\n        spectral_locus[105] = float2(0.73468998, 0.26531002);\n        spectral_locus[106] = float2(0.73469,    0.26531   );\n        spectral_locus[107] = float2(0.73469,    0.26531   );\n        spectral_locus[108] = float2(0.73469002, 0.26530998);\n        spectral_locus[109] = float2(0.73469007, 0.26530993);\n        spectral_locus[110] = float2(0.73468999, 0.26531001);\n        spectral_locus[111] = float2(0.73468999, 0.26531001);\n        spectral_locus[112] = float2(0.73468999, 0.26531001);\n        spectral_locus[113] = float2(0.73469001, 0.26530999);\n        spectral_locus[114] = float2(0.73468998, 0.26531002);\n        spectral_locus[115] = float2(0.73468998, 0.26531002);\n        spectral_locus[116] = float2(0.73468995, 0.26531005);\n        spectral_locus[117] = float2(0.73469004, 0.26530996);\n        // flat bottom line of the horseshoe, retrieved via manual lerp\n        spectral_locus[118] = float2(0.231473211, 0.031295452);\n        spectral_locus[119] = float2(0.28738619200000004, 0.057297064);\n        spectral_locus[120] = float2(0.343299173, 0.083298676);\n        spectral_locus[121] = float2(0.39921215400000004, 0.10930028800000001);\n        spectral_locus[122] = float2(0.455125135, 0.1353019);\n        spectral_locus[123] = float2(0.511038116, 0.161303512);\n        spectral_locus[124] = float2(0.566951097, 0.18730512400000002);\n        spectral_locus[125] = float2(0.622864078, 0.213306736);\n        spectral_locus[126] = float2(0.6787770590000001, 0.239308348);\n\n        // retrieved from colour library:\n        //      CCT = numpy.arange(4000, 25000, 200) * 1.4388 / 1.4380\n        //      print(f\"x\{len(CCT)\} CCTs: max=\{max(CCT)\}; min=\{min(CCT)\}\")\n        //      loc = colour.temperature.CCT_to_xy_CIE_D(CCT)\n        //      print(loc.reshape([-1, 2]))\n        daylight_locus[0] = float2(0.38224364, 0.38370865);\n        daylight_locus[1] = float2(0.37362395, 0.37851617);\n        daylight_locus[2] = float2(0.36570774, 0.37335476);\n        daylight_locus[3] = float2(0.35844396, 0.36828795);\n        daylight_locus[4] = float2(0.35177882, 0.3633602 );\n        daylight_locus[5] = float2(0.34565945, 0.35860125);\n        daylight_locus[6] = float2(0.34003569, 0.35402962);\n        daylight_locus[7] = float2(0.33486105, 0.34965545);\n        daylight_locus[8] = float2(0.330093,   0.34548275);\n        daylight_locus[9] = float2(0.32569299, 0.34151111);\n        daylight_locus[10] = float2(0.32162624, 0.337737  );\n        daylight_locus[11] = float2(0.31786152, 0.33415473);\n        daylight_locus[12] = float2(0.31437082, 0.33075721);\n        daylight_locus[13] = float2(0.31112903, 0.3275365 );\n        daylight_locus[14] = float2(0.30811368, 0.32448414);\n        daylight_locus[15] = float2(0.30530391, 0.32159079);\n        daylight_locus[16] = float2(0.30267173, 0.31883734);\n        daylight_locus[17] = float2(0.30021269, 0.31622744);\n        daylight_locus[18] = float2(0.29791133, 0.31375204);\n        daylight_locus[19] = float2(0.29575391, 0.3114026 );\n        daylight_locus[20] = float2(0.29372817, 0.30917114);\n        daylight_locus[21] = float2(0.29182314, 0.30705018);\n        daylight_locus[22] = float2(0.29002899, 0.30503275);\n        daylight_locus[23] = float2(0.28833688, 0.30311237);\n        daylight_locus[24] = float2(0.28673885, 0.30128299);\n        daylight_locus[25] = float2(0.28522772, 0.299539  );\n        daylight_locus[26] = float2(0.283797,   0.29787518);\n        daylight_locus[27] = float2(0.28244078, 0.29628666);\n        daylight_locus[28] = float2(0.28115373, 0.29476894);\n        daylight_locus[29] = float2(0.27993096, 0.29331783);\n        daylight_locus[30] = float2(0.27876804, 0.29192942);\n        daylight_locus[31] = float2(0.27766092, 0.29060008);\n        daylight_locus[32] = float2(0.27660588, 0.28932643);\n        daylight_locus[33] = float2(0.27559952, 0.28810534);\n        daylight_locus[34] = float2(0.27463873, 0.28693386);\n        daylight_locus[35] = float2(0.27372063, 0.28580926);\n        daylight_locus[36] = float2(0.27284259, 0.28472899);\n        daylight_locus[37] = float2(0.27200216, 0.28369068);\n        daylight_locus[38] = float2(0.27119711, 0.28269208);\n        daylight_locus[39] = float2(0.27042535, 0.28173114);\n        daylight_locus[40] = float2(0.26968495, 0.28080589);\n        daylight_locus[41] = float2(0.26897414, 0.27991452);\n        daylight_locus[42] = float2(0.26829127, 0.27905532);\n        daylight_locus[43] = float2(0.26763478, 0.27822669);\n        daylight_locus[44] = float2(0.26700326, 0.27742713);\n        daylight_locus[45] = float2(0.26639536, 0.27665522);\n        daylight_locus[46] = float2(0.26580985, 0.27590964);\n        daylight_locus[47] = float2(0.26524557, 0.27518915);\n        daylight_locus[48] = float2(0.26470143, 0.27449257);\n        daylight_locus[49] = float2(0.26417643, 0.2738188 );\n        daylight_locus[50] = float2(0.26366961, 0.27316679);\n        daylight_locus[51] = float2(0.26318009, 0.27253558);\n        daylight_locus[52] = float2(0.26270703, 0.27192422);\n        daylight_locus[53] = float2(0.26224965, 0.27133186);\n        daylight_locus[54] = float2(0.26180722, 0.27075766);\n        daylight_locus[55] = float2(0.26137904, 0.27020084);\n        daylight_locus[56] = float2(0.26096447, 0.26966067);\n        daylight_locus[57] = float2(0.2605629,  0.26913644);\n        daylight_locus[58] = float2(0.26017374, 0.2686275 );\n        daylight_locus[59] = float2(0.25979645, 0.26813322);\n        daylight_locus[60] = float2(0.25943052, 0.26765301);\n        daylight_locus[61] = float2(0.25907546, 0.26718629);\n        daylight_locus[62] = float2(0.25873082, 0.26673254);\n        daylight_locus[63] = float2(0.25839616, 0.26629125);\n        daylight_locus[64] = float2(0.25807107, 0.26586194);\n        daylight_locus[65] = float2(0.25775515, 0.26544413);\n        daylight_locus[66] = float2(0.25744805, 0.26503741);\n        daylight_locus[67] = float2(0.25714941, 0.26464135);\n        daylight_locus[68] = float2(0.2568589,  0.26425556);\n        daylight_locus[69] = float2(0.2565762,  0.26387965);\n        daylight_locus[70] = float2(0.25630101, 0.26351328);\n        daylight_locus[71] = float2(0.25603305, 0.26315609);\n        daylight_locus[72] = float2(0.25577205, 0.26280776);\n        daylight_locus[73] = float2(0.25551775, 0.26246798);\n        daylight_locus[74] = float2(0.2552699,  0.26213645);\n        daylight_locus[75] = float2(0.25502828, 0.26181289);\n        daylight_locus[76] = float2(0.25479264, 0.26149701);\n        daylight_locus[77] = float2(0.25456279, 0.26118857);\n        daylight_locus[78] = float2(0.25433852, 0.26088731);\n        daylight_locus[79] = float2(0.25411964, 0.26059299);\n        daylight_locus[80] = float2(0.25390595, 0.26030539);\n        daylight_locus[81] = float2(0.25369729, 0.26002428);\n        daylight_locus[82] = float2(0.25349348, 0.25974946);\n        daylight_locus[83] = float2(0.25329437, 0.25948072);\n        daylight_locus[84] = float2(0.25309979, 0.25921788);\n        daylight_locus[85] = float2(0.2529096,  0.25896075);\n        daylight_locus[86] = float2(0.25272365, 0.25870915);\n        daylight_locus[87] = float2(0.25254182, 0.25846291);\n        daylight_locus[88] = float2(0.25236396, 0.25822186);\n        daylight_locus[89] = float2(0.25218996, 0.25798586);\n        daylight_locus[90] = float2(0.25201969, 0.25775474);\n        daylight_locus[91] = float2(0.25185304, 0.25752837);\n        daylight_locus[92] = float2(0.2516899,  0.25730659);\n        daylight_locus[93] = float2(0.25153016, 0.25708929);\n        daylight_locus[94] = float2(0.25137372, 0.25687633);\n        daylight_locus[95] = float2(0.25122048, 0.25666758);\n        daylight_locus[96] = float2(0.25107034, 0.25646293);\n        daylight_locus[97] = float2(0.25092322, 0.25626226);\n        daylight_locus[98] = float2(0.25077903, 0.25606545);\n        daylight_locus[99] = float2(0.25063769, 0.25587241);\n        daylight_locus[100] = float2(0.2504991,  0.25568302);\n        daylight_locus[101] = float2(0.2503632,  0.25549719);\n        daylight_locus[102] = float2(0.25022991, 0.25531482);\n        daylight_locus[103] = float2(0.25009916, 0.25513583);\n        daylight_locus[104] = float2(0.24997088, 0.2549601 );\n    \}\n\n    void process(int2 pos) \{\n\n        float invert = u_invert == 1 ? -1: 1;\n        float2 dst_whitepoint = u_src_whitepoint + u_whitepoint_pre_offset * invert;\n        float2 dst_post_whitepoint = dst_whitepoint + u_whitepoint_post_offset * invert;\n\n        // 1. calculate inset gamut\n        float3x3 inset_colorspace;\n        inset_colorspace = get_inset_colorspace(\n            u_src_primary_r,\n            u_src_primary_g,\n            u_src_primary_b,\n            dst_whitepoint,\n            invert * u_inset_r,\n            invert * u_inset_g,\n            invert * u_inset_b\n        );\n\n        float2 primary_r_inset(inset_colorspace[0][0], inset_colorspace[0][1]);\n        float2 primary_g_inset(inset_colorspace[1][0], inset_colorspace[1][1]);\n        float2 primary_b_inset(inset_colorspace[2][0], inset_colorspace[2][1]);\n\n        primary_r_inset = rotate_point_around(\n            primary_r_inset, u_rotate_r * (pi/180) * invert, dst_whitepoint\n        );\n        primary_g_inset = rotate_point_around(\n            primary_g_inset, u_rotate_g * (pi/180) * invert, dst_whitepoint\n        );\n        primary_b_inset = rotate_point_around(\n            primary_b_inset, u_rotate_b * (pi/180) * invert, dst_whitepoint\n        );\n\n        // 2. start drawing in pixel space\n\n        float point_r_weight = 0.0;\n        float point_g_weight = 0.0;\n        float point_b_weight = 0.0;\n        float point_w_weight = 0.0;\n        float2 point_center(0,0);\n\n        // smaller point for src primaries\n        float point_scale = u_point_scale * u_outline_scale * 0.5;\n        // bigger point for dst primaries\n        float point_scale_torus = u_point_scale * u_outline_scale;\n\n        // 2.1 draw src primaries\n        point_center = convert_CIExy_to_workspace(u_src_primary_r);\n        point_center = float2(pos.x, pos.y) - point_center;\n        point_r_weight = draw_point(point_center, point_scale);\n\n        point_center = convert_CIExy_to_workspace(u_src_primary_g);\n        point_center = float2(pos.x, pos.y) - point_center;\n        point_g_weight = draw_point(point_center, point_scale);\n\n        point_center = convert_CIExy_to_workspace(u_src_primary_b);\n        point_center = float2(pos.x, pos.y) - point_center;\n        point_b_weight = draw_point(point_center, point_scale);\n\n        point_center = convert_CIExy_to_workspace(u_src_whitepoint);\n        point_center = float2(pos.x, pos.y) - point_center;\n        point_w_weight = draw_point(point_center, point_scale);\n\n        // 2.2 draw inset primaries\n        point_center = convert_CIExy_to_workspace(primary_r_inset);\n        point_center = float2(pos.x, pos.y) - point_center;\n        point_r_weight += draw_torus(point_center, u_point_scale, point_scale_torus);\n\n        point_center = convert_CIExy_to_workspace(primary_g_inset);\n        point_center = float2(pos.x, pos.y) - point_center;\n        point_g_weight += draw_torus(point_center, u_point_scale, point_scale_torus);\n\n        point_center = convert_CIExy_to_workspace(primary_b_inset);\n        point_center = float2(pos.x, pos.y) - point_center;\n        point_b_weight += draw_torus(point_center, u_point_scale, point_scale_torus);\n\n        point_center = convert_CIExy_to_workspace(dst_post_whitepoint);\n        point_center = float2(pos.x, pos.y) - point_center;\n        point_w_weight += draw_torus(point_center, u_point_scale, point_scale_torus);\n\n        point_r_weight = max(point_r_weight, point_w_weight);\n        point_g_weight = max(point_g_weight, point_w_weight);\n        point_b_weight = max(point_b_weight, point_w_weight);\n        float point_alpha = max(max(point_r_weight, point_g_weight), point_b_weight);\n        float4 point_color = float4(point_r_weight, point_g_weight, point_b_weight, point_alpha);\n\n        float4 border_color(0.0, 0.0, 0.0, 0.0);\n        if (u_show_space_borders)\{\n            float border_alpha = draw_borders(float2(pos.x, pos.y));\n            // avoid border visually overlapping with points\n            border_alpha = point_alpha > 0.0? 0.0: border_alpha;\n            border_color = float4(0.1, 0.1, 0.1, 1.0) * border_alpha;\n        \}\n\n        float4 spectral_locus_color(0.0, 0.0, 0.0, 0.0);\n        if (u_show_spectral_locus)\{\n            float spectral_locus_alpha = draw_spectral_locus(float2(pos.x, pos.y));\n            // avoid locus visually overlapping with points\n            spectral_locus_alpha = point_alpha > 0.0? 0.0: spectral_locus_alpha;\n            spectral_locus_color = float4(0.2, 0.2, 0.2, 1.0) * spectral_locus_alpha;\n        \}\n\n        float4 daylight_locus_color(0.0, 0.0, 0.0, 0.0);\n        if (u_show_daylight_locus)\{\n            float daylight_locus_alpha = draw_daylight_locus(float2(pos.x, pos.y));\n            // avoid locus visually overlapping with points\n            daylight_locus_alpha = point_alpha > 0.0? 0.0: daylight_locus_alpha;\n            daylight_locus_color = float4(0.5, 0.3, 0.2, 1.0) * daylight_locus_alpha;\n        \}\n        dst() = (\n            border_color +\n            spectral_locus_color +\n            daylight_locus_color +\n            point_color\n        );\n    \}\n\};"
+     rebuild ""
+     InsetPrimariesPlot_u_src_primary_r {
+        {{parent.primary_r.x}}
+        {{parent.primary_r.y}}
+       }
+     InsetPrimariesPlot_u_src_primary_g {
+         {{parent.primary_g.x}}
+         {{parent.primary_g.y}}
+       }
+     InsetPrimariesPlot_u_src_primary_b {
+         {{parent.primary_b.x}}
+         {{parent.primary_b.y}}
+       }
+     InsetPrimariesPlot_u_src_whitepoint {
+         {{parent.whitepoint.x}}
+         {{parent.whitepoint.y}}
+       }
+     InsetPrimariesPlot_u_inset_r {{parent.inset_r}}
+     InsetPrimariesPlot_u_inset_g {{parent.inset_g}}
+     InsetPrimariesPlot_u_inset_b {{parent.inset_b}}
+     InsetPrimariesPlot_u_rotate_r {{parent.rotate_r}}
+     InsetPrimariesPlot_u_rotate_g {{parent.rotate_g}}
+     InsetPrimariesPlot_u_rotate_b {{parent.rotate_b}}
+     InsetPrimariesPlot_u_whitepoint_pre_offset {
+         {{parent.whitepoint_pre_offset_x}}
+         {{parent.whitepoint_pre_offset_y}}
+       }
+     InsetPrimariesPlot_u_whitepoint_post_offset {
+         {{parent.whitepoint_post_offset_x}}
+         {{parent.whitepoint_post_offset_y}}
+       }
+     InsetPrimariesPlot_u_invert {{parent.invert_inset}}
+     InsetPrimariesPlot_u_point_scale {{parent.point_size}}
+     InsetPrimariesPlot_u_outline_scale {{parent.point_outline_scale}}
+     InsetPrimariesPlot_u_margins {{parent.plot_margins}}
+     InsetPrimariesPlot_u_show_spectral_locus {{parent.plot_show_spectral_locus}}
+     InsetPrimariesPlot_u_show_daylight_locus {{parent.plot_show_daylight_locus}}
+     InsetPrimariesPlot_u_show_space_borders {{parent.plot_show_space_borders}}
+     format "2048 2048 0 0 2048 2048 1 square_2K"
+     useGPUIfAvailable {{parent.use_gpu}}
+     rebuild_finalise ""
+     name InsetPlotBlink
+     xpos 200
+     ypos 200
+    }
+   push $N1aabb660
+    BlinkScript {
+     inputs 1
+     recompileCount 1
+     KernelDescription "2 \"InsetPrimaries\" iterate pixelWise 22158edb4a38696d029dc1be2d704f819d976c99164e005b5773f925cbc54f2f 2 \"src\" Read Point \"dst\" Write Point 13 \"u_invert\" Bool 1 AA== \"u_src_primary_r\" Float 2 AAAAAAAAAAA= \"u_src_primary_g\" Float 2 AAAAAAAAAAA= \"u_src_primary_b\" Float 2 AAAAAAAAAAA= \"u_src_whitepoint\" Float 2 AAAAAAAAAAA= \"u_inset_r\" Float 1 AAAAAA== \"u_inset_g\" Float 1 AAAAAA== \"u_inset_b\" Float 1 AAAAAA== \"u_rotate_r\" Float 1 AAAAAA== \"u_rotate_g\" Float 1 AAAAAA== \"u_rotate_b\" Float 1 AAAAAA== \"u_whitepoint_pre_offset\" Float 2 AAAAAAAAAAA= \"u_whitepoint_post_offset\" Float 2 AAAAAAAAAAA= 13 \"u_invert\" 1 1 \"u_src_primary_r\" 2 1 \"u_src_primary_g\" 2 1 \"u_src_primary_b\" 2 1 \"u_src_whitepoint\" 2 1 \"u_inset_r\" 1 1 \"u_inset_g\" 1 1 \"u_inset_b\" 1 1 \"u_rotate_r\" 1 1 \"u_rotate_g\" 1 1 \"u_rotate_b\" 1 1 \"u_whitepoint_pre_offset\" 2 1 \"u_whitepoint_post_offset\" 2 1 1 \"pi\" Float 1 1 AAAAAA=="
+     kernelSource "// version 6\nkernel InsetPrimaries : ImageComputationKernel<ePixelWise>\n\{\n    Image<eRead, eAccessPoint, eEdgeClamped> src;\n    Image<eWrite> dst;\n\n    param:\n        bool u_invert;\n        float2 u_src_primary_r;\n        float2 u_src_primary_g;\n        float2 u_src_primary_b;\n        float2 u_src_whitepoint;\n        float u_inset_r;\n        float u_inset_g;\n        float u_inset_b;\n        float u_rotate_r;\n        float u_rotate_g;\n        float u_rotate_b;\n        float2 u_whitepoint_pre_offset;\n        float2 u_whitepoint_post_offset;\n\n    local:\n        float pi;\n\n    float lerp(float a1, float a2, float amount)\{\n        // linear interpolation between 2 values\n        return (1.0 - amount) * a1 + amount * a2;\n    \}\n\n    float2 rotate_point_around(float2 point, float angle, float2 center)\{\n        // angle: in radians\n        // https://stackoverflow.com/a/2259502/13806195\n\n        float s = sin(angle);\n        float c = cos(angle);\n\n        // translate point back to origin:\n        point.x -= center.x;\n        point.y -= center.y;\n\n        // rotate point\n        float xnew = point.x * c - point.y * s;\n        float ynew = point.x * s + point.y * c;\n\n        // translate point back:\n        point.x = xnew + center.x;\n        point.y = ynew + center.y;\n        return point;\n    \}\n\n    float3 mult_f3_by_f3x3(float3 vector, float3x3 matrix) \{\n        return float3(\n            matrix[0][0] * vector.x + matrix[0][1] * vector.y + matrix[0][2] * vector.z,\n            matrix[1][0] * vector.x + matrix[1][1] * vector.y + matrix[1][2] * vector.z,\n            matrix[2][0] * vector.x + matrix[2][1] * vector.y + matrix[2][2] * vector.z\n        );\n    \}\n\n    float3x3 normalised_primary_matrix(\n        float2 primary_r,\n        float2 primary_g,\n        float2 primary_b,\n        float2 whitepoint\n    ) \{\n        // Calculate the normalized primaries matrix for the specified chromaticities and whitepoint.\n        // Derived from:\n        //   SMPTE Recommended Practice - Derivation of Basic Television Color Equations\n        //   https://ieeexplore.ieee.org/document/7291155\n\n        float3x3 matrix;\n        // build a 3x3 matrix from the primaries and add a third z axis\n        matrix[0][0] = primary_r[0];\n        matrix[0][1] = primary_r[1];\n        matrix[0][2] = 1.0 - primary_r[0] - primary_r[1];\n        matrix[1][0] = primary_g[0];\n        matrix[1][1] = primary_g[1];\n        matrix[1][2] = 1.0 - primary_g[0] - primary_g[1];\n        matrix[2][0] = primary_b[0];\n        matrix[2][1] = primary_b[1];\n        matrix[2][2] = 1.0 - primary_b[0] - primary_b[1];\n\n        float Wz;\n        Wz = 1.0 - whitepoint[0] - whitepoint[1];\n        float3 W(whitepoint[0] / whitepoint[1], 1.0, Wz /  whitepoint[1]);\n\n        float3x3 P(matrix);\n        P = P.transpose();\n\n        float3 C;\n        C = mult_f3_by_f3x3(W,P.invert());\n\n        float3x3 Cm(0,0,0,0,0,0,0,0,0);\n        Cm[0][0] = C.x;\n        Cm[1][1] = C.y;\n        Cm[2][2] = C.z;\n\n        float3x3 npm;\n        npm = P * Cm;\n        return npm;\n    \}\n\n    bool are_chromaticities_identity(\n        float2 primary_r,\n        float2 primary_g,\n        float2 primary_b\n    ) \{\n        return (\n            primary_r.x == 1.0 && primary_r.y == 0.0 &&\n            primary_g.x == 0.0 && primary_g.y == 1.0 &&\n            primary_b.x == 0.0 && primary_b.y == 0.0\n        );\n    \}\n\n    float3x3 get_inset_colorspace(\n        float2 primary_r,\n        float2 primary_g,\n        float2 primary_b,\n        float2 whitepoint,\n        float inset_r,\n        float inset_g,\n        float inset_b\n    )\{\n        float2 new_primary_r;\n        float2 new_primary_g;\n        float2 new_primary_b;\n\n        new_primary_r.x = lerp(primary_r.x, whitepoint.x, inset_r);\n        new_primary_r.y = lerp(primary_r.y, whitepoint.y, inset_r);\n        new_primary_g.x = lerp(primary_g.x, whitepoint.x, inset_g);\n        new_primary_g.y = lerp(primary_g.y, whitepoint.y, inset_g);\n        new_primary_b.x = lerp(primary_b.x, whitepoint.x, inset_b);\n        new_primary_b.y = lerp(primary_b.y, whitepoint.y, inset_b);\n\n        float3x3 out;\n        out[0][0] = new_primary_r.x;\n        out[0][1] = new_primary_r.y;\n        out[1][0] = new_primary_g.x;\n        out[1][1] = new_primary_g.y;\n        out[2][0] = new_primary_b.x;\n        out[2][1] = new_primary_b.y;\n        return out;\n\n    \}\n\n    void init() \{\n        pi = 3.1415926535f;\n    \}\n\n    void process() \{\n\n        float2 dst_whitepoint = u_src_whitepoint + u_whitepoint_pre_offset;\n\n        float3x3 inset_colorspace;\n        inset_colorspace = get_inset_colorspace(\n            u_src_primary_r,\n            u_src_primary_g,\n            u_src_primary_b,\n            dst_whitepoint,\n            u_inset_r,\n            u_inset_g,\n            u_inset_b\n        );\n\n        float2 primary_r_inset(inset_colorspace[0][0], inset_colorspace[0][1]);\n        float2 primary_g_inset(inset_colorspace[1][0], inset_colorspace[1][1]);\n        float2 primary_b_inset(inset_colorspace[2][0], inset_colorspace[2][1]);\n\n        primary_r_inset = rotate_point_around(\n            primary_r_inset, u_rotate_r * (pi/180), dst_whitepoint\n        );\n        primary_g_inset = rotate_point_around(\n            primary_g_inset, u_rotate_g * (pi/180), dst_whitepoint\n        );\n        primary_b_inset = rotate_point_around(\n            primary_b_inset, u_rotate_b * (pi/180), dst_whitepoint\n        );\n\n        float3x3 dst_to_xyz;\n\n        if (\n            are_chromaticities_identity(\n                primary_r_inset, primary_g_inset, primary_b_inset\n            )\n        ) \{\n            dst_to_xyz.setIdentity();\n        \} else \{\n            dst_to_xyz = normalised_primary_matrix(\n                primary_r_inset,\n                primary_g_inset,\n                primary_b_inset,\n                dst_whitepoint + u_whitepoint_post_offset\n            );\n            dst_to_xyz = dst_to_xyz.invert();\n        \}\n\n        float3x3 src_to_xyz;\n\n        if (\n            are_chromaticities_identity(\n                u_src_primary_r, u_src_primary_g, u_src_primary_b\n            )\n        ) \{\n            src_to_xyz.setIdentity();\n        \} else \{\n            src_to_xyz = normalised_primary_matrix(\n                u_src_primary_r,\n                u_src_primary_g,\n                u_src_primary_b,\n                u_src_whitepoint\n            );\n        \}\n\n        float3x3 conversion_matrix;\n        conversion_matrix = dst_to_xyz * src_to_xyz;\n        if (!(u_invert))\{\n            conversion_matrix = conversion_matrix.invert();\n        \}\n\n        float4 rgba = src();\n        float3 converted_rgb(rgba.x, rgba.y, rgba.z);\n        converted_rgb = mult_f3_by_f3x3(converted_rgb, conversion_matrix);\n        dst() = float4(\n            converted_rgb.x,\n            converted_rgb.y,\n            converted_rgb.z,\n            rgba.w\n        );\n    \}\n\};"
+     rebuild ""
+     InsetPrimaries_u_src_primary_r {
+        {{parent.primary_r.x}}
+        {{parent.primary_r.y}}
+       }
+     InsetPrimaries_u_src_primary_g {
+         {{parent.primary_g.x}}
+         {{parent.primary_g.y}}
+       }
+     InsetPrimaries_u_src_primary_b {
+         {{parent.primary_b.x}}
+         {{parent.primary_b.y}}
+       }
+     InsetPrimaries_u_src_whitepoint {
+         {{parent.whitepoint.x}}
+         {{parent.whitepoint.y}}
+       }
+     InsetPrimaries_u_inset_r {{parent.inset_r}}
+     InsetPrimaries_u_inset_g {{parent.inset_g}}
+     InsetPrimaries_u_inset_b {{parent.inset_b}}
+     InsetPrimaries_u_rotate_r {{parent.rotate_r}}
+     InsetPrimaries_u_rotate_g {{parent.rotate_g}}
+     InsetPrimaries_u_rotate_b {{parent.rotate_b}}
+     InsetPrimaries_u_whitepoint_pre_offset {
+         {{parent.whitepoint_pre_offset_x}}
+         {{parent.whitepoint_pre_offset_y}}
+       }
+     InsetPrimaries_u_whitepoint_post_offset {
+         {{parent.whitepoint_post_offset_x}}
+         {{parent.whitepoint_post_offset_y}}
+       }
+     InsetPrimaries_u_invert {{parent.invert_inset}}
+     format "2048 2048 0 0 2048 2048 1 square_2K"
+     useGPUIfAvailable {{parent.use_gpu}}
+     rebuild_finalise ""
+     name InsetBlink
+     xpos 0
+     ypos 100
+    }
+   Switch {
+    inputs 2
+    which {{parent.plot_show}}
+    name SwitchPlotShow
+    xpos 0
+    ypos 300
+   }
+   Output {
+    name Output1
+    xpos 0
+    ypos 350
+   }
+  end_group
+  # endfrom
+ push $N23344020
+  Dot {
+   name DotPurityNone
+   xpos 100
+   ypos 900
+  }
+ NodeWrapper {
+   inputs 2
+   name PurityAmount
+   xpos 0
+   ypos 950
+   mix {{parent.purity_amount}}
+ }
+ Dot {
   name DotDisplay
   xpos 0
-  ypos 900
+  ypos 1050
  }
  set N23344020 [stack 0]
   Colorspace {
    name TO_DISPLAY_GAMUT
    label "gamut: [value primary_in] > [value primary_out]"
    xpos 0
-   ypos 950
+   ypos 1100
    primary_in "Rec.2020"
    bradford_matrix true
   }
   Grade {
    name GRADE_DISPLAY_LINEAR
    xpos 0
-   ypos 1000
+   ypos 1150
    white 1.1
   }
   Colorspace {
    name TO_DISPLAY_EOTF
    label "cctf: [value colorspace_in] > [value colorspace_out]"
    xpos 0
-   ypos 1050
+   ypos 1200
    colorspace_out "sRGB"
   }
  push $N23344020
  Dot {
   name DotDisplay1
   xpos 200
-  ypos 900
+  ypos 1050
  }
  Dot {
   name DotDisplay2
   xpos 200
-  ypos 1100
+  ypos 1250
  }
  Switch {
   inputs 2
   which {{parent.todisplay_apply}}
   name SwitchDisplay
   xpos 0
-  ypos 1100
+  ypos 1250
  }
  Dot {
   name DotPlotLast
   xpos 0
-  ypos 1200
+  ypos 1280
  }
  set N23344020 [stack 0]
   Dot {
-   name DotPlotSlice
+   name DotPlotSlice1
    xpos 200
-   ypos 1200
+   ypos 1280
   }
   set N5bf32400 [stack 0]
    Expression {
     name ExpressionFillBlack
     xpos 300
-    ypos 1200
+    ypos 1280
     expr0 0
     expr1 0
     expr2 0
@@ -1137,7 +1360,7 @@ Group {
    Grid {
     name GridPlot1
     xpos 300
-    ypos 1230
+    ypos 1320
     opacity 0.5
     number {4 2}
     size 3
@@ -1145,7 +1368,7 @@ Group {
    Grid {
     name GridPlot2
     xpos 300
-    ypos 1270
+    ypos 1360
     opacity 0.15
     number {8 0}
     size 3
@@ -1181,7 +1404,7 @@ Group {
     addUserKnob {6 lines_color_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
     antialias 1
     xpos 200
-    ypos 1230
+    ypos 1320
    }
     Input {
      inputs 0
@@ -1387,7 +1610,7 @@ Group {
    Grade {
     name GradePlot
     xpos 200
-    ypos 1270
+    ypos 1360
     channels rgba
     white 4
     white_clamp 1
@@ -1397,13 +1620,13 @@ Group {
    inputs 2
    name MergePlotGrid
    xpos 200
-   ypos 1320
+   ypos 1400
    operation under
   }
   Dot {
-   name DotPlotSlice
+   name DotPlotSlice2
    xpos 200
-   ypos 1350
+   ypos 1450
   }
  push $N23344020
  Switch {
