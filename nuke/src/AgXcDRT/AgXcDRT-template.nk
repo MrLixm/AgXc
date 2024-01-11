@@ -173,13 +173,6 @@ Group {
   ypos 300
  }
  %NODE_AgXcTonescale:{"ypos": 350, "xpos": 0,"name": "AgXcTonescaleFirst", "min_exposure": "{{parent.tonescale1_min_exposure}}", "max_exposure": "{{parent.tonescale1_max_exposure}}", "general_contrast": "{{parent.contrast1}}", "use_gpu": "{{parent.use_gpu}}"}%
- Colorspace {
-  name LINEARIZE_TONESCALE_OUTSET
-  xpos 0
-  ypos 400
-  label "cctf: [value colorspace_in] > [value colorspace_out]"
-  colorspace_in "2.40"
- }
  Dot {
   name DotPurityInput
   xpos 0
@@ -199,13 +192,6 @@ Group {
    xpos 0
    ypos 550
    mix {{parent.purity_amount}}
- }
- Colorspace {
-  name UNLINEARIZE_TONESCALE_OUTSET
-  xpos 0
-  ypos 600
-  label "cctf: [value colorspace_in] > [value colorspace_out]"
-  colorspace_out "2.40"
  }
  Dot {
   name Dot2ndTonescale
