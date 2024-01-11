@@ -13,6 +13,8 @@ Group {
  use_gpu true
  addUserKnob {26 "" +STARTLINE}
  addUserKnob {26 txt_purity l "" +STARTLINE T "<h2> Purity </h2>"}
+ addUserKnob {6 use_luma_compensation l "Use Luminance Compensation." t "Affect very saturated colors on gamut boundaries." +STARTLINE}
+ use_luma_compensation true
  addUserKnob {7 inset1 +STARTLINE l "inset" t "reduce chroma purity" R 0 1}
  inset1 0.4
  addUserKnob {7 purity_amount +STARTLINE l "purity amount" t "higher values restore chroma purity using an outset" R 0 1}
@@ -87,7 +89,7 @@ Group {
  addUserKnob {20 endGroup n -1}
  addUserKnob {20 About}
  addUserKnob {26 toolName l name T AgXcDRT}
- addUserKnob {26 toolVersion l version T 1.1.1}
+ addUserKnob {26 toolVersion l version T 1.2.0}
  addUserKnob {26 toolAuthor l author T "<a style=\"color: rgb(200,200,200);\" href=\"https://mrlixm.github.io/\">Liam Collod</a>"}
  addUserKnob {26 toolDescription l description T "AgX(custom) Display Rendering Transform."}
  addUserKnob {26 toolUrl l url T "<a style=\"color: rgb(200,200,200);\" href=\"https://github.com/MrLixm/AgXc\">https://github.com/MrLixm/AgXc</a>"}
@@ -119,6 +121,44 @@ Group {
   name image
   xpos 0
   ypos 0
+ }
+ set Nd508a50 [stack 0]
+ # Under expression is:
+ # 1. extracting chroma by finding luma
+ # 2. applying offset
+ # 3. applying power
+ # 4. multiplying back chroma with luma, which have been compensated for chroma changes
+ # 5. lerping with luma to only apply changes on higher values
+ Expression {
+  name ExpressionLuminanceCompensation
+  xpos 100
+  ypos 50
+  temp_name0 L
+  temp_expr0 wR*r+wG*g+wB*b
+  expr0 "lerp(r, pow((L==0? 0: r / L) + Coffset, 1 / Cpower) * (L * Lgain), L)"
+  expr1 "lerp(g, pow((L==0? 0: g / L) + Coffset, 1 / Cpower) * (L * Lgain), L)"
+  expr2 "lerp(b, pow((L==0? 0: b / L) + Coffset, 1 / Cpower) * (L * Lgain), L)"
+  addUserKnob {20 User l "Parameters"}
+  addUserKnob {7 Cpower "chroma power"}
+  Cpower 0.5
+  addUserKnob {7 Coffset "chroma offset" R -2 2}
+  Coffset 1
+  addUserKnob {7 Lgain "luma gain"}
+  Lgain 0.25
+  addUserKnob {7 wR}
+  wR 0.26270021
+  addUserKnob {7 wG}
+  wG 0.67799807
+  addUserKnob {7 wB}
+  wB 0.05930171
+ }
+ push $Nd508a50
+ Switch {
+  name SwitchLuminanceCompensation
+  inputs 2
+  xpos 0
+  ypos 100
+  which {{parent.use_luma_compensation}}
  }
  # startfrom: https://github.com/MrLixm/Foundry_Nuke/raw/823438ebda0d92614355932a2ecb7264774e2562/src/primaries_inset/PrimariesInset.nk
  Group {
