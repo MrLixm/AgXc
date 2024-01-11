@@ -90,6 +90,43 @@ of the input and high values the white ones.
 
 ![screenshot of AgXcDRT plot option result in Nuke](doc/img/AgXcDRT-plot.png)
 
+
+### purity
+
+#### luminance compensation
+
+A personal "trick" to reduce purity in gamut boundaries values.
+
+The algorithm is as follows :
+
+1. find luma using R-G-B weights computed from colorspace primaries and whitepoint
+2. extract chroma by dividing luma
+3. apply +1 offset on chroma
+4. apply 0.5 power on chroma
+5. apply 0.25 gain on luma to compensate for chroma change
+6. multiplying back chroma with luma to recombine image
+7. lerping 6. with luma calculated in 1. to only apply changes on higher values
+
+
+#### inset
+
+Control the amount of chroma purity in bright values where higher values will
+produce a less chroma-intense look.
+
+The default value of 0.4 might be a bit strong.
+
+#### purity amount
+
+Apply the invert inset operation called outset (the inset being a 3x3 matrix 
+this is just the matrix inverted) and control how much is applied.
+
+The outset retrieve purity in midtones and shadows but reintroduce skews and
+artefacts.
+
+Note the outset is applied after teh first tonescale meaning you can play with
+the second inset to compensate for its artefact.
+
+
 ### tonescale
 
 "Luminance mapping" of the image with additional grading possibilities to emulate
@@ -100,13 +137,6 @@ and stayed, in lack of better term.
 Original AgX implementation applied the tonescale a single time. This one can apply
 it 2 times, producing an extra softness that can be comparable to the look
 of analog film.
-
-#### inset
-
-Control the amount of chroma purity in bright values where higher values will
-produce a less chroma-intense look.
-
-The default value of 0.4 might be a bit strong.
 
 #### contrast
 
@@ -123,10 +153,15 @@ on the `print contrast` control, with the additional pivot control to refine fur
 the look (do not hesitate to check `Show Plot` to have an alternative representation
 of your changes).
 
+The pivot correspond to the center of the "S curve" and a value of 0.18 map to
+scene-linear middle grey.
+
 
 ### display
 
 Pick the target display the image should be intended to be displayed on.
+
+The grade options help achieve an optimal rendering for that display.
 
 # Developer
 
