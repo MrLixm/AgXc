@@ -29,7 +29,7 @@ Group {
  addUserKnob {18 print_contrast l "print contrast" R 0.8 4}
  print_contrast {1.0 1.0 1.0}
  addUserKnob {18 print_contrast_pivot l "print contrast pivot" R 0.1 1.0}
- print_contrast_pivot {0.65 0.65 0.65}
+ print_contrast_pivot {0.355 0.355 0.355}
  addUserKnob {7 print_contrast_amount l "print contrast amount" R 0 1}
  print_contrast_amount 1.0
  addUserKnob {26 "" +STARTLINE}
@@ -89,7 +89,7 @@ Group {
  addUserKnob {20 endGroup n -1}
  addUserKnob {20 About}
  addUserKnob {26 toolName l name T AgXcDRT}
- addUserKnob {26 toolVersion l version T 1.2.0}
+ addUserKnob {26 toolVersion l version T 1.3.0}
  addUserKnob {26 toolAuthor l author T "<a style=\"color: rgb(200,200,200);\" href=\"https://mrlixm.github.io/\">Liam Collod</a>"}
  addUserKnob {26 toolDescription l description T "AgX(custom) Display Rendering Transform."}
  addUserKnob {26 toolUrl l url T "<a style=\"color: rgb(200,200,200);\" href=\"https://github.com/MrLixm/AgXc\">https://github.com/MrLixm/AgXc</a>"}
@@ -1312,6 +1312,13 @@ Group {
   xpos 0
   ypos 850
  }
+ Colorspace {
+  name LINEARIZE_TONESCALE
+  xpos 0
+  ypos 900
+  label "cctf: [value colorspace_in] > [value colorspace_out]"
+  colorspace_in "2.40"
+ }
  # startfrom: https://github.com/jedypod/nuke-colortools/raw/b0912ff8c9ffd0438d208847ef49d0ecc89655cf/toolsets/transfer_function/SigmoidParabolic.nk
  #MIT License
  #
@@ -1335,16 +1342,9 @@ Group {
   p {{parent.print_contrast} {parent.print_contrast} {parent.print_contrast}}
   mix {{parent.print_contrast_amount}}
   xpos 0
-  ypos 900
+  ypos 950
  }
  # endfrom
- Colorspace {
-  name LINEARIZE_TONESCALE
-  xpos 0
-  ypos 950
-  label "cctf: [value colorspace_in] > [value colorspace_out]"
-  colorspace_in "2.40"
- }
  Dot {
   name DotDisplay
   xpos 0
