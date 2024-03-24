@@ -135,29 +135,29 @@ struct _FLogConstants {
 };
 // ref[3]
 _FLogConstants FLogConstants(){
-    _FLogConstants output;
-    output.a = 0.555556;
-    output.b = 0.009468;
-    output.c = 0.344676;
-    output.d = 0.790453;
-    output.e = 8.735631;
-    output.f = 0.092864;
-    output.cut1 = 0.00089;
-    output.cut2 = 0.10053777522386;
-    return output;
+    _FLogConstants _instance;
+    _instance.a = 0.555556;
+    _instance.b = 0.009468;
+    _instance.c = 0.344676;
+    _instance.d = 0.790453;
+    _instance.e = 8.735631;
+    _instance.f = 0.092864;
+    _instance.cut1 = 0.00089;
+    _instance.cut2 = 0.10053777522386;
+    return _instance;
 }
 // ref[4]
 _FLogConstants FLog2Constants(){
-    _FLogConstants output;
-    output.a = 5.555556;
-    output.b = 0.064829;
-    output.c = 0.245281;
-    output.d = 0.384316;
-    output.e = 8.799461;
-    output.f = 0.092864;
-    output.cut1 = 0.000889;
-    output.cut2 = 0.100686685370811;
-    return output;
+    _FLogConstants _instance;
+    _instance.a = 5.555556;
+    _instance.b = 0.064829;
+    _instance.c = 0.245281;
+    _instance.d = 0.384316;
+    _instance.e = 8.799461;
+    _instance.f = 0.092864;
+    _instance.cut1 = 0.000889;
+    _instance.cut2 = 0.100686685370811;
+    return _instance;
 }
 
 // ref[3][4][5]
@@ -188,14 +188,14 @@ struct _NLogConstants {
 };
 // ref[6]
 _NLogConstants NLogConstants(){
-    _NLogConstants output;
-    output.a = 650.0/1023.0;
-    output.b = 0.0075;
-    output.c = 150.0/1023.0;
-    output.d = 619.0/1023.0;
-    output.cut1 = 0.328;
-    output.cut2 = 452.0/1023.0;
-    return output;
+    _NLogConstants _instance;
+    _instance.a = 650.0/1023.0;
+    _instance.b = 0.0075;
+    _instance.c = 150.0/1023.0;
+    _instance.d = 619.0/1023.0;
+    _instance.cut1 = 0.328;
+    _instance.cut2 = 452.0/1023.0;
+    return _instance;
 }
 // ref[6]
 float3 cctf_decoding_NLog(float3 color){
@@ -223,16 +223,16 @@ struct _SLogConstants {
 };
 // ref[7][8]
 _SLogConstants SLogConstants(){
-    _SLogConstants output;
-    output.a = 0.432699;
-    output.b = 0.616596;
-    output.c = 0.030001222851889303;
-    output.d = 3.53881278538813;
-    output.e = 0.03;
-    output.f = 155.0;
-    output.g = 219.0;
-    output.h = 0.037584;
-    return output;
+    _SLogConstants _instance;
+    _instance.a = 0.432699;
+    _instance.b = 0.616596;
+    _instance.c = 0.030001222851889303;
+    _instance.d = 3.53881278538813;
+    _instance.e = 0.03;
+    _instance.f = 155.0;
+    _instance.g = 219.0;
+    _instance.h = 0.037584;
+    return _instance;
 }
 // ref[7]
 float3 cctf_encoding_SLog(float3 color){
@@ -287,13 +287,13 @@ struct _VLogConstants {
 };
 // ref[9]
 _VLogConstants VLogConstants(){
-    _VLogConstants output;
-    output.b = 0.00873;
-    output.c = 0.241514;
-    output.d = 0.598206;
-    output.cut1 = 0.01;
-    output.cut2 = 0.181;
-    return output;
+    _VLogConstants _instance;
+    _instance.b = 0.00873;
+    _instance.c = 0.241514;
+    _instance.d = 0.598206;
+    _instance.cut1 = 0.01;
+    _instance.cut2 = 0.181;
+    return _instance;
 }
 float3 cctf_decoding_VLog(float3 color){
      _VLogConstants vlconst = VLogConstants();
