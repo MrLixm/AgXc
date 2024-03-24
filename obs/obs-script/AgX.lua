@@ -15,6 +15,11 @@ local __version__ = "1.3.0"
 local hlsl_shader_file_path = script_path() .. 'AgX.hlsl'
 local agx_lut_file_path = script_path() .. 'AgX-default_contrast.lut.png'
 
+local function LOGGER(level, message)
+   obs.blog(level, "[AgXc]" .. message)
+end
+
+
 function script_description()
   return ([[
   <p>
@@ -32,7 +37,7 @@ end
 function load_texture(path)
 
   if string.len(path) < 0 then
-    obs.blog(obs.LOG_ERROR, "Cannot load texture: no path given.")
+    LOGGER(obs.LOG_ERROR, "[load_texture] Cannot load texture: no path given.")
     return
   end
 
@@ -43,7 +48,7 @@ function load_texture(path)
   if new_texture.loaded then
     obs.gs_image_file_init_texture(new_texture)
   else
-    obs.blog(obs.LOG_ERROR, "Cannot load texture " .. path)
+    LOGGER(obs.LOG_ERROR, "[load_texture] Cannot load " .. path)
     new_texture = nil
   end
 
@@ -216,15 +221,13 @@ source_info.create = function(settings, source)
 
   -- Compile HLSL shader
   obs.obs_enter_graphics()
-  local error = ""
+  LOGGER(obs.LOG_INFO, "[source_info.create] Loading effect " .. hlsl_shader_file_path)
   data.effect = obs.gs_effect_create_from_file(hlsl_shader_file_path, nil)
-  obs.blog(obs.LOG_INFO, "[source_info.create] Loaded effect " .. hlsl_shader_file_path)
   obs.obs_leave_graphics()
 
   if data.effect == nil then
-    obs.blog(obs.LOG_ERROR, "Effect compilation failed for " .. hlsl_shader_file_path .. "\n" .. error)
+    LOGGER(obs.LOG_ERROR, "[source_info.create] Effect compilation failed for " .. hlsl_shader_file_path)
     source_info.destroy(data)
-    error = nil
     return nil
   end
 
