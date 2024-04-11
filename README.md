@@ -56,3 +56,11 @@ The simplicity of AgX allowed to port it to various languages and software:
 ![OBS interface screenshot with webcam feed](obs/doc/img/obs-main.png)
 
 > Screenshot of the OBS interface while streaming 8Bit VLog from a Panasonic camera.
+
+# Usage
+
+Consider each directory in this repository to be its own independent software.
+Usually each have its own versioning, changelog and documentation.
+
+When any of the implementation has a new version I bump the global version
+of this repo in the [pyproject.toml](pyproject.toml) and make a new GitHub release.
