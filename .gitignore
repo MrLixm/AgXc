@@ -30,3 +30,6 @@ _uses/
 _outputs/
 *.blink.src
 *.blink.desc
+*.afphoto~lock~
+*.nknc.autosave
+*.nk.autosave

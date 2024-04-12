@@ -1,4 +1,7 @@
-# version: 0.2.3
+# version: 0.2.4
+
+name: AgXc
+
 ocio_profile_version: 1
 description: |
   AgX config by Troy Sobotka. Modified by Liam Collod with full permissions from

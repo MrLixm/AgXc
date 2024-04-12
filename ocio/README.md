@@ -1,16 +1,14 @@
 # OCIO
 
-The goal was making the proof-of-concept OCIO config more "production-ready" because, well that's a damn solid concept.
+The goal was making [the proof-of-concept OCIO config](https://github.com/sobotka/AgX) 
+more "production-ready" because, well that's a damn solid concept.
 
->  **Note**:
+![AgXc comparison with ACES and filmic using a cg render](../doc/images/dragon.full.combined.jpg)
+
+>  [!TIP]
 >  Compatible with OCIO v2 and OCIO v1.
 
-![agx comparison with aces and filmic](../comparison.jpg)
-
-> extreme example rendered with pure ACEScg primaries
-
-
-## Changes
+## Changes with original
 
 - Slight update in the colorspaces names / families 
     - `Generic Data` -> `Passtrough` ( for scalar data)
