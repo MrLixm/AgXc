@@ -13,6 +13,8 @@ Group {
  use_gpu true
  addUserKnob {26 "" +STARTLINE}
  addUserKnob {26 txt_purity l "" +STARTLINE T "<h2> Purity </h2>"}
+ addUserKnob {6 use_luma_compensation l "Use Luminance Compensation." t "Affect very saturated colors on gamut boundaries." +STARTLINE}
+ use_luma_compensation true
  addUserKnob {7 inset1 +STARTLINE l "inset" t "reduce chroma purity" R 0 1}
  inset1 0.4
  addUserKnob {7 purity_amount +STARTLINE l "purity amount" t "higher values restore chroma purity using an outset" R 0 1}
@@ -27,7 +29,7 @@ Group {
  addUserKnob {18 print_contrast l "print contrast" R 0.8 4}
  print_contrast {1.0 1.0 1.0}
  addUserKnob {18 print_contrast_pivot l "print contrast pivot" R 0.1 1.0}
- print_contrast_pivot {0.65 0.65 0.65}
+ print_contrast_pivot {0.355 0.355 0.355}
  addUserKnob {7 print_contrast_amount l "print contrast amount" R 0 1}
  print_contrast_amount 1.0
  addUserKnob {26 "" +STARTLINE}
@@ -87,7 +89,7 @@ Group {
  addUserKnob {20 endGroup n -1}
  addUserKnob {20 About}
  addUserKnob {26 toolName l name T AgXcDRT}
- addUserKnob {26 toolVersion l version T 1.1.1}
+ addUserKnob {26 toolVersion l version T 1.3.0}
  addUserKnob {26 toolAuthor l author T "<a style=\"color: rgb(200,200,200);\" href=\"https://mrlixm.github.io/\">Liam Collod</a>"}
  addUserKnob {26 toolDescription l description T "AgX(custom) Display Rendering Transform."}
  addUserKnob {26 toolUrl l url T "<a style=\"color: rgb(200,200,200);\" href=\"https://github.com/MrLixm/AgXc\">https://github.com/MrLixm/AgXc</a>"}
@@ -120,6 +122,44 @@ Group {
   xpos 0
   ypos 0
  }
+ set Nd508a50 [stack 0]
+ # Under expression is:
+ # 1. extracting chroma by finding luma
+ # 2. applying offset
+ # 3. applying power
+ # 4. multiplying back chroma with luma, which have been compensated for chroma changes
+ # 5. lerping with luma to only apply changes on higher values
+ Expression {
+  name ExpressionLuminanceCompensation
+  xpos 100
+  ypos 50
+  temp_name0 L
+  temp_expr0 wR*r+wG*g+wB*b
+  expr0 "lerp(r, pow((L==0? 0: r / L) + Coffset, 1 / Cpower) * (L * Lgain), L)"
+  expr1 "lerp(g, pow((L==0? 0: g / L) + Coffset, 1 / Cpower) * (L * Lgain), L)"
+  expr2 "lerp(b, pow((L==0? 0: b / L) + Coffset, 1 / Cpower) * (L * Lgain), L)"
+  addUserKnob {20 User l "Parameters"}
+  addUserKnob {7 Cpower "chroma power"}
+  Cpower 0.5
+  addUserKnob {7 Coffset "chroma offset" R -2 2}
+  Coffset 1
+  addUserKnob {7 Lgain "luma gain"}
+  Lgain 0.25
+  addUserKnob {7 wR}
+  wR 0.26270021
+  addUserKnob {7 wG}
+  wG 0.67799807
+  addUserKnob {7 wB}
+  wB 0.05930171
+ }
+ push $Nd508a50
+ Switch {
+  name SwitchLuminanceCompensation
+  inputs 2
+  xpos 0
+  ypos 100
+  which {{parent.use_luma_compensation}}
+ }
  %NODE_PrimariesInset:{"ypos": 200, "xpos": 0, "name": "PrimariesInsetFirst", "colorspace_preset": "\"ITU-R BT.2020\"", "primary_r": "{0.708 0.292}", "primary_g": "{0.17 0.797}", "primary_b": "{0.131 0.046}", "whitepoint": "{0.3127 0.329}", "inset": "{{parent.inset1}}", "u_inset_r": 0.125, "u_inset_b": 0.15, "rotate_r": 5, "rotate_b": -5, "use_gpu": "{{parent.use_gpu}}"}%
  %NODE_Log2Shaper:{"ypos": 250, "xpos": 0, "name": "Log2ShaperTonescaleFirst", "min_exp": "{{parent.tonescale1_min_exposure}}", "max_exp": "{{parent.tonescale1_max_exposure}}"}%
  set N543acf70 [stack 0]
@@ -133,13 +173,6 @@ Group {
   ypos 300
  }
  %NODE_AgXcTonescale:{"ypos": 350, "xpos": 0,"name": "AgXcTonescaleFirst", "min_exposure": "{{parent.tonescale1_min_exposure}}", "max_exposure": "{{parent.tonescale1_max_exposure}}", "general_contrast": "{{parent.contrast1}}", "use_gpu": "{{parent.use_gpu}}"}%
- Colorspace {
-  name LINEARIZE_TONESCALE_OUTSET
-  xpos 0
-  ypos 400
-  label "cctf: [value colorspace_in] > [value colorspace_out]"
-  colorspace_in "2.40"
- }
  Dot {
   name DotPurityInput
   xpos 0
@@ -159,13 +192,6 @@ Group {
    xpos 0
    ypos 550
    mix {{parent.purity_amount}}
- }
- Colorspace {
-  name UNLINEARIZE_TONESCALE_OUTSET
-  xpos 0
-  ypos 600
-  label "cctf: [value colorspace_in] > [value colorspace_out]"
-  colorspace_out "2.40"
  }
  Dot {
   name Dot2ndTonescale
@@ -194,14 +220,14 @@ Group {
   xpos 0
   ypos 850
  }
- %NODE_SigmoidParabolic:{"ypos": 900, "xpos": 0, "name": "PRINT_CONTRAST_SigmoidParabolic", "mix": "{{parent.print_contrast_amount}}", "p": "{{parent.print_contrast} {parent.print_contrast} {parent.print_contrast}}", "t0": "{{parent.print_contrast_pivot} {parent.print_contrast_pivot} {parent.print_contrast_pivot}}"}%
  Colorspace {
   name LINEARIZE_TONESCALE
   xpos 0
-  ypos 950
+  ypos 900
   label "cctf: [value colorspace_in] > [value colorspace_out]"
   colorspace_in "2.40"
  }
+ %NODE_SigmoidParabolic:{"ypos": 950, "xpos": 0, "name": "PRINT_CONTRAST_SigmoidParabolic", "mix": "{{parent.print_contrast_amount}}", "p": "{{parent.print_contrast} {parent.print_contrast} {parent.print_contrast}}", "t0": "{{parent.print_contrast_pivot} {parent.print_contrast_pivot} {parent.print_contrast_pivot}}"}%
  Dot {
   name DotDisplay
   xpos 0
