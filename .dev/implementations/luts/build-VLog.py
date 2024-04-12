@@ -236,7 +236,7 @@ def main():
             comment="author = Liam Collod",
         )
 
-        lust_dst_dir = THIS_DIR / ".." / "VLog"
+        lust_dst_dir = THIS_DIR.parent.parent.parent / "luts" / "VLog"
         lust_dst_dir.mkdir(exist_ok=True)
         lut_dst_path = lust_dst_dir / f"{lut_config['name']}.cube"
 
