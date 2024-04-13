@@ -49,13 +49,11 @@ The simplicity of AgX allowed to port it to various languages and software:
 - [nuke](nuke): partial implementation for [Foundry's Nuke](https://www.foundry.com/products/nuke-family/nuke)
 - [luts](luts): LUTs file for preview in various systems
 
-![ReShade: Stray screenshot with AgX](reshade/img/stray-3-AgX.jpg)
 
-> screenshot from game Stray with AgX applied via ReShade
-
-![OBS interface screenshot with webcam feed](obs/doc/img/obs-main.png)
-
-> Screenshot of the OBS interface while streaming 8Bit VLog from a Panasonic camera.
+| ![ReShade: Stray screenshot with AgX](reshade/img/stray-3-AgX.jpg) | ![OBS interface screenshot with webcam feed](obs/doc/img/obs-main.png)              |
+|--------------------------------------------------------------------|-------------------------------------------------------------------------------------|
+| Screenshot from game Stray with AgXc applied via ReShade           | Screenshot of the OBS interface while streaming 8Bit VLog from a Panasonic camera.  |
+ 
 
 # Browsing
 
