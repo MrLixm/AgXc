@@ -1,13 +1,15 @@
 import logging
+import sys
 from pathlib import Path
 
 import colour
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
+
+THIS_DIR = Path(__file__).parent
 
 
-def generate_and_save_sRGB_LUT(targetPath: Path):
-
+def generate_sRGB_LUT() -> colour.LUT1D:
     lut_size = 4096
     lut_domain = [0.0, 1.0]
 
@@ -22,22 +24,24 @@ def generate_and_save_sRGB_LUT(targetPath: Path):
             "sRGB IEC 61966-2-1 2.2 Exponent Reference EOTF Display. Decoding function."
         ],
     )
+    return lut
 
+
+def main():
+    repoRootDir = THIS_DIR.parent.parent.parent
+    targetPath = repoRootDir / "ocio" / "LUTs" / "sRGB-EOTF-inverse.spi1d"
+
+    LOGGER.info(f"generating sRGB lut")
+    lut = generate_sRGB_LUT()
+    LOGGER.info(f"writing sRGB lut to <{targetPath}>")
     colour.write_LUT(lut, str(targetPath))
-
-    logger.info(f"[generate_and_save_sRGB_LUT] Finished writting {targetPath}")
-    return
 
 
 if __name__ == "__main__":
-
     logging.basicConfig(
         level=logging.DEBUG,
-        format="{levelname: <7} | {asctime} [{name}]{message}",
+        format="{levelname: <7} | {asctime} [{name}] {message}",
         style="{",
+        stream=sys.stdout,
     )
-
-    _targetPath = Path() / ".." / ".." / "ocio" / "LUTs" / "sRGB-EOTF-inverse.spi1d"
-    _targetPath = _targetPath.absolute().resolve()
-
-    generate_and_save_sRGB_LUT(targetPath=_targetPath)
+    main()
