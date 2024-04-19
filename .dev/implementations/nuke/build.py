@@ -30,7 +30,7 @@ class BuildPaths:
     )
     assert src_AgXcTonescale_blink_desc.exists()
 
-    dst_dir = THIS_DIR.parent
+    dst_dir = THIS_DIR.parent.parent.parent / "nuke"
     dst_AgXcDRT_node = dst_dir / "AgXcDRT.nk"
     dst_AgXcTonescale_node = dst_dir / "AgXcTonescale.nk"
 

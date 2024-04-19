@@ -63,7 +63,7 @@ Instructions are also available as video :
 GitHub repository.
 
 Put the **whole** content of the [obs/obs-script](obs-script) directory 
-anywhere you want on your system (you DON'T need the `src/` or the `doc/` directory).
+anywhere you want on your system (you DON'T need the `doc/` directory).
 
 1. Open OBS
 2. In the top menu > Tools > Scripts
@@ -184,4 +184,4 @@ Default is Bradford and doesn't need to be changed.
 
 # Developer
 
-Developer documentation can be found in [doc/DEV.md](doc/DEV.md).
+Developer documentation can be found in [../.dev/implementations/obs](../.dev/implementations/obs) directory.

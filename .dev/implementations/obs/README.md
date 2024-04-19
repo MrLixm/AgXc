@@ -11,15 +11,13 @@ With that you will find additional hlsl modules that are all imported in `AgX.hl
   - `_lib_colorscience/`: some of the modules are procedurally-generated and not 
    intended to be edited directly (see header comment).
 
-The "procedurally" generated code can be found in the [../src/](../src) directory.
-
 # Add a new colorspace.
 
 ## Case 1 : gamut/whitepoint/cctf are already there.
 
 You will need :
 
-1. Modify the `../src/scripts/build-colorspace_core.hlsl.py` by adding the new colorspace.
+1. Modify the `.scripts/build-colorspace_core.hlsl.py` by adding the new colorspace.
    1. This is done by adding a new instance of `AssemblyColorspace`.
 2. Run the script, this will automatically take care of the hlsl code.
 3. You will need to manually update the LUA code :

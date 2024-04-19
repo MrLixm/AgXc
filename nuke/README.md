@@ -130,7 +130,7 @@ Pick the target display the image should be intended to be displayed on.
 
 # Developer
 
-Check the [src/](src) directory.
+Check the [../.dev/implementations/nuke](../.dev/implementations/nuke) directory.
 
 # Credits
 
