@@ -83,6 +83,78 @@ class Colorspace:
 
 
 @dataclasses.dataclass
+class ImageColorspace:
+    """
+    A colorspace intended to be defined as <ColorSpace> but also as <View>, combining
+    an optional look.
+
+    The class offer convenient properties to build those objects.
+    """
+
+    image_rendering: str
+    display_colorspace: str
+    look: Optional[str] = None
+
+    @property
+    def name(self) -> str:
+        """
+        Name for the <ColorSpace>
+        """
+        look = f"-{self.look}" if self.look else ""
+        return f"Image {self.image_rendering}{look} {self.display_colorspace}"
+
+    @property
+    def view_name(self) -> str:
+        """
+        Name for the <View>
+        """
+        look = f" {self.look}" if self.look else ""
+        return f"{self.image_rendering}{look}"
+
+    @property
+    def description(self) -> str:
+        """
+        Human-readable description for the <ColorSpace>
+        """
+        text = [
+            "A display-referred/display-ready colorspace. Built with:",
+            f"- the {self.image_rendering} image rendering transform",
+        ]
+        if self.look:
+            text += [f"- the {self.look} look transform"]
+
+        text += [f"- a conversion for {self.display_colorspace} display standard."]
+        return "\n".join(text)
+
+    @property
+    def transforms(self) -> list[ocio.Transform]:
+        """
+        List of transforms for the <ColorSpace>
+        """
+        transforms: list[ocio.Transform] = [
+            ocio.ColorSpaceTransform(
+                src="reference",
+                dst=self.image_rendering,
+            ),
+        ]
+        if self.look:
+            transforms += [
+                ocio.LookTransform(
+                    src=self.image_rendering,
+                    dst=self.image_rendering,
+                    looks=self.look,
+                ),
+            ]
+        transforms += [
+            ocio.ColorSpaceTransform(
+                src=self.image_rendering,
+                dst=self.display_colorspace,
+            ),
+        ]
+        return transforms
+
+
+@dataclasses.dataclass
 class View:
     name: str
     """

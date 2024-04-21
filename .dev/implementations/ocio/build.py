@@ -1,9 +1,11 @@
 import argparse
+import dataclasses
 import datetime
 import enum
 import logging
 import sys
 from pathlib import Path
+from typing import Optional
 
 import PyOpenColorIO as ocio
 import colour
@@ -25,6 +27,7 @@ from ocio_config_helpers import View
 from ocio_config_helpers import BaseFamily
 from ocio_config_helpers import build_ocio_colorspace
 from ocio_config_helpers import build_display_views
+from ocio_config_helpers import ImageColorspace
 
 
 class AgXcFamily(BaseFamily):
@@ -36,7 +39,6 @@ class AgXcFamily(BaseFamily):
     agx = "AgX"
     util_curves = "Utilities/Curves"
     views = "Views"
-    view_looks = "Views/Looked"
 
 
 class AgXcConfigVariant(enum.Enum):
@@ -77,28 +79,50 @@ class AgXcConfig(ocio.Config):
         self.lut_AgX = "AgX_Default_Contrast.spi1d"
         self._luts: dict[str, colour.LUT1D] = {}
 
-        self.colorspace_Linear_sRGB = "Linear sRGB"
-        self.colorspace_AgX_Log = "AgX Log (Kraken)"
-        self.colorspace_EOTF_2_2 = "2.2 EOTF Encoding"
-        self.colorspace_EOTF_2_4 = "2.4 EOTF Encoding"
-        self.colorspace_sRGB_2_2 = "sRGB - 2.2"
-        self.colorspace_sRGB_EOTF = "sRGB - EOTF"
-        self.colorspace_Display_P3 = "Display P3"
+        self.look_punchy = "Punchy"
+        self.looks = [
+            self.look_punchy,
+        ]
+
+        self.colorspace_Linear_sRGB = "sRGB-linear"
+        self.colorspace_AgX_Log = "AgX-Log-(Kraken)"
+        self.colorspace_EOTF_2_2 = "2.2-EOTF-Encoding"
+        self.colorspace_EOTF_2_4 = "2.4-EOTF-Encoding"
+        self.colorspace_sRGB_2_2 = "sRGB-2.2"
+        self.colorspace_sRGB_EOTF = "sRGB-EOTF"
+        self.colorspace_Display_P3 = "Display-P3"
         self.colorspace_BT_1886 = "BT.1886"
-        self.colorspace_AgX_Base = "AgX Base"
-        self.colorspace_AgX_Base_sRGB = "AgX Base sRGB"
-        self.colorspace_AgX_Base_BT1886 = "AgX Base BT.1886"
-        self.colorspace_AgX_Base_DisplayP3 = "AgX Base Display P3"
-        self.colorspace_Appearance_PunchysRGB = "Appearance Punchy sRGB"
-        self.colorspace_Appearance_Punchy_DisplayP3 = "Appearance Punchy Display P3"
-        self.colorspace_Appearance_Punchy_BT1886 = "Appearance Punchy BT.1886"
+        self.colorspace_AgX_Base = "AgX"
         self.colorspace_Passthrough = "Passthrough"
         self.colorspace_ACEScg = "ACEScg"
         self.colorspace_ACES20651 = "ACES2065-1"
-        self.colorspace_CIE_XYZ_D65 = "CIE - XYZ - D65"
-        self.colorspace_Linear_BT2020 = "Linear BT.2020"
+        self.colorspace_CIE_XYZ_D65 = "CIE-XYZ-D65"
+        self.colorspace_Linear_BT2020 = "BT.2020-linear"
 
-        self.look_punchy = "Punchy"
+        self.display_colorspaces = [
+            self.colorspace_sRGB_2_2,
+            self.colorspace_sRGB_EOTF,
+            self.colorspace_Display_P3,
+            self.colorspace_BT_1886,
+        ]
+
+        self.image_renderings = [
+            self.colorspace_AgX_Base,
+        ]
+
+        self.image_colorspaces: list[ImageColorspace] = []
+
+        # we do a matrix of image_rendering x look x display_colorspace to define how
+        # much "image" colorspace we need to create
+        for image_rendering in self.image_renderings:
+            for look in [None] + self.looks:
+                for display_colorspace in self.display_colorspaces:
+                    image_colorspace = ImageColorspace(
+                        image_rendering=image_rendering,
+                        display_colorspace=display_colorspace,
+                        look=look,
+                    )
+                    self.image_colorspaces.append(image_colorspace)
 
         if self.use_ocio_v1:
             self.setVersion(1, 0)
@@ -347,131 +371,6 @@ class AgXcConfig(ocio.Config):
                 ]
             )
 
-        # // Views with AgX (+look)
-
-        with build_ocio_colorspace(self.colorspace_AgX_Base_sRGB, self) as colorspace:
-            colorspace.description = "AgX Base Image Encoding for sRGB Displays"
-            colorspace.family = AgXcFamily.views
-            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            if self.use_ocio_v1:
-                colorspace.allocationVars = [0, 1]
-            colorspace.set_transforms_from_reference(
-                [
-                    ocio.ColorSpaceTransform(
-                        src="reference",
-                        dst=self.colorspace_AgX_Base,
-                    )
-                ]
-            )
-
-        with build_ocio_colorspace(self.colorspace_AgX_Base_BT1886, self) as colorspace:
-            colorspace.description = "AgX Base Image Encoding for BT.1886 Displays"
-            colorspace.family = AgXcFamily.views
-            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            if self.use_ocio_v1:
-                colorspace.allocationVars = [0, 1]
-            colorspace.set_transforms_from_reference(
-                [
-                    ocio.ColorSpaceTransform(
-                        src="reference",
-                        dst=self.colorspace_AgX_Base,
-                    ),
-                    ocio.ColorSpaceTransform(
-                        src=self.colorspace_EOTF_2_2,
-                        dst=self.colorspace_EOTF_2_4,
-                    ),
-                ]
-            )
-
-        with build_ocio_colorspace(
-            self.colorspace_AgX_Base_DisplayP3, self
-        ) as colorspace:
-            colorspace.description = "AgX Base Image Encoding for Display P3 Displays"
-            colorspace.family = AgXcFamily.views
-            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            if self.use_ocio_v1:
-                colorspace.allocationVars = [0, 1]
-            colorspace.set_transforms_from_reference(
-                [
-                    ocio.ColorSpaceTransform(
-                        src="reference",
-                        dst=self.colorspace_AgX_Base,
-                    ),
-                    ocio.ColorSpaceTransform(
-                        src=self.colorspace_EOTF_2_2,
-                        dst=self.colorspace_Display_P3,
-                    ),
-                ]
-            )
-
-        with build_ocio_colorspace(
-            self.colorspace_Appearance_PunchysRGB, self
-        ) as colorspace:
-            colorspace.description = (
-                "A punchy and more chroma laden look for sRGB displays"
-            )
-            colorspace.family = AgXcFamily.view_looks
-            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            if self.use_ocio_v1:
-                colorspace.allocationVars = [0, 1]
-            colorspace.set_transforms_from_reference(
-                [
-                    ocio.LookTransform(
-                        src="reference",
-                        dst=self.colorspace_AgX_Base,
-                        looks=self.look_punchy,
-                    )
-                ]
-            )
-
-        with build_ocio_colorspace(
-            self.colorspace_Appearance_Punchy_DisplayP3, self
-        ) as colorspace:
-            colorspace.description = (
-                "A punchy and more chroma laden look for Display P3 displays"
-            )
-            colorspace.family = AgXcFamily.view_looks
-            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            if self.use_ocio_v1:
-                colorspace.allocationVars = [0, 1]
-            colorspace.set_transforms_from_reference(
-                [
-                    ocio.LookTransform(
-                        src="reference",
-                        dst=self.colorspace_AgX_Base,
-                        looks=self.look_punchy,
-                    ),
-                    ocio.ColorSpaceTransform(
-                        src=self.colorspace_EOTF_2_2,
-                        dst=self.colorspace_Display_P3,
-                    ),
-                ]
-            )
-
-        with build_ocio_colorspace(
-            self.colorspace_Appearance_Punchy_BT1886, self
-        ) as colorspace:
-            colorspace.description = (
-                "A punchy and more chroma laden look for BT.1886 displays"
-            )
-            colorspace.family = AgXcFamily.view_looks
-            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            if self.use_ocio_v1:
-                colorspace.allocationVars = [0, 1]
-            colorspace.set_transforms_from_reference(
-                [
-                    ocio.LookTransform(
-                        src="reference",
-                        dst=self.colorspace_AgX_Base,
-                        looks=self.look_punchy,
-                    ),
-                    ocio.ColorSpaceTransform(
-                        src=self.colorspace_EOTF_2_2,
-                        dst=self.colorspace_EOTF_2_4,
-                    ),
-                ]
-            )
-
         # // open-domain colorspaces
 
         with build_ocio_colorspace(self.colorspace_Passthrough, self) as colorspace:
@@ -557,28 +456,39 @@ class AgXcConfig(ocio.Config):
                 ]
             )
 
+        # // closed-domain colorspaces (display-referred)
+
+        for image_colorspace in self.image_colorspaces:
+            with build_ocio_colorspace(image_colorspace.name, self) as colorspace:
+                colorspace.description = image_colorspace.description
+                colorspace.family = AgXcFamily.views
+                colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
+                if self.use_ocio_v1:
+                    colorspace.allocationVars = [0, 1]
+                colorspace.set_transforms_from_reference(image_colorspace.transforms)
+
     def _build_display_view(self):
-        with build_display_views("sRGB", self) as display:
-            display.append(View("AgX Punchy", self.colorspace_Appearance_PunchysRGB))
-            display.append(View("AgX", self.colorspace_AgX_Base_sRGB))
-            display.append(View("Disabled", self.colorspace_Passthrough))
-            display.append(View("Display Native", self.colorspace_sRGB_2_2))
 
-        with build_display_views("Display P3", self) as display:
-            display.append(
-                View("AgX Punchy", self.colorspace_Appearance_Punchy_DisplayP3)
-            )
-            display.append(View("AgX", self.colorspace_AgX_Base_DisplayP3))
-            display.append(View("Disabled", self.colorspace_Passthrough))
-            display.append(View("Display Native", self.colorspace_Display_P3))
+        def get_image_colorspaces_from_display(
+            display_name: str,
+        ) -> list[ImageColorspace]:
+            return [
+                _image_colorspace
+                for _image_colorspace in self.image_colorspaces
+                if _image_colorspace.display_colorspace == display_name
+            ]
 
-        with build_display_views("BT.1886", self) as display:
-            display.append(View("AgX Punchy", self.colorspace_Appearance_Punchy_BT1886))
-            display.append(View("AgX", self.colorspace_AgX_Base_BT1886))
-            display.append(View("Disabled", self.colorspace_Passthrough))
-            display.append(View("Display Native", self.colorspace_BT_1886))
+        for display_colorspace in self.display_colorspaces:
+            image_colorspaces = get_image_colorspaces_from_display(display_colorspace)
+            with build_display_views(display_colorspace, self) as display:
+                for image_colorspace in image_colorspaces:
+                    display.append(
+                        View(image_colorspace.view_name, image_colorspace.name)
+                    )
+                display.append(View("Disabled", self.colorspace_Passthrough))
+                display.append(View("Display Native", display_colorspace))
 
-        self.setActiveDisplays(":".join(["sRGB"]))
+        self.setActiveDisplays(":".join([self.display_colorspaces[0]]))
         self.setActiveViews(":".join([]))
 
     def as_text(self) -> str:
