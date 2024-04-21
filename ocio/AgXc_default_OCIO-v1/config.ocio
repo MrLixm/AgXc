@@ -1,7 +1,7 @@
 # version: 0.2.5
 # name: AgXc
 # variant: default_OCIO-v1
-# built on: 2024-04-21 15:07:17.506237
+# built on: 2024-04-21 15:16:31.342076
 # // visit https://github.com/MrLixm/AgXc
 # // and inspect the python build script for details
 
@@ -301,3 +301,19 @@ colorspaces:
     allocation: lg2
     allocationvars: [-8, 5, 0.00390625]
     from_reference: !<MatrixTransform> {matrix: [0.412390799266, 0.357584339384, 0.180480788402, 0, 0.212639005872, 0.715168678768, 0.072192315361, 0, 0.019330818716, 0.119194779795, 0.95053215225, 0, 0, 0, 0, 1]}
+
+  - !<ColorSpace>
+    name: Linear BT.2020
+    family: Colorspaces
+    equalitygroup: ""
+    bitdepth: 32f
+    description: |
+      The ITU-R BT.2020 colorspace with a linear transfer-function.
+      A very wide gamut on the edge of the spectral locus, with a D65 whitepoint.
+    isdata: false
+    allocation: lg2
+    allocationvars: [-8, 5, 0.00390625]
+    from_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: CIE - XYZ - D65}
+        - !<MatrixTransform> {matrix: [1.716651187971, -0.355670783776, -0.253366281374, 0, -0.666684351832, 1.616481236635, 0.015768545814, 0, 0.017639857445, -0.042770613258, 0.942103121235, 0, 0, 0, 0, 1]}

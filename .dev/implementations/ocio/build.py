@@ -349,6 +349,7 @@ class AgXcConfig(ocio.Config):
         self.colorspace_ACEScg = "ACEScg"
         self.colorspace_ACES20651 = "ACES2065-1"
         self.colorspace_CIE_XYZ_D65 = "CIE - XYZ - D65"
+        self.colorspace_Linear_BT2020 = "Linear BT.2020"
 
         self.look_punchy = "Punchy"
 
@@ -825,6 +826,39 @@ class AgXcConfig(ocio.Config):
             )
             colorspace.set_transforms_from_reference(
                 [
+                    ocio.MatrixTransform(matrix=matrix),
+                ]
+            )
+
+        with build_ocio_colorspace(self.colorspace_Linear_BT2020, self) as colorspace:
+            colorspace.name = self.colorspace_Linear_BT2020
+            colorspace.description = (
+                "The ITU-R BT.2020 colorspace with a linear transfer-function.\n"
+                "A very wide gamut on the edge of the spectral locus, with a D65 whitepoint."
+            )
+            colorspace.family = ColorspaceFamily.colorspaces
+            colorspace.bitdepth = ocio.BIT_DEPTH_F32
+            if self.use_ocio_v1:
+                colorspace.allocation = ocio.ALLOCATION_LG2
+                colorspace.allocationVars = [-8, 5, 0.00390625]
+
+            src_colorspace = "XYZ"
+            dst_colorspace: colour.RGB_Colourspace = colour.RGB_COLOURSPACES[
+                "ITU-R BT.2020"
+            ]
+            dst_colorspace.use_derived_transformation_matrices(True)
+            matrix = matrix_primaries_transform_ocio(
+                source=src_colorspace,
+                target=dst_colorspace,
+                source_whitepoint=whitepoint_d65,
+                target_whitepoint=dst_colorspace.whitepoint,
+            )
+            colorspace.set_transforms_from_reference(
+                [
+                    ocio.ColorSpaceTransform(
+                        src="reference",
+                        dst=self.colorspace_CIE_XYZ_D65,
+                    ),
                     ocio.MatrixTransform(matrix=matrix),
                 ]
             )
