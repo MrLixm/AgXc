@@ -2,6 +2,7 @@
 Mathematical operations to change the shape of a colorspace's gamut while maintaining
 its whitepoint.
 """
+
 import logging
 import math
 
@@ -138,12 +139,12 @@ def get_rotated_gamut(
 def get_reshaped_colorspace_matrix(
     src_gamut: Ndarray,
     src_whitepoint: Ndarray,
-    inset_r: float,
-    inset_g: float,
-    inset_b: float,
-    rotate_r: float,
-    rotate_g: float,
-    rotate_b: float,
+    inset_r: float = 0.0,
+    inset_g: float = 0.0,
+    inset_b: float = 0.0,
+    rotate_r: float = 0.0,
+    rotate_g: float = 0.0,
+    rotate_b: float = 0.0,
 ) -> Ndarray:
     """
     Get the normalised 3x3 primary matrix that allow to convert from the given src

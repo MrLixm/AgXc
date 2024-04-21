@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "AgXc"
-version = "0.11.3"
+version = "0.11.4"
 description = "Fork of Troy.S AgX, a display rendering transform available via OCIO and more."
 authors = ["Liam Collod <monsieurlixm@gmail.com>"]
 readme = "README.md"
@@ -18,6 +18,7 @@ opencolorio = "2.1.*"
 [tool.poetry.group.dev.dependencies]
 black = "*"
 pytest = "*"
+types-nuke = "*"
 
 [build-system]
 requires = ["poetry-core"]
