@@ -1,7 +1,7 @@
 # version: 0.2.5
 # name: AgXc
 # variant: default_OCIO-v2
-# built on: 2024-04-21 15:30:57.630666
+# built on: 2024-04-21 15:37:27.793882
 # // visit https://github.com/MrLixm/AgXc
 # // and inspect the python build script for details
 
@@ -169,7 +169,7 @@ colorspaces:
 
   - !<ColorSpace>
     name: AgX Base sRGB
-    family: Views/AgX sRGB
+    family: Views
     equalitygroup: ""
     bitdepth: unknown
     description: AgX Base Image Encoding for sRGB Displays
@@ -179,7 +179,7 @@ colorspaces:
 
   - !<ColorSpace>
     name: AgX Base BT.1886
-    family: Views/AgX BT.1886
+    family: Views
     equalitygroup: ""
     bitdepth: unknown
     description: AgX Base Image Encoding for BT.1886 Displays
@@ -192,7 +192,7 @@ colorspaces:
 
   - !<ColorSpace>
     name: AgX Base Display P3
-    family: Views/AgX Display P3
+    family: Views
     equalitygroup: ""
     bitdepth: unknown
     description: AgX Base Image Encoding for Display P3 Displays
@@ -205,7 +205,7 @@ colorspaces:
 
   - !<ColorSpace>
     name: Appearance Punchy sRGB
-    family: Views/Appearance
+    family: Views/Looked
     equalitygroup: ""
     bitdepth: unknown
     description: A punchy and more chroma laden look for sRGB displays
@@ -215,7 +215,7 @@ colorspaces:
 
   - !<ColorSpace>
     name: Appearance Punchy Display P3
-    family: Views/Appearance
+    family: Views/Looked
     equalitygroup: ""
     bitdepth: unknown
     description: A punchy and more chroma laden look for Display P3 displays
@@ -228,7 +228,7 @@ colorspaces:
 
   - !<ColorSpace>
     name: Appearance Punchy BT.1886
-    family: Views/Appearance
+    family: Views/Looked
     equalitygroup: ""
     bitdepth: unknown
     description: A punchy and more chroma laden look for BT.1886 displays
