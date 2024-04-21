@@ -209,13 +209,83 @@ class AgXcConfig(ocio.Config):
                 decimals=self.decimal_precision,
             )
 
-        with build_ocio_colorspace(self.colorspace_Linear_sRGB, self) as colorspace:
-            colorspace.description = "Open Domain Linear BT.709 Tristimulus"
-            colorspace.family = AgXcFamily.colorspaces
-            colorspace.bitdepth = ocio.BIT_DEPTH_F32
+        transform_eotf_22 = ocio.ExponentTransform(
+            value=[2.2, 2.2, 2.2, 1],
+            direction=ocio.TRANSFORM_DIR_INVERSE,
+        )
+        transform_eotf_24 = ocio.ExponentTransform(
+            value=[2.4, 2.4, 2.4, 1],
+            direction=ocio.TRANSFORM_DIR_INVERSE,
+        )
+        transform_eotf_srgb = ocio.FileTransform(
+            src=self.lut_sRGB,
+            interpolation=ocio.INTERP_LINEAR,
+        )
+
+        # // utilities
+
+        with build_ocio_colorspace(self.colorspace_EOTF_2_2, self) as colorspace:
+            colorspace.description = "transfer-function: 2.2 Exponent EOTF Encoding"
+            colorspace.family = AgXcFamily.util_curves
+            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
             if self.use_ocio_v1:
-                colorspace.allocation = ocio.ALLOCATION_LG2
-                colorspace.allocationVars = [-10, 7, 0.0056065625]
+                colorspace.allocationVars = [0, 1]
+            colorspace.set_transforms_from_reference([transform_eotf_22])
+
+        with build_ocio_colorspace(self.colorspace_EOTF_2_4, self) as colorspace:
+            colorspace.description = "transfer-function: 2.4 Exponent EOTF Encoding"
+            colorspace.family = AgXcFamily.util_curves
+            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
+            if self.use_ocio_v1:
+                colorspace.allocationVars = [0, 1]
+            colorspace.set_transforms_from_reference([transform_eotf_24])
+
+        # // display-referred colorspaces
+
+        with build_ocio_colorspace(self.colorspace_sRGB_2_2, self) as colorspace:
+            colorspace.description = (
+                "sRGB with transfer-function simplified to the 2.2 power function."
+            )
+            colorspace.family = AgXcFamily.colorspaces
+            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
+            if self.use_ocio_v1:
+                colorspace.allocationVars = [0.0, 1.0]
+            colorspace.set_transforms_from_reference([transform_eotf_22])
+
+        with build_ocio_colorspace(self.colorspace_sRGB_EOTF, self) as colorspace:
+            colorspace.description = 'sRGB IEC 61966-2-1 2.2 Exponent Reference EOTF Display\nThis "colorspace" is required by Redshift.'
+            colorspace.family = AgXcFamily.colorspaces
+            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
+            if self.use_ocio_v1:
+                colorspace.allocationVars = [0.0, 1.0]
+            colorspace.set_transforms_to_reference([transform_eotf_srgb])
+
+        with build_ocio_colorspace(self.colorspace_Display_P3, self) as colorspace:
+            colorspace.description = (
+                "Display P3 2.2 Exponent EOTF Display. For Apple hardware."
+            )
+            colorspace.family = AgXcFamily.colorspaces
+            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
+            if self.use_ocio_v1:
+                colorspace.allocationVars = [0.0, 1.0]
+
+            matrix = get_conversion_matrix("DCI-P3")
+            colorspace.set_transforms_from_reference(
+                [
+                    ocio.MatrixTransform(matrix=matrix),
+                    transform_eotf_22,
+                ]
+            )
+
+        with build_ocio_colorspace(self.colorspace_BT_1886, self) as colorspace:
+            colorspace.description = "BT.1886 2.4 Exponent EOTF Display. Also known as Rec.709 transfer function."
+            colorspace.family = AgXcFamily.colorspaces
+            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
+            if self.use_ocio_v1:
+                colorspace.allocationVars = [0, 1]
+            colorspace.set_transforms_from_reference([transform_eotf_24])
+
+        # // AgX colorspaces
 
         with build_ocio_colorspace(self.colorspace_AgX_Log, self) as colorspace:
             colorspace.description = "AgX Log (Kraken)"
@@ -256,103 +326,6 @@ class AgXcConfig(ocio.Config):
                 ]
             )
 
-        with build_ocio_colorspace(self.colorspace_EOTF_2_2, self) as colorspace:
-            colorspace.description = "transfer-function: 2.2 Exponent EOTF Encoding"
-            colorspace.family = AgXcFamily.util_curves
-            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            if self.use_ocio_v1:
-                colorspace.allocationVars = [0, 1]
-            colorspace.set_transforms_from_reference(
-                [
-                    ocio.ExponentTransform(
-                        value=[2.2, 2.2, 2.2, 1],
-                        direction=ocio.TRANSFORM_DIR_INVERSE,
-                    ),
-                ]
-            )
-
-        with build_ocio_colorspace(self.colorspace_EOTF_2_4, self) as colorspace:
-            colorspace.description = "transfer-function: 2.4 Exponent EOTF Encoding"
-            colorspace.family = AgXcFamily.util_curves
-            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            if self.use_ocio_v1:
-                colorspace.allocationVars = [0, 1]
-            colorspace.set_transforms_from_reference(
-                [
-                    ocio.ExponentTransform(
-                        value=[2.4, 2.4, 2.4, 1],
-                        direction=ocio.TRANSFORM_DIR_INVERSE,
-                    ),
-                ]
-            )
-
-        with build_ocio_colorspace(self.colorspace_sRGB_2_2, self) as colorspace:
-            colorspace.description = (
-                "sRGB with transfer-function simplified to the 2.2 power function."
-            )
-            colorspace.family = AgXcFamily.colorspaces
-            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            if self.use_ocio_v1:
-                colorspace.allocationVars = [0.0, 1.0]
-            colorspace.set_transforms_from_reference(
-                [
-                    ocio.ColorSpaceTransform(
-                        src="reference",
-                        dst=self.colorspace_EOTF_2_2,
-                    ),
-                ]
-            )
-
-        with build_ocio_colorspace(self.colorspace_sRGB_EOTF, self) as colorspace:
-            colorspace.description = 'sRGB IEC 61966-2-1 2.2 Exponent Reference EOTF Display\nThis "colorspace" is required by Redshift.'
-            colorspace.family = AgXcFamily.colorspaces
-            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            if self.use_ocio_v1:
-                colorspace.allocationVars = [0.0, 1.0]
-            colorspace.set_transforms_to_reference(
-                [
-                    ocio.FileTransform(
-                        src=self.lut_sRGB,
-                        interpolation=ocio.INTERP_LINEAR,
-                    ),
-                ]
-            )
-
-        with build_ocio_colorspace(self.colorspace_Display_P3, self) as colorspace:
-            colorspace.description = (
-                "Display P3 2.2 Exponent EOTF Display. For Apple hardware."
-            )
-            colorspace.family = AgXcFamily.colorspaces
-            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            if self.use_ocio_v1:
-                colorspace.allocationVars = [0.0, 1.0]
-
-            matrix = get_conversion_matrix("DCI-P3")
-            colorspace.set_transforms_from_reference(
-                [
-                    ocio.MatrixTransform(matrix=matrix),
-                    ocio.ColorSpaceTransform(
-                        src="reference",
-                        dst=self.colorspace_EOTF_2_2,
-                    ),
-                ]
-            )
-
-        with build_ocio_colorspace(self.colorspace_BT_1886, self) as colorspace:
-            colorspace.description = "BT.1886 2.4 Exponent EOTF Display. Also known as Rec.709 transfer function."
-            colorspace.family = AgXcFamily.colorspaces
-            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            if self.use_ocio_v1:
-                colorspace.allocationVars = [0, 1]
-            colorspace.set_transforms_from_reference(
-                [
-                    ocio.ColorSpaceTransform(
-                        src="reference",
-                        dst=self.colorspace_EOTF_2_4,
-                    )
-                ]
-            )
-
         with build_ocio_colorspace(self.colorspace_AgX_Base, self) as colorspace:
             colorspace.description = (
                 "AgX Base Image Encoding, output is already display encoded."
@@ -373,6 +346,8 @@ class AgXcConfig(ocio.Config):
                     ),
                 ]
             )
+
+        # // Views with AgX (+look)
 
         with build_ocio_colorspace(self.colorspace_AgX_Base_sRGB, self) as colorspace:
             colorspace.description = "AgX Base Image Encoding for sRGB Displays"
@@ -497,6 +472,8 @@ class AgXcConfig(ocio.Config):
                 ]
             )
 
+        # // open-domain colorspaces
+
         with build_ocio_colorspace(self.colorspace_Passthrough, self) as colorspace:
             colorspace.description = (
                 'Passthrough means no transformations. Also know as "raw".'
@@ -507,6 +484,14 @@ class AgXcConfig(ocio.Config):
                 colorspace.allocationVars = [0, 1]
             colorspace.isData = True
             colorspace.equalityGroup = "scalar"
+
+        with build_ocio_colorspace(self.colorspace_Linear_sRGB, self) as colorspace:
+            colorspace.description = "Open Domain Linear BT.709 Tristimulus"
+            colorspace.family = AgXcFamily.colorspaces
+            colorspace.bitdepth = ocio.BIT_DEPTH_F32
+            if self.use_ocio_v1:
+                colorspace.allocation = ocio.ALLOCATION_LG2
+                colorspace.allocationVars = [-10, 7, 0.0056065625]
 
         with build_ocio_colorspace(self.colorspace_ACEScg, self) as colorspace:
             colorspace.description = "ACES rendering space for CGI. Also known as AP1."

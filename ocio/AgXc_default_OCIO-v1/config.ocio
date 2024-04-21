@@ -1,7 +1,7 @@
 # version: 0.2.5
 # name: AgXc
 # variant: default_OCIO-v1
-# built on: 2024-04-21 15:37:27.752416
+# built on: 2024-04-21 18:14:04.059483
 # // visit https://github.com/MrLixm/AgXc
 # // and inspect the python build script for details
 
@@ -65,32 +65,6 @@ looks:
 
 colorspaces:
   - !<ColorSpace>
-    name: Linear sRGB
-    family: Colorspaces
-    equalitygroup: ""
-    bitdepth: 32f
-    description: Open Domain Linear BT.709 Tristimulus
-    isdata: false
-    allocation: lg2
-    allocationvars: [-10, 7, 0.005606562]
-
-  - !<ColorSpace>
-    name: AgX Log (Kraken)
-    family: AgX
-    equalitygroup: ""
-    bitdepth: 32f
-    description: AgX Log (Kraken)
-    isdata: false
-    allocation: uniform
-    allocationvars: [-12.47393, 4.026069]
-    from_reference: !<GroupTransform>
-      children:
-        - !<CDLTransform> {power: [2, 2, 2]}
-        - !<CDLTransform> {power: [0.500001, 0.500001, 0.500001]}
-        - !<MatrixTransform> {matrix: [0.842398929049531, 0.0784301651048638, 0.0791709058456044, 0, 0.0423989290495314, 0.878430165104864, 0.0791709058456048, 0, 0.0423989290495314, 0.0784301651048639, 0.879170905845605, 0, 0, 0, 0, 1]}
-        - !<AllocationTransform> {allocation: lg2, vars: [-12.47393, 4.026069]}
-
-  - !<ColorSpace>
     name: 2.2 EOTF Encoding
     family: Utilities/Curves
     equalitygroup: ""
@@ -121,7 +95,7 @@ colorspaces:
     isdata: false
     allocation: uniform
     allocationvars: [0, 1]
-    from_reference: !<ColorSpaceTransform> {src: reference, dst: 2.2 EOTF Encoding}
+    from_reference: !<ExponentTransform> {value: [2.2, 2.2, 2.2, 1], direction: inverse}
 
   - !<ColorSpace>
     name: sRGB - EOTF
@@ -148,7 +122,7 @@ colorspaces:
     from_reference: !<GroupTransform>
       children:
         - !<MatrixTransform> {matrix: [0.868579739716, 0.128919138461, 0.002501121823, 0, 0.034540410254, 0.961811386362, 0.003648203384, 0, 0.016771429041, 0.071039997787, 0.912188573172, 0, 0, 0, 0, 1]}
-        - !<ColorSpaceTransform> {src: reference, dst: 2.2 EOTF Encoding}
+        - !<ExponentTransform> {value: [2.2, 2.2, 2.2, 1], direction: inverse}
 
   - !<ColorSpace>
     name: BT.1886
@@ -159,7 +133,23 @@ colorspaces:
     isdata: false
     allocation: uniform
     allocationvars: [0, 1]
-    from_reference: !<ColorSpaceTransform> {src: reference, dst: 2.4 EOTF Encoding}
+    from_reference: !<ExponentTransform> {value: [2.4, 2.4, 2.4, 1], direction: inverse}
+
+  - !<ColorSpace>
+    name: AgX Log (Kraken)
+    family: AgX
+    equalitygroup: ""
+    bitdepth: 32f
+    description: AgX Log (Kraken)
+    isdata: false
+    allocation: uniform
+    allocationvars: [-12.47393, 4.026069]
+    from_reference: !<GroupTransform>
+      children:
+        - !<CDLTransform> {power: [2, 2, 2]}
+        - !<CDLTransform> {power: [0.500001, 0.500001, 0.500001]}
+        - !<MatrixTransform> {matrix: [0.842398929049531, 0.0784301651048638, 0.0791709058456044, 0, 0.0423989290495314, 0.878430165104864, 0.0791709058456048, 0, 0.0423989290495314, 0.0784301651048639, 0.879170905845605, 0, 0, 0, 0, 1]}
+        - !<AllocationTransform> {allocation: lg2, vars: [-12.47393, 4.026069]}
 
   - !<ColorSpace>
     name: AgX Base
@@ -262,6 +252,16 @@ colorspaces:
     isdata: true
     allocation: uniform
     allocationvars: [0, 1]
+
+  - !<ColorSpace>
+    name: Linear sRGB
+    family: Colorspaces
+    equalitygroup: ""
+    bitdepth: 32f
+    description: Open Domain Linear BT.709 Tristimulus
+    isdata: false
+    allocation: lg2
+    allocationvars: [-10, 7, 0.005606562]
 
   - !<ColorSpace>
     name: ACEScg
