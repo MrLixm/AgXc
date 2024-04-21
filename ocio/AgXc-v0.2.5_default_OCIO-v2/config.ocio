@@ -1,19 +1,18 @@
 # version: 0.2.5
 # name: AgXc
-# variant: default_OCIO-v1
-# built on: 2024-04-21 14:19:21.316481
+# variant: default_OCIO-v2
+# built on: 2024-04-21 14:19:21.357371
 # // visit https://github.com/MrLixm/AgXc
 # // and inspect the python build script for details
 
-ocio_profile_version: 1
+ocio_profile_version: 2
 
-name: AgXc
-
-environment: {}
-
+environment:
+  {}
 search_path: LUTs
 strictparsing: true
 luma: [0.2126, 0.7152, 0.0722]
+name: AgXc
 description: |
   AgX image rendering initially designed by Troy Sobotka.
   Adapted by Liam Collod with full permissions from Troy Sobotka.
@@ -34,6 +33,9 @@ roles:
   reference: Linear sRGB
   scene_linear: Linear sRGB
   texture_paint: sRGB - 2.2
+
+file_rules:
+  - !<Rule> {name: Default, colorspace: default}
 
 displays:
   sRGB:
@@ -83,7 +85,7 @@ colorspaces:
     isdata: false
     allocation: uniform
     allocationvars: [-12.47393, 4.026069]
-    from_reference: !<GroupTransform>
+    from_scene_reference: !<GroupTransform>
       children:
         - !<CDLTransform> {power: [2, 2, 2]}
         - !<CDLTransform> {power: [0.500001, 0.500001, 0.500001]}
@@ -99,7 +101,7 @@ colorspaces:
     isdata: false
     allocation: uniform
     allocationvars: [0, 1]
-    from_reference: !<ExponentTransform> {value: [2.2, 2.2, 2.2, 1], direction: inverse}
+    from_scene_reference: !<ExponentTransform> {value: 2.2, direction: inverse}
 
   - !<ColorSpace>
     name: 2.4 EOTF Encoding
@@ -110,7 +112,7 @@ colorspaces:
     isdata: false
     allocation: uniform
     allocationvars: [0, 1]
-    from_reference: !<ExponentTransform> {value: [2.4, 2.4, 2.4, 1], direction: inverse}
+    from_scene_reference: !<ExponentTransform> {value: 2.4, direction: inverse}
 
   - !<ColorSpace>
     name: sRGB - 2.2
@@ -121,7 +123,7 @@ colorspaces:
     isdata: false
     allocation: uniform
     allocationvars: [0, 1]
-    from_reference: !<ColorSpaceTransform> {src: reference, dst: 2.2 EOTF Encoding}
+    from_scene_reference: !<ColorSpaceTransform> {src: reference, dst: 2.2 EOTF Encoding}
 
   - !<ColorSpace>
     name: sRGB - EOTF
@@ -134,7 +136,7 @@ colorspaces:
     isdata: false
     allocation: uniform
     allocationvars: [0, 1]
-    to_reference: !<FileTransform> {src: sRGB-EOTF-inverse.spi1d, interpolation: linear}
+    to_scene_reference: !<FileTransform> {src: sRGB-EOTF-inverse.spi1d, interpolation: linear}
 
   - !<ColorSpace>
     name: Display P3
@@ -145,7 +147,7 @@ colorspaces:
     isdata: false
     allocation: uniform
     allocationvars: [0, 1]
-    from_reference: !<GroupTransform>
+    from_scene_reference: !<GroupTransform>
       children:
         - !<MatrixTransform> {matrix: [0.868579739716, 0.128919138461, 0.002501121823, 0, 0.034540410254, 0.961811386362, 0.003648203384, 0, 0.016771429041, 0.071039997787, 0.912188573172, 0, 0, 0, 0, 1]}
         - !<ColorSpaceTransform> {src: reference, dst: 2.2 EOTF Encoding}
@@ -159,7 +161,7 @@ colorspaces:
     isdata: false
     allocation: uniform
     allocationvars: [0, 1]
-    from_reference: !<ColorSpaceTransform> {src: reference, dst: 2.4 EOTF Encoding}
+    from_scene_reference: !<ColorSpaceTransform> {src: reference, dst: 2.4 EOTF Encoding}
 
   - !<ColorSpace>
     name: AgX Base
@@ -170,7 +172,7 @@ colorspaces:
     isdata: false
     allocation: uniform
     allocationvars: [0, 1]
-    from_reference: !<GroupTransform>
+    from_scene_reference: !<GroupTransform>
       children:
         - !<ColorSpaceTransform> {src: reference, dst: AgX Log (Kraken)}
         - !<FileTransform> {src: AgX_Default_Contrast.spi1d, interpolation: linear}
@@ -184,7 +186,7 @@ colorspaces:
     isdata: false
     allocation: uniform
     allocationvars: [0, 1]
-    from_reference: !<ColorSpaceTransform> {src: reference, dst: AgX Base}
+    from_scene_reference: !<ColorSpaceTransform> {src: reference, dst: AgX Base}
 
   - !<ColorSpace>
     name: AgX Base BT.1886
@@ -195,7 +197,7 @@ colorspaces:
     isdata: false
     allocation: uniform
     allocationvars: [0, 1]
-    from_reference: !<GroupTransform>
+    from_scene_reference: !<GroupTransform>
       children:
         - !<ColorSpaceTransform> {src: reference, dst: AgX Base}
         - !<ColorSpaceTransform> {src: 2.2 EOTF Encoding, dst: 2.4 EOTF Encoding}
@@ -209,7 +211,7 @@ colorspaces:
     isdata: false
     allocation: uniform
     allocationvars: [0, 1]
-    from_reference: !<GroupTransform>
+    from_scene_reference: !<GroupTransform>
       children:
         - !<ColorSpaceTransform> {src: reference, dst: AgX Base}
         - !<ColorSpaceTransform> {src: 2.2 EOTF Encoding, dst: Display P3}
@@ -223,7 +225,7 @@ colorspaces:
     isdata: false
     allocation: uniform
     allocationvars: [0, 1]
-    from_reference: !<LookTransform> {src: reference, dst: AgX Base, looks: Punchy}
+    from_scene_reference: !<LookTransform> {src: reference, dst: AgX Base, looks: Punchy}
 
   - !<ColorSpace>
     name: Appearance Punchy Display P3
@@ -234,7 +236,7 @@ colorspaces:
     isdata: false
     allocation: uniform
     allocationvars: [0, 1]
-    from_reference: !<GroupTransform>
+    from_scene_reference: !<GroupTransform>
       children:
         - !<LookTransform> {src: reference, dst: AgX Base, looks: Punchy}
         - !<ColorSpaceTransform> {src: 2.2 EOTF Encoding, dst: Display P3}
@@ -248,7 +250,7 @@ colorspaces:
     isdata: false
     allocation: uniform
     allocationvars: [0, 1]
-    from_reference: !<GroupTransform>
+    from_scene_reference: !<GroupTransform>
       children:
         - !<LookTransform> {src: reference, dst: AgX Base, looks: Punchy}
         - !<ColorSpaceTransform> {src: 2.2 EOTF Encoding, dst: 2.4 EOTF Encoding}
@@ -272,7 +274,7 @@ colorspaces:
     isdata: false
     allocation: lg2
     allocationvars: [-8, 5, 0.00390625]
-    from_reference: !<GroupTransform>
+    from_scene_reference: !<GroupTransform>
       children:
         - !<ColorSpaceTransform> {src: reference, dst: CIE - XYZ - D65}
         - !<MatrixTransform> {matrix: [1.660585326491, -0.315295560826, -0.241509327608, 0, -0.659926063224, 1.608391469566, 0.017298594705, 0, 0.009002569138, -0.00356687639, 0.913643312763, 0, 0, 0, 0, 1]}
@@ -286,7 +288,7 @@ colorspaces:
     isdata: false
     allocation: lg2
     allocationvars: [-8, 5, 0.00390625]
-    from_reference: !<GroupTransform>
+    from_scene_reference: !<GroupTransform>
       children:
         - !<ColorSpaceTransform> {src: reference, dst: CIE - XYZ - D65}
         - !<MatrixTransform> {matrix: [1.063495491494, 0.006408910197, -0.015806786618, 0, -0.492074127924, 1.368223407473, 0.091337088314, 0, -0.002816461639, 0.004644171057, 0.916418574594, 0, 0, 0, 0, 1]}
@@ -300,4 +302,4 @@ colorspaces:
     isdata: false
     allocation: lg2
     allocationvars: [-8, 5, 0.00390625]
-    from_reference: !<MatrixTransform> {matrix: [0.412390799266, 0.357584339384, 0.180480788402, 0, 0.212639005872, 0.715168678768, 0.072192315361, 0, 0.019330818716, 0.119194779795, 0.95053215225, 0, 0, 0, 0, 1]}
+    from_scene_reference: !<MatrixTransform> {matrix: [0.412390799266, 0.357584339384, 0.180480788402, 0, 0.212639005872, 0.715168678768, 0.072192315361, 0, 0.019330818716, 0.119194779795, 0.95053215225, 0, 0, 0, 0, 1]}

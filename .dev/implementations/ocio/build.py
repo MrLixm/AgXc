@@ -294,29 +294,36 @@ Config definition
 """
 
 
+class AgXcConfigVariant(enum.Enum):
+    default_ociov1 = "default_OCIO-v1"
+    default_ociov2 = "default_OCIO-v2"
+
+    @classmethod
+    def get_all(cls):
+        return [
+            cls.default_ociov1,
+            cls.default_ociov2,
+        ]
+
+
 class AgXcConfig(ocio.Config):
     version = "0.2.5"
     lut_dir_name = "LUTs"
 
-    def __init__(self):
+    def __init__(self, variant: AgXcConfigVariant):
         super().__init__()
+
+        self._variant = variant
 
         self.header: list[str] = [
             f"# version: {self.version}",
             f"# name: AgXc",
+            f"# variant: {variant.value}",
             f"# built on: {datetime.datetime.now()}",
             "# // visit https://github.com/MrLixm/AgXc",
             "# // and inspect the python build script for details",
         ]
-        self.overrides: list[str] = [
-            "",
-            # XXX: this is ignored by OCIO on v1 API but we want to keep it
-            "name: AgXc",
-            "",
-            # XXX: this is ignored by OCIO on v1 API but we want to keep it but
-            #   as some apps spit out warning without
-            "environment: {}",
-        ]
+        self.overrides: list[str] = []
         self.lut_sRGB = "sRGB-EOTF-inverse.spi1d"
         self.lut_AgX = "AgX_Default_Contrast.spi1d"
         self._luts: dict[str, colour.LUT1D] = {}
@@ -343,8 +350,24 @@ class AgXcConfig(ocio.Config):
 
         self.look_punchy = "Punchy"
 
-        self.setVersion(1, 0)
-        self.setName("AgXc")  # XXX: name is not a OCIO v1 feature
+        use_ocio_v1 = self._variant is self._variant.default_ociov1
+
+        if use_ocio_v1:
+            self.setVersion(1, 0)
+            self.overrides = [
+                "",
+                # XXX: this is ignored by OCIO on v1 API but we want to keep it
+                "name: AgXc",
+                "",
+                # XXX: this is ignored by OCIO on v1 API but we want to keep it but
+                #   as some apps spit out warning without
+                "environment: {}",
+            ]
+
+        else:
+            self.setVersion(2, 0)
+            self.setName("AgXc")
+
         self.setDescription(
             "AgX image rendering initially designed by Troy Sobotka.\n"
             "Adapted by Liam Collod with full permissions from Troy Sobotka.\n"
@@ -855,9 +878,8 @@ class AgXcConfig(ocio.Config):
         file_path.write_text(content)
 
     def save_luts_to_disk(self, directory):
-        target_dir = directory / self.lut_dir_name
         for lut_filename, lut in self._luts.items():
-            target_path = target_dir / lut_filename
+            target_path = directory / lut_filename
             LOGGER.debug(f"writing {target_path}")
             colour.write_LUT(lut, str(target_path))
 
@@ -900,17 +922,30 @@ def main():
             f"Target directory must exist on disk. Got <{target_dir}>."
         )
 
-    LOGGER.info(f"generating ocio config")
-    ocio_config = AgXcConfig()
-    ocio_config.validate()
+    variants = AgXcConfigVariant.get_all()
+    for index, variant in enumerate(variants):
+        LOGGER.info(
+            f"{index+1}/{len(variants)} generating ocio config variant {variant}"
+        )
+        ocio_config = AgXcConfig(variant=variant)
+        ocio_config.validate()
 
-    ocio_config_path = target_dir / "AgXc_v0.2.5-OCIO_v1-default" / "config.ocio"
-    LOGGER.info(f"writing ocio config to <{ocio_config_path}>")
-    ocio_config.save_to_disk(ocio_config_path)
+        ocio_config_path = target_dir / f"AgXc-v{AgXcConfig.version}_{variant.value}"
+        if not ocio_config_path.exists():
+            LOGGER.debug(f"mkdir({ocio_config_path})")
+            ocio_config_path.mkdir()
 
-    luts_path = ocio_config_path.parent
-    LOGGER.info(f"writing luts to <{luts_path}>")
-    ocio_config.save_luts_to_disk(luts_path)
+        ocio_config_path = ocio_config_path / "config.ocio"
+        LOGGER.info(f"writing ocio config to <{ocio_config_path}>")
+        ocio_config.save_to_disk(ocio_config_path)
+
+        luts_path = ocio_config_path.parent / ocio_config.lut_dir_name
+        if not luts_path.exists():
+            LOGGER.debug(f"mkdir({luts_path})")
+            luts_path.mkdir()
+
+        LOGGER.info(f"writing luts to <{luts_path}>")
+        ocio_config.save_luts_to_disk(luts_path)
 
 
 if __name__ == "__main__":
