@@ -1,17 +1,26 @@
-# version: 0.2.4
+# version: 0.2.5
+# name: AgXc
+# built on: 2024-04-21 09:56:13.703600
+# // visit https://github.com/MrLixm/AgXc
+# // and inspect the python build script for details
+
+ocio_profile_version: 1
 
 name: AgXc
 
-ocio_profile_version: 1
-description: |
-  AgX config by Troy Sobotka. Modified by Liam Collod with full permissions from
-  Troy Sobotka. CAT used is <Bradford>.
+environment: {}
 
-environment: { }
 search_path: LUTs
 strictparsing: true
+luma: [0.2126, 0.7152, 0.0722]
+description: |
+  AgX image rendering initially designed by Troy Sobotka.
+  Adapted by Liam Collod with full permissions from Troy Sobotka.
+  C.A.T. used for whitepoint conversions is <Bradford>.
 
 roles:
+  aces_interchange: ACES2065-1
+  cie_xyz_d65_interchange: CIE - XYZ - D65
   color_picking: sRGB - 2.2
   color_timing: sRGB - 2.2
   compositing_log: AgX Log (Kraken)
@@ -24,36 +33,33 @@ roles:
   reference: Linear sRGB
   scene_linear: Linear sRGB
   texture_paint: sRGB - 2.2
-  aces_interchange: ACES2065-1
-  cie_xyz_d65_interchange: CIE - XYZ - D65
 
 displays:
   sRGB:
-    - !<View> { name: AgX Punchy, colorspace: Appearance Punchy sRGB }
-    - !<View> { name: AgX, colorspace: AgX Base sRGB }
-    - !<View> { name: Disabled, colorspace: Passthrough }
-    - !<View> { name: Display Native, colorspace: sRGB - 2.2 }
+    - !<View> {name: AgX Punchy, colorspace: Appearance Punchy sRGB}
+    - !<View> {name: AgX, colorspace: AgX Base sRGB}
+    - !<View> {name: Disabled, colorspace: Passthrough}
+    - !<View> {name: Display Native, colorspace: sRGB - 2.2}
   Display P3:
-    - !<View> { name: AgX Punchy, colorspace: Appearance Punchy Display P3 }
-    - !<View> { name: AgX, colorspace: AgX Base Display P3 }
-    - !<View> { name: Disabled, colorspace: Passthrough }
-    - !<View> { name: Display Native, colorspace: Display P3 }
+    - !<View> {name: AgX Punchy, colorspace: Appearance Punchy Display P3}
+    - !<View> {name: AgX, colorspace: AgX Base Display P3}
+    - !<View> {name: Disabled, colorspace: Passthrough}
+    - !<View> {name: Display Native, colorspace: Display P3}
   BT.1886:
-    - !<View> { name: AgX Punchy, colorspace: Appearance Punchy BT.1886 }
-    - !<View> { name: AgX, colorspace: AgX Base BT.1886 }
-    - !<View> { name: Disabled, colorspace: Passthrough }
-    - !<View> { name: Display Native, colorspace: BT.1886 }
+    - !<View> {name: AgX Punchy, colorspace: Appearance Punchy BT.1886}
+    - !<View> {name: AgX, colorspace: AgX Base BT.1886}
+    - !<View> {name: Disabled, colorspace: Passthrough}
+    - !<View> {name: Display Native, colorspace: BT.1886}
 
-active_displays: [ sRGB ]
-active_views: [ ]
+active_displays: [sRGB]
+active_views: []
 
 looks:
-
   - !<Look>
     name: Punchy
     process_space: AgX Base
     description: A punchy and more chroma laden look.
-    transform: !<CDLTransform> { power: [ 1.3, 1.3, 1.3 ], sat: 1.2 }
+    transform: !<CDLTransform> {power: [1.3, 1.3, 1.3], sat: 1.2}
 
 
 colorspaces:
@@ -65,7 +71,7 @@ colorspaces:
     description: Open Domain Linear BT.709 Tristimulus
     isdata: false
     allocation: lg2
-    allocationvars: [ -10, 7, 0.0056065625 ]
+    allocationvars: [-10, 7, 0.005606562]
 
   - !<ColorSpace>
     name: AgX Log (Kraken)
@@ -75,15 +81,13 @@ colorspaces:
     description: AgX Log (Kraken)
     isdata: false
     allocation: uniform
-    allocationvars: [ -12.47393, 4.026069 ]
+    allocationvars: [-12.47393, 4.026069]
     from_reference: !<GroupTransform>
       children:
-        # the 2 CLDTransform are a hack to clamp negatives
-        # 2nd one has an offset else considered no-op and no clamp applied
-        - !<CDLTransform> { power: [ 2.0, 2.0, 2.0 ] }
-        - !<CDLTransform> { power: [ 0.500001, 0.500001, 0.500001 ] }
-        - !<MatrixTransform> { matrix: [ 0.842479062253094, 0.0784335999999992, 0.0792237451477643, 0, 0.0423282422610123, 0.878468636469772, 0.0791661274605434, 0, 0.0423756549057051, 0.0784336, 0.879142973793104, 0, 0, 0, 0, 1 ] }
-        - !<AllocationTransform> { allocation: lg2, vars: [ -12.47393, 4.026069 ] }
+        - !<CDLTransform> {power: [2, 2, 2]}
+        - !<CDLTransform> {power: [0.500001, 0.500001, 0.500001]}
+        - !<MatrixTransform> {matrix: [0.842398929049531, 0.0784301651048638, 0.0791709058456044, 0, 0.0423989290495314, 0.878430165104864, 0.0791709058456048, 0, 0.0423989290495314, 0.0784301651048639, 0.879170905845605, 0, 0, 0, 0, 1]}
+        - !<AllocationTransform> {allocation: lg2, vars: [-12.47393, 4.026069]}
 
   - !<ColorSpace>
     name: 2.2 EOTF Encoding
@@ -93,8 +97,8 @@ colorspaces:
     description: "transfer-function: 2.2 Exponent EOTF Encoding"
     isdata: false
     allocation: uniform
-    allocationvars: [ 0, 1 ]
-    from_reference: !<ExponentTransform> { value: [ 2.2, 2.2, 2.2, 1 ], direction: inverse }
+    allocationvars: [0, 1]
+    from_reference: !<ExponentTransform> {value: [2.2, 2.2, 2.2, 1], direction: inverse}
 
   - !<ColorSpace>
     name: 2.4 EOTF Encoding
@@ -104,8 +108,8 @@ colorspaces:
     description: "transfer-function: 2.4 Exponent EOTF Encoding"
     isdata: false
     allocation: uniform
-    allocationvars: [ 0, 1 ]
-    from_reference: !<ExponentTransform> { value: [ 2.4, 2.4, 2.4, 1 ], direction: inverse }
+    allocationvars: [0, 1]
+    from_reference: !<ExponentTransform> {value: [2.4, 2.4, 2.4, 1], direction: inverse}
 
   - !<ColorSpace>
     name: sRGB - 2.2
@@ -115,8 +119,8 @@ colorspaces:
     description: sRGB with transfer-function simplified to the 2.2 power function.
     isdata: false
     allocation: uniform
-    allocationvars: [ 0.0, 1.0 ]
-    from_reference: !<ColorSpaceTransform> { src: reference, dst: 2.2 EOTF Encoding }
+    allocationvars: [0, 1]
+    from_reference: !<ColorSpaceTransform> {src: reference, dst: 2.2 EOTF Encoding}
 
   - !<ColorSpace>
     name: sRGB - EOTF
@@ -128,8 +132,8 @@ colorspaces:
       This "colorspace" is required by Redshift.
     isdata: false
     allocation: uniform
-    allocationvars: [ 0.0, 1.0 ]
-    to_reference: !<FileTransform> { src: sRGB-EOTF-inverse.spi1d, interpolation: linear }
+    allocationvars: [0, 1]
+    to_reference: !<FileTransform> {src: sRGB-EOTF-inverse.spi1d, interpolation: linear}
 
   - !<ColorSpace>
     name: Display P3
@@ -139,11 +143,11 @@ colorspaces:
     description: Display P3 2.2 Exponent EOTF Display. For Apple hardware.
     isdata: false
     allocation: uniform
-    allocationvars: [ 0.0, 1.0 ]
+    allocationvars: [0, 1]
     from_reference: !<GroupTransform>
       children:
-        - !<MatrixTransform> { matrix: [ 0.868579739716, 0.128919138461, 0.002501121823, 0.0, 0.034540410254, 0.961811386362, 0.003648203384, 0.0, 0.016771429041, 0.071039997787, 0.912188573172, 0.0, 0.0, 0.0, 0.0, 1.0 ] }
-        - !<ColorSpaceTransform> { src: reference, dst: 2.2 EOTF Encoding }
+        - !<MatrixTransform> {matrix: [0.868579739716, 0.128919138461, 0.002501121823, 0, 0.034540410254, 0.961811386362, 0.003648203384, 0, 0.016771429041, 0.071039997787, 0.912188573172, 0, 0, 0, 0, 1]}
+        - !<ColorSpaceTransform> {src: reference, dst: 2.2 EOTF Encoding}
 
   - !<ColorSpace>
     name: BT.1886
@@ -153,8 +157,8 @@ colorspaces:
     description: BT.1886 2.4 Exponent EOTF Display. Also known as Rec.709 transfer function.
     isdata: false
     allocation: uniform
-    allocationvars: [ 0, 1 ]
-    from_reference: !<ColorSpaceTransform> { src: reference, dst: 2.4 EOTF Encoding }
+    allocationvars: [0, 1]
+    from_reference: !<ColorSpaceTransform> {src: reference, dst: 2.4 EOTF Encoding}
 
   - !<ColorSpace>
     name: AgX Base
@@ -164,11 +168,11 @@ colorspaces:
     description: AgX Base Image Encoding, output is already display encoded.
     isdata: false
     allocation: uniform
-    allocationvars: [ 0, 1 ]
+    allocationvars: [0, 1]
     from_reference: !<GroupTransform>
       children:
-        - !<ColorSpaceTransform> { src: reference, dst: AgX Log (Kraken) }
-        - !<FileTransform> { src: AgX_Default_Contrast.spi1d, interpolation: linear }
+        - !<ColorSpaceTransform> {src: reference, dst: AgX Log (Kraken)}
+        - !<FileTransform> {src: AgX_Default_Contrast.spi1d, interpolation: linear}
 
   - !<ColorSpace>
     name: AgX Base sRGB
@@ -178,10 +182,8 @@ colorspaces:
     description: AgX Base Image Encoding for sRGB Displays
     isdata: false
     allocation: uniform
-    allocationvars: [ 0, 1 ]
-    from_reference: !<GroupTransform>
-      children:
-        - !<ColorSpaceTransform> { src: reference, dst: AgX Base }
+    allocationvars: [0, 1]
+    from_reference: !<ColorSpaceTransform> {src: reference, dst: AgX Base}
 
   - !<ColorSpace>
     name: AgX Base BT.1886
@@ -191,11 +193,11 @@ colorspaces:
     description: AgX Base Image Encoding for BT.1886 Displays
     isdata: false
     allocation: uniform
-    allocationvars: [ 0, 1 ]
+    allocationvars: [0, 1]
     from_reference: !<GroupTransform>
       children:
-        - !<ColorSpaceTransform> { src: reference, dst: AgX Base }
-        - !<ColorSpaceTransform> { src: 2.2 EOTF Encoding, dst: 2.4 EOTF Encoding }
+        - !<ColorSpaceTransform> {src: reference, dst: AgX Base}
+        - !<ColorSpaceTransform> {src: 2.2 EOTF Encoding, dst: 2.4 EOTF Encoding}
 
   - !<ColorSpace>
     name: AgX Base Display P3
@@ -205,11 +207,11 @@ colorspaces:
     description: AgX Base Image Encoding for Display P3 Displays
     isdata: false
     allocation: uniform
-    allocationvars: [ 0, 1 ]
+    allocationvars: [0, 1]
     from_reference: !<GroupTransform>
       children:
-        - !<ColorSpaceTransform> { src: reference, dst: AgX Base }
-        - !<ColorSpaceTransform> { src: 2.2 EOTF Encoding, dst: Display P3 }
+        - !<ColorSpaceTransform> {src: reference, dst: AgX Base}
+        - !<ColorSpaceTransform> {src: 2.2 EOTF Encoding, dst: Display P3}
 
   - !<ColorSpace>
     name: Appearance Punchy sRGB
@@ -219,8 +221,8 @@ colorspaces:
     description: A punchy and more chroma laden look for sRGB displays
     isdata: false
     allocation: uniform
-    allocationvars: [ 0, 1 ]
-    from_reference: !<LookTransform> { src: reference, dst: AgX Base, looks: Punchy }
+    allocationvars: [0, 1]
+    from_reference: !<LookTransform> {src: reference, dst: AgX Base, looks: Punchy}
 
   - !<ColorSpace>
     name: Appearance Punchy Display P3
@@ -230,11 +232,11 @@ colorspaces:
     description: A punchy and more chroma laden look for Display P3 displays
     isdata: false
     allocation: uniform
-    allocationvars: [ 0, 1 ]
+    allocationvars: [0, 1]
     from_reference: !<GroupTransform>
       children:
-        - !<LookTransform> { src: reference, dst: AgX Base, looks: Punchy }
-        - !<ColorSpaceTransform> { src: 2.2 EOTF Encoding, dst: Display P3 }
+        - !<LookTransform> {src: reference, dst: AgX Base, looks: Punchy}
+        - !<ColorSpaceTransform> {src: 2.2 EOTF Encoding, dst: Display P3}
 
   - !<ColorSpace>
     name: Appearance Punchy BT.1886
@@ -244,11 +246,11 @@ colorspaces:
     description: A punchy and more chroma laden look for BT.1886 displays
     isdata: false
     allocation: uniform
-    allocationvars: [ 0, 1 ]
+    allocationvars: [0, 1]
     from_reference: !<GroupTransform>
       children:
-        - !<LookTransform> { src: reference, dst: AgX Base, looks: Punchy }
-        - !<ColorSpaceTransform> { src: 2.2 EOTF Encoding, dst: 2.4 EOTF Encoding }
+        - !<LookTransform> {src: reference, dst: AgX Base, looks: Punchy}
+        - !<ColorSpaceTransform> {src: 2.2 EOTF Encoding, dst: 2.4 EOTF Encoding}
 
   - !<ColorSpace>
     name: Passthrough
@@ -258,7 +260,7 @@ colorspaces:
     description: Passthrough means no transformations. Also know as "raw".
     isdata: true
     allocation: uniform
-    allocationvars: [ 0, 1 ]
+    allocationvars: [0, 1]
 
   - !<ColorSpace>
     name: ACEScg
@@ -268,11 +270,11 @@ colorspaces:
     description: ACES rendering space for CGI. Also known as AP1.
     isdata: false
     allocation: lg2
-    allocationvars: [ -8, 5, 0.00390625 ]
+    allocationvars: [-8, 5, 0.00390625]
     from_reference: !<GroupTransform>
       children:
-        - !<ColorSpaceTransform> { src: reference, dst: CIE - XYZ - D65 }
-        - !<MatrixTransform> { matrix: [ 1.660585326491, -0.315295560826, -0.241509327608, 0.0, -0.659926063224, 1.608391469566, 0.017298594705, 0.0, 0.009002569138, -0.00356687639, 0.913643312763, 0.0, 0.0, 0.0, 0.0, 1.0 ] }
+        - !<ColorSpaceTransform> {src: reference, dst: CIE - XYZ - D65}
+        - !<MatrixTransform> {matrix: [1.660585326491, -0.315295560826, -0.241509327608, 0, -0.659926063224, 1.608391469566, 0.017298594705, 0, 0.009002569138, -0.00356687639, 0.913643312763, 0, 0, 0, 0, 1]}
 
   - !<ColorSpace>
     name: ACES2065-1
@@ -282,17 +284,19 @@ colorspaces:
     description: ACES Interchange format. Also known as AP0.
     isdata: false
     allocation: lg2
-    allocationvars: [ -8, 5, 0.00390625 ]
+    allocationvars: [-8, 5, 0.00390625]
     from_reference: !<GroupTransform>
       children:
-        - !<ColorSpaceTransform> { src: reference, dst: CIE - XYZ - D65 }
-        - !<MatrixTransform> { matrix: [ 1.063495491494, 0.006408910197, -0.015806786618, 0.0, -0.492074127924, 1.368223407473, 0.091337088314, 0.0, -0.002816461639, 0.004644171057, 0.916418574594, 0.0, 0.0, 0.0, 0.0, 1.0 ] }
+        - !<ColorSpaceTransform> {src: reference, dst: CIE - XYZ - D65}
+        - !<MatrixTransform> {matrix: [1.063495491494, 0.006408910197, -0.015806786618, 0, -0.492074127924, 1.368223407473, 0.091337088314, 0, -0.002816461639, 0.004644171057, 0.916418574594, 0, 0, 0, 0, 1]}
 
   - !<ColorSpace>
     name: CIE - XYZ - D65
     family: Colorspaces
+    equalitygroup: ""
     bitdepth: 32f
     description: CIE 1931 Colorspace with a D65 whitepoint.
+    isdata: false
     allocation: lg2
-    allocationvars: [ -8, 5, 0.00390625 ]
-    from_reference: !<MatrixTransform> { matrix: [ 0.412390799266, 0.357584339384, 0.180480788402, 0.0, 0.212639005872, 0.715168678768, 0.072192315361, 0.0, 0.019330818716, 0.119194779795, 0.95053215225, 0.0, 0.0, 0.0, 0.0, 1.0 ] }
+    allocationvars: [-8, 5, 0.00390625]
+    from_reference: !<MatrixTransform> {matrix: [0.412390799266, 0.357584339384, 0.180480788402, 0, 0.212639005872, 0.715168678768, 0.072192315361, 0, 0.019330818716, 0.119194779795, 0.95053215225, 0, 0, 0, 0, 1]}

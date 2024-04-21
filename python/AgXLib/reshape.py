@@ -2,6 +2,7 @@
 Mathematical operations to change the shape of a colorspace's gamut while maintaining
 its whitepoint.
 """
+
 import logging
 import math
 

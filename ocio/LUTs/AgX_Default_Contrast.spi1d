@@ -4100,3 +4100,8 @@ Components 1
  0.9999292
  1.0000000
 }
+# AgX 1D tonescale with following configuration
+#    min_EV = -10.0
+#    max_EV = +6.5
+#    general_contrast = 2.0
+#    limits_contrast = (3.0, 3.25)
