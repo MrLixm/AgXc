@@ -315,6 +315,8 @@ class AgXcConfig(ocio.Config):
 
         self._variant = variant
 
+        self.use_ocio_v1 = self._variant is self._variant.default_ociov1
+
         self.header: list[str] = [
             f"# version: {self.version}",
             f"# name: AgXc",
@@ -350,9 +352,7 @@ class AgXcConfig(ocio.Config):
 
         self.look_punchy = "Punchy"
 
-        use_ocio_v1 = self._variant is self._variant.default_ociov1
-
-        if use_ocio_v1:
+        if self.use_ocio_v1:
             self.setVersion(1, 0)
             self.overrides = [
                 "",
@@ -466,12 +466,22 @@ class AgXcConfig(ocio.Config):
                 inset_b=0.2,
             )
             inset_matrix = matrix_format_ocio(numpy.linalg.inv(inset_matrix))
-            colorspace.set_transforms_from_reference(
-                [
-                    # the 2 CLDTransform are a hack to clamp negatives
-                    # 2nd one has a minuscule offset else considered no-op and no clamp applied
+
+            if self.use_ocio_v1:
+                # hack to clamp negatives only, in OCIOv1
+                clamp_transform = [
                     ocio.CDLTransform(power=[2.0, 2.0, 2.0]),
+                    # 2nd one has a minuscule offset else considered no-op and no clamp applied
                     ocio.CDLTransform(power=[0.500001, 0.500001, 0.500001]),
+                ]
+            else:
+                clamp_transform = [
+                    ocio.RangeTransform(minInValue=0.0, minOutValue=0.0),
+                ]
+
+            colorspace.set_transforms_from_reference(
+                clamp_transform
+                + [
                     ocio.MatrixTransform(matrix=inset_matrix),
                     ocio.AllocationTransform(
                         allocation=ocio.ALLOCATION_LG2,

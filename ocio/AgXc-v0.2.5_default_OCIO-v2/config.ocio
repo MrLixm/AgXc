@@ -1,7 +1,7 @@
 # version: 0.2.5
 # name: AgXc
 # variant: default_OCIO-v2
-# built on: 2024-04-21 14:19:21.357371
+# built on: 2024-04-21 14:38:35.052388
 # // visit https://github.com/MrLixm/AgXc
 # // and inspect the python build script for details
 
@@ -87,8 +87,7 @@ colorspaces:
     allocationvars: [-12.47393, 4.026069]
     from_scene_reference: !<GroupTransform>
       children:
-        - !<CDLTransform> {power: [2, 2, 2]}
-        - !<CDLTransform> {power: [0.500001, 0.500001, 0.500001]}
+        - !<RangeTransform> {min_in_value: 0, min_out_value: 0}
         - !<MatrixTransform> {matrix: [0.842398929049531, 0.0784301651048638, 0.0791709058456044, 0, 0.0423989290495314, 0.878430165104864, 0.0791709058456048, 0, 0.0423989290495314, 0.0784301651048639, 0.879170905845605, 0, 0, 0, 0, 1]}
         - !<AllocationTransform> {allocation: lg2, vars: [-12.47393, 4.026069]}
 
