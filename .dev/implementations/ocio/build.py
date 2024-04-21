@@ -904,7 +904,7 @@ def main():
     ocio_config = AgXcConfig()
     ocio_config.validate()
 
-    ocio_config_path = target_dir / "config.ocio"
+    ocio_config_path = target_dir / "AgXc_v0.2.5-OCIO_v1-default" / "config.ocio"
     LOGGER.info(f"writing ocio config to <{ocio_config_path}>")
     ocio_config.save_to_disk(ocio_config_path)
 

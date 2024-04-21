@@ -10,7 +10,7 @@ def main():
     this_dir = Path(".").resolve()
     repo_dir = this_dir.parent.parent.parent.parent.parent
 
-    agx_config_path = repo_dir / "ocio" / "config.ocio"
+    agx_config_path = repo_dir / "ocio" / "AgXc_v0.2.5-OCIO_v1-default" / "config.ocio"
     assert agx_config_path.exists(), agx_config_path
     assert agx_config_path.is_absolute(), agx_config_path
 
