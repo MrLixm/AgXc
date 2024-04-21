@@ -18,6 +18,7 @@ opencolorio = "2.1.*"
 [tool.poetry.group.dev.dependencies]
 black = "*"
 pytest = "*"
+types-nuke = "*"
 
 [build-system]
 requires = ["poetry-core"]
