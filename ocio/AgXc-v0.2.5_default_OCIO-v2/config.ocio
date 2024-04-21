@@ -1,7 +1,7 @@
 # version: 0.2.5
 # name: AgXc
 # variant: default_OCIO-v2
-# built on: 2024-04-21 14:38:35.052388
+# built on: 2024-04-21 15:02:11.981999
 # // visit https://github.com/MrLixm/AgXc
 # // and inspect the python build script for details
 
@@ -73,8 +73,7 @@ colorspaces:
     bitdepth: 32f
     description: Open Domain Linear BT.709 Tristimulus
     isdata: false
-    allocation: lg2
-    allocationvars: [-10, 7, 0.005606562]
+    allocation: uniform
 
   - !<ColorSpace>
     name: AgX Log (Kraken)
@@ -84,7 +83,6 @@ colorspaces:
     description: AgX Log (Kraken)
     isdata: false
     allocation: uniform
-    allocationvars: [-12.47393, 4.026069]
     from_scene_reference: !<GroupTransform>
       children:
         - !<RangeTransform> {min_in_value: 0, min_out_value: 0}
@@ -99,7 +97,6 @@ colorspaces:
     description: "transfer-function: 2.2 Exponent EOTF Encoding"
     isdata: false
     allocation: uniform
-    allocationvars: [0, 1]
     from_scene_reference: !<ExponentTransform> {value: 2.2, direction: inverse}
 
   - !<ColorSpace>
@@ -110,7 +107,6 @@ colorspaces:
     description: "transfer-function: 2.4 Exponent EOTF Encoding"
     isdata: false
     allocation: uniform
-    allocationvars: [0, 1]
     from_scene_reference: !<ExponentTransform> {value: 2.4, direction: inverse}
 
   - !<ColorSpace>
@@ -121,7 +117,6 @@ colorspaces:
     description: sRGB with transfer-function simplified to the 2.2 power function.
     isdata: false
     allocation: uniform
-    allocationvars: [0, 1]
     from_scene_reference: !<ColorSpaceTransform> {src: reference, dst: 2.2 EOTF Encoding}
 
   - !<ColorSpace>
@@ -134,7 +129,6 @@ colorspaces:
       This "colorspace" is required by Redshift.
     isdata: false
     allocation: uniform
-    allocationvars: [0, 1]
     to_scene_reference: !<FileTransform> {src: sRGB-EOTF-inverse.spi1d, interpolation: linear}
 
   - !<ColorSpace>
@@ -145,7 +139,6 @@ colorspaces:
     description: Display P3 2.2 Exponent EOTF Display. For Apple hardware.
     isdata: false
     allocation: uniform
-    allocationvars: [0, 1]
     from_scene_reference: !<GroupTransform>
       children:
         - !<MatrixTransform> {matrix: [0.868579739716, 0.128919138461, 0.002501121823, 0, 0.034540410254, 0.961811386362, 0.003648203384, 0, 0.016771429041, 0.071039997787, 0.912188573172, 0, 0, 0, 0, 1]}
@@ -159,7 +152,6 @@ colorspaces:
     description: BT.1886 2.4 Exponent EOTF Display. Also known as Rec.709 transfer function.
     isdata: false
     allocation: uniform
-    allocationvars: [0, 1]
     from_scene_reference: !<ColorSpaceTransform> {src: reference, dst: 2.4 EOTF Encoding}
 
   - !<ColorSpace>
@@ -170,7 +162,6 @@ colorspaces:
     description: AgX Base Image Encoding, output is already display encoded.
     isdata: false
     allocation: uniform
-    allocationvars: [0, 1]
     from_scene_reference: !<GroupTransform>
       children:
         - !<ColorSpaceTransform> {src: reference, dst: AgX Log (Kraken)}
@@ -184,7 +175,6 @@ colorspaces:
     description: AgX Base Image Encoding for sRGB Displays
     isdata: false
     allocation: uniform
-    allocationvars: [0, 1]
     from_scene_reference: !<ColorSpaceTransform> {src: reference, dst: AgX Base}
 
   - !<ColorSpace>
@@ -195,7 +185,6 @@ colorspaces:
     description: AgX Base Image Encoding for BT.1886 Displays
     isdata: false
     allocation: uniform
-    allocationvars: [0, 1]
     from_scene_reference: !<GroupTransform>
       children:
         - !<ColorSpaceTransform> {src: reference, dst: AgX Base}
@@ -209,7 +198,6 @@ colorspaces:
     description: AgX Base Image Encoding for Display P3 Displays
     isdata: false
     allocation: uniform
-    allocationvars: [0, 1]
     from_scene_reference: !<GroupTransform>
       children:
         - !<ColorSpaceTransform> {src: reference, dst: AgX Base}
@@ -223,7 +211,6 @@ colorspaces:
     description: A punchy and more chroma laden look for sRGB displays
     isdata: false
     allocation: uniform
-    allocationvars: [0, 1]
     from_scene_reference: !<LookTransform> {src: reference, dst: AgX Base, looks: Punchy}
 
   - !<ColorSpace>
@@ -234,7 +221,6 @@ colorspaces:
     description: A punchy and more chroma laden look for Display P3 displays
     isdata: false
     allocation: uniform
-    allocationvars: [0, 1]
     from_scene_reference: !<GroupTransform>
       children:
         - !<LookTransform> {src: reference, dst: AgX Base, looks: Punchy}
@@ -248,7 +234,6 @@ colorspaces:
     description: A punchy and more chroma laden look for BT.1886 displays
     isdata: false
     allocation: uniform
-    allocationvars: [0, 1]
     from_scene_reference: !<GroupTransform>
       children:
         - !<LookTransform> {src: reference, dst: AgX Base, looks: Punchy}
@@ -262,7 +247,6 @@ colorspaces:
     description: Passthrough means no transformations. Also know as "raw".
     isdata: true
     allocation: uniform
-    allocationvars: [0, 1]
 
   - !<ColorSpace>
     name: ACEScg
@@ -271,8 +255,7 @@ colorspaces:
     bitdepth: 32f
     description: ACES rendering space for CGI. Also known as AP1.
     isdata: false
-    allocation: lg2
-    allocationvars: [-8, 5, 0.00390625]
+    allocation: uniform
     from_scene_reference: !<GroupTransform>
       children:
         - !<ColorSpaceTransform> {src: reference, dst: CIE - XYZ - D65}
@@ -285,8 +268,7 @@ colorspaces:
     bitdepth: 32f
     description: ACES Interchange format. Also known as AP0.
     isdata: false
-    allocation: lg2
-    allocationvars: [-8, 5, 0.00390625]
+    allocation: uniform
     from_scene_reference: !<GroupTransform>
       children:
         - !<ColorSpaceTransform> {src: reference, dst: CIE - XYZ - D65}
@@ -299,6 +281,5 @@ colorspaces:
     bitdepth: 32f
     description: CIE 1931 Colorspace with a D65 whitepoint.
     isdata: false
-    allocation: lg2
-    allocationvars: [-8, 5, 0.00390625]
+    allocation: uniform
     from_scene_reference: !<MatrixTransform> {matrix: [0.412390799266, 0.357584339384, 0.180480788402, 0, 0.212639005872, 0.715168678768, 0.072192315361, 0, 0.019330818716, 0.119194779795, 0.95053215225, 0, 0, 0, 0, 1]}

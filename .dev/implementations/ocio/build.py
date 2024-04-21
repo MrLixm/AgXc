@@ -447,16 +447,17 @@ class AgXcConfig(ocio.Config):
             colorspace.description = "Open Domain Linear BT.709 Tristimulus"
             colorspace.family = ColorspaceFamily.colorspaces
             colorspace.bitdepth = ocio.BIT_DEPTH_F32
-            colorspace.allocation = ocio.ALLOCATION_LG2
-            colorspace.allocationVars = [-10, 7, 0.0056065625]
+            if self.use_ocio_v1:
+                colorspace.allocation = ocio.ALLOCATION_LG2
+                colorspace.allocationVars = [-10, 7, 0.0056065625]
 
         with build_ocio_colorspace(self.colorspace_AgX_Log, self) as colorspace:
             colorspace.name = self.colorspace_AgX_Log
             colorspace.description = "AgX Log (Kraken)"
             colorspace.family = ColorspaceFamily.agx
             colorspace.bitdepth = ocio.BIT_DEPTH_F32
-            colorspace.allocation = ocio.ALLOCATION_UNIFORM
-            colorspace.allocationVars = [-12.47393, 4.026069]
+            if self.use_ocio_v1:
+                colorspace.allocationVars = [-12.47393, 4.026069]
 
             inset_matrix = AgXLib.get_reshaped_colorspace_matrix(
                 src_gamut=srgb_colorspace.primaries,
@@ -495,8 +496,8 @@ class AgXcConfig(ocio.Config):
             colorspace.description = "transfer-function: 2.2 Exponent EOTF Encoding"
             colorspace.family = ColorspaceFamily.util_curves
             colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            colorspace.allocation = ocio.ALLOCATION_UNIFORM
-            colorspace.allocationVars = [0, 1]
+            if self.use_ocio_v1:
+                colorspace.allocationVars = [0, 1]
             colorspace.set_transforms_from_reference(
                 [
                     ocio.ExponentTransform(
@@ -511,8 +512,8 @@ class AgXcConfig(ocio.Config):
             colorspace.description = "transfer-function: 2.4 Exponent EOTF Encoding"
             colorspace.family = ColorspaceFamily.util_curves
             colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            colorspace.allocation = ocio.ALLOCATION_UNIFORM
-            colorspace.allocationVars = [0, 1]
+            if self.use_ocio_v1:
+                colorspace.allocationVars = [0, 1]
             colorspace.set_transforms_from_reference(
                 [
                     ocio.ExponentTransform(
@@ -529,8 +530,8 @@ class AgXcConfig(ocio.Config):
             )
             colorspace.family = ColorspaceFamily.colorspaces
             colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            colorspace.allocation = ocio.ALLOCATION_UNIFORM
-            colorspace.allocationVars = [0.0, 1.0]
+            if self.use_ocio_v1:
+                colorspace.allocationVars = [0.0, 1.0]
             colorspace.set_transforms_from_reference(
                 [
                     ocio.ColorSpaceTransform(
@@ -545,8 +546,8 @@ class AgXcConfig(ocio.Config):
             colorspace.description = 'sRGB IEC 61966-2-1 2.2 Exponent Reference EOTF Display\nThis "colorspace" is required by Redshift.'
             colorspace.family = ColorspaceFamily.colorspaces
             colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            colorspace.allocation = ocio.ALLOCATION_UNIFORM
-            colorspace.allocationVars = [0.0, 1.0]
+            if self.use_ocio_v1:
+                colorspace.allocationVars = [0.0, 1.0]
             colorspace.set_transforms_to_reference(
                 [
                     ocio.FileTransform(
@@ -563,8 +564,8 @@ class AgXcConfig(ocio.Config):
             )
             colorspace.family = ColorspaceFamily.colorspaces
             colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            colorspace.allocation = ocio.ALLOCATION_UNIFORM
-            colorspace.allocationVars = [0.0, 1.0]
+            if self.use_ocio_v1:
+                colorspace.allocationVars = [0.0, 1.0]
 
             src_colorspace: colour.RGB_Colourspace = colour.RGB_COLOURSPACES["sRGB"]
             src_colorspace.use_derived_transformation_matrices(True)
@@ -591,8 +592,8 @@ class AgXcConfig(ocio.Config):
             colorspace.description = "BT.1886 2.4 Exponent EOTF Display. Also known as Rec.709 transfer function."
             colorspace.family = ColorspaceFamily.colorspaces
             colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            colorspace.allocation = ocio.ALLOCATION_UNIFORM
-            colorspace.allocationVars = [0, 1]
+            if self.use_ocio_v1:
+                colorspace.allocationVars = [0, 1]
             colorspace.set_transforms_from_reference(
                 [
                     ocio.ColorSpaceTransform(
@@ -609,8 +610,8 @@ class AgXcConfig(ocio.Config):
             )
             colorspace.family = ColorspaceFamily.agx
             colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            colorspace.allocation = ocio.ALLOCATION_UNIFORM
-            colorspace.allocationVars = [0, 1]
+            if self.use_ocio_v1:
+                colorspace.allocationVars = [0, 1]
             colorspace.set_transforms_from_reference(
                 [
                     ocio.ColorSpaceTransform(
@@ -629,8 +630,8 @@ class AgXcConfig(ocio.Config):
             colorspace.description = "AgX Base Image Encoding for sRGB Displays"
             colorspace.family = ColorspaceFamily.view_agx_srgb
             colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            colorspace.allocation = ocio.ALLOCATION_UNIFORM
-            colorspace.allocationVars = [0, 1]
+            if self.use_ocio_v1:
+                colorspace.allocationVars = [0, 1]
             colorspace.set_transforms_from_reference(
                 [
                     ocio.ColorSpaceTransform(
@@ -645,8 +646,8 @@ class AgXcConfig(ocio.Config):
             colorspace.description = "AgX Base Image Encoding for BT.1886 Displays"
             colorspace.family = ColorspaceFamily.view_agx_bt1886
             colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            colorspace.allocation = ocio.ALLOCATION_UNIFORM
-            colorspace.allocationVars = [0, 1]
+            if self.use_ocio_v1:
+                colorspace.allocationVars = [0, 1]
             colorspace.set_transforms_from_reference(
                 [
                     ocio.ColorSpaceTransform(
@@ -667,8 +668,8 @@ class AgXcConfig(ocio.Config):
             colorspace.description = "AgX Base Image Encoding for Display P3 Displays"
             colorspace.family = ColorspaceFamily.view_agx_displayp3
             colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            colorspace.allocation = ocio.ALLOCATION_UNIFORM
-            colorspace.allocationVars = [0, 1]
+            if self.use_ocio_v1:
+                colorspace.allocationVars = [0, 1]
             colorspace.set_transforms_from_reference(
                 [
                     ocio.ColorSpaceTransform(
@@ -691,8 +692,8 @@ class AgXcConfig(ocio.Config):
             )
             colorspace.family = ColorspaceFamily.view_appareance
             colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            colorspace.allocation = ocio.ALLOCATION_UNIFORM
-            colorspace.allocationVars = [0, 1]
+            if self.use_ocio_v1:
+                colorspace.allocationVars = [0, 1]
             colorspace.set_transforms_from_reference(
                 [
                     ocio.LookTransform(
@@ -712,8 +713,8 @@ class AgXcConfig(ocio.Config):
             )
             colorspace.family = ColorspaceFamily.view_appareance
             colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            colorspace.allocation = ocio.ALLOCATION_UNIFORM
-            colorspace.allocationVars = [0, 1]
+            if self.use_ocio_v1:
+                colorspace.allocationVars = [0, 1]
             colorspace.set_transforms_from_reference(
                 [
                     ocio.LookTransform(
@@ -737,8 +738,8 @@ class AgXcConfig(ocio.Config):
             )
             colorspace.family = ColorspaceFamily.view_appareance
             colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            colorspace.allocation = ocio.ALLOCATION_UNIFORM
-            colorspace.allocationVars = [0, 1]
+            if self.use_ocio_v1:
+                colorspace.allocationVars = [0, 1]
             colorspace.set_transforms_from_reference(
                 [
                     ocio.LookTransform(
@@ -760,8 +761,8 @@ class AgXcConfig(ocio.Config):
             )
             colorspace.family = ColorspaceFamily.colorspaces
             colorspace.bitdepth = ocio.BIT_DEPTH_F32
-            colorspace.allocation = ocio.ALLOCATION_UNIFORM
-            colorspace.allocationVars = [0, 1]
+            if self.use_ocio_v1:
+                colorspace.allocationVars = [0, 1]
             colorspace.isData = True
             colorspace.equalityGroup = "scalar"
 
@@ -770,8 +771,9 @@ class AgXcConfig(ocio.Config):
             colorspace.description = "ACES rendering space for CGI. Also known as AP1."
             colorspace.family = ColorspaceFamily.colorspaces
             colorspace.bitdepth = ocio.BIT_DEPTH_F32
-            colorspace.allocation = ocio.ALLOCATION_LG2
-            colorspace.allocationVars = [-8, 5, 0.00390625]
+            if self.use_ocio_v1:
+                colorspace.allocation = ocio.ALLOCATION_LG2
+                colorspace.allocationVars = [-8, 5, 0.00390625]
 
             src_colorspace = "XYZ"
             dst_colorspace: colour.RGB_Colourspace = colour.RGB_COLOURSPACES["ACEScg"]
@@ -797,8 +799,9 @@ class AgXcConfig(ocio.Config):
             colorspace.description = "ACES Interchange format. Also known as AP0."
             colorspace.family = ColorspaceFamily.colorspaces
             colorspace.bitdepth = ocio.BIT_DEPTH_F32
-            colorspace.allocation = ocio.ALLOCATION_LG2
-            colorspace.allocationVars = [-8, 5, 0.00390625]
+            if self.use_ocio_v1:
+                colorspace.allocation = ocio.ALLOCATION_LG2
+                colorspace.allocationVars = [-8, 5, 0.00390625]
 
             src_colorspace = "XYZ"
             dst_colorspace: colour.RGB_Colourspace = colour.RGB_COLOURSPACES[
@@ -826,8 +829,9 @@ class AgXcConfig(ocio.Config):
             colorspace.description = "CIE 1931 Colorspace with a D65 whitepoint."
             colorspace.family = ColorspaceFamily.colorspaces
             colorspace.bitdepth = ocio.BIT_DEPTH_F32
-            colorspace.allocation = ocio.ALLOCATION_LG2
-            colorspace.allocationVars = [-8, 5, 0.00390625]
+            if self.use_ocio_v1:
+                colorspace.allocation = ocio.ALLOCATION_LG2
+                colorspace.allocationVars = [-8, 5, 0.00390625]
 
             src_colorspace: colour.RGB_Colourspace = colour.RGB_COLOURSPACES["sRGB"]
             src_colorspace.use_derived_transformation_matrices(True)
