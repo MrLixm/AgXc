@@ -1,7 +1,7 @@
 # version: 0.2.5
 # name: AgXc
 # variant: default_OCIO-v2
-# built on: 2024-04-21 15:16:31.436822
+# built on: 2024-04-21 15:30:57.630666
 # // visit https://github.com/MrLixm/AgXc
 # // and inspect the python build script for details
 
@@ -256,10 +256,7 @@ colorspaces:
     description: ACES rendering space for CGI. Also known as AP1.
     isdata: false
     allocation: uniform
-    from_scene_reference: !<GroupTransform>
-      children:
-        - !<ColorSpaceTransform> {src: reference, dst: CIE - XYZ - D65}
-        - !<MatrixTransform> {matrix: [1.660585326491, -0.315295560826, -0.241509327608, 0, -0.659926063224, 1.608391469566, 0.017298594705, 0, 0.009002569138, -0.00356687639, 0.913643312763, 0, 0, 0, 0, 1]}
+    from_scene_reference: !<MatrixTransform> {matrix: [0.613097402401, 0.339523146184, 0.047379451415, 0, 0.07019372247, 0.916353879057, 0.013452398473, 0, 0.020615592882, 0.109569772938, 0.86981463418, 0, 0, 0, 0, 1]}
 
   - !<ColorSpace>
     name: ACES2065-1
@@ -269,10 +266,7 @@ colorspaces:
     description: ACES Interchange format. Also known as AP0.
     isdata: false
     allocation: uniform
-    from_scene_reference: !<GroupTransform>
-      children:
-        - !<ColorSpaceTransform> {src: reference, dst: CIE - XYZ - D65}
-        - !<MatrixTransform> {matrix: [1.063495491494, 0.006408910197, -0.015806786618, 0, -0.492074127924, 1.368223407473, 0.091337088314, 0, -0.002816461639, 0.004644171057, 0.916418574594, 0, 0, 0, 0, 1]}
+    from_scene_reference: !<MatrixTransform> {matrix: [0.439632981919, 0.382988698152, 0.177378319929, 0, 0.089776442959, 0.813439428749, 0.096784128292, 0, 0.017541170383, 0.111546553302, 0.870912276314, 0, 0, 0, 0, 1]}
 
   - !<ColorSpace>
     name: CIE - XYZ - D65
@@ -294,7 +288,4 @@ colorspaces:
       A very wide gamut on the edge of the spectral locus, with a D65 whitepoint.
     isdata: false
     allocation: uniform
-    from_scene_reference: !<GroupTransform>
-      children:
-        - !<ColorSpaceTransform> {src: reference, dst: CIE - XYZ - D65}
-        - !<MatrixTransform> {matrix: [1.716651187971, -0.355670783776, -0.253366281374, 0, -0.666684351832, 1.616481236635, 0.015768545814, 0, 0.017639857445, -0.042770613258, 0.942103121235, 0, 0, 0, 0, 1]}
+    from_scene_reference: !<MatrixTransform> {matrix: [0.627403895935, 0.329283038378, 0.043313065687, 0, 0.069097289358, 0.919540395075, 0.011362315566, 0, 0.016391438875, 0.088013307877, 0.895595253248, 0, 0, 0, 0, 1]}

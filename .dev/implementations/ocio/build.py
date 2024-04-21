@@ -438,10 +438,27 @@ class AgXcConfig(ocio.Config):
         self.addLook(look)
 
     def _build_colorspaces(self):
-
-        srgb_colorspace = colour.RGB_COLOURSPACES["sRGB"]
+        colorspaces = colour.RGB_COLOURSPACES
         illum_1931 = colour.CCS_ILLUMINANTS["CIE 1931 2 Degree Standard Observer"]
         whitepoint_d65 = illum_1931["D65"]
+
+        reference_colorspace: colour.RGB_Colourspace = colorspaces["sRGB"]
+        reference_colorspace.use_derived_transformation_matrices(True)
+
+        def get_conversion_matrix(colorspace_name: str) -> list[float]:
+            if colorspace_name == "XYZ":
+                _src = "XYZ"
+                _src_whitepoint = whitepoint_d65
+            else:
+                _src: colour.RGB_Colourspace = colorspaces[colorspace_name]
+                _src.use_derived_transformation_matrices(True)
+                _src_whitepoint = _src.whitepoint
+            return matrix_primaries_transform_ocio(
+                source=reference_colorspace,
+                target=_src,
+                source_whitepoint=reference_colorspace.whitepoint,
+                target_whitepoint=_src_whitepoint,
+            )
 
         with build_ocio_colorspace(self.colorspace_Linear_sRGB, self) as colorspace:
             colorspace.description = "Open Domain Linear BT.709 Tristimulus"
@@ -459,8 +476,8 @@ class AgXcConfig(ocio.Config):
                 colorspace.allocationVars = [-12.47393, 4.026069]
 
             inset_matrix = AgXLib.get_reshaped_colorspace_matrix(
-                src_gamut=srgb_colorspace.primaries,
-                src_whitepoint=whitepoint_d65,
+                src_gamut=reference_colorspace.primaries,
+                src_whitepoint=reference_colorspace.whitepoint,
                 inset_r=0.2,
                 inset_g=0.2,
                 inset_b=0.2,
@@ -561,16 +578,7 @@ class AgXcConfig(ocio.Config):
             if self.use_ocio_v1:
                 colorspace.allocationVars = [0.0, 1.0]
 
-            src_colorspace: colour.RGB_Colourspace = colour.RGB_COLOURSPACES["sRGB"]
-            src_colorspace.use_derived_transformation_matrices(True)
-            dst_colorspace: colour.RGB_Colourspace = colour.RGB_COLOURSPACES["DCI-P3"]
-            dst_colorspace.use_derived_transformation_matrices(True)
-            matrix = matrix_primaries_transform_ocio(
-                source=src_colorspace,
-                target=dst_colorspace,
-                source_whitepoint=src_colorspace.whitepoint,
-                target_whitepoint=dst_colorspace.whitepoint,
-            )
+            matrix = get_conversion_matrix("DCI-P3")
             colorspace.set_transforms_from_reference(
                 [
                     ocio.MatrixTransform(matrix=matrix),
@@ -759,21 +767,9 @@ class AgXcConfig(ocio.Config):
                 colorspace.allocation = ocio.ALLOCATION_LG2
                 colorspace.allocationVars = [-8, 5, 0.00390625]
 
-            src_colorspace = "XYZ"
-            dst_colorspace: colour.RGB_Colourspace = colour.RGB_COLOURSPACES["ACEScg"]
-            dst_colorspace.use_derived_transformation_matrices(True)
-            matrix = matrix_primaries_transform_ocio(
-                source=src_colorspace,
-                target=dst_colorspace,
-                source_whitepoint=whitepoint_d65,
-                target_whitepoint=dst_colorspace.whitepoint,
-            )
+            matrix = get_conversion_matrix("ACEScg")
             colorspace.set_transforms_from_reference(
                 [
-                    ocio.ColorSpaceTransform(
-                        src="reference",
-                        dst=self.colorspace_CIE_XYZ_D65,
-                    ),
                     ocio.MatrixTransform(matrix=matrix),
                 ]
             )
@@ -786,23 +782,9 @@ class AgXcConfig(ocio.Config):
                 colorspace.allocation = ocio.ALLOCATION_LG2
                 colorspace.allocationVars = [-8, 5, 0.00390625]
 
-            src_colorspace = "XYZ"
-            dst_colorspace: colour.RGB_Colourspace = colour.RGB_COLOURSPACES[
-                "ACES2065-1"
-            ]
-            dst_colorspace.use_derived_transformation_matrices(True)
-            matrix = matrix_primaries_transform_ocio(
-                source=src_colorspace,
-                target=dst_colorspace,
-                source_whitepoint=whitepoint_d65,
-                target_whitepoint=dst_colorspace.whitepoint,
-            )
+            matrix = get_conversion_matrix("ACES2065-1")
             colorspace.set_transforms_from_reference(
                 [
-                    ocio.ColorSpaceTransform(
-                        src="reference",
-                        dst=self.colorspace_CIE_XYZ_D65,
-                    ),
                     ocio.MatrixTransform(matrix=matrix),
                 ]
             )
@@ -815,15 +797,7 @@ class AgXcConfig(ocio.Config):
                 colorspace.allocation = ocio.ALLOCATION_LG2
                 colorspace.allocationVars = [-8, 5, 0.00390625]
 
-            src_colorspace: colour.RGB_Colourspace = colour.RGB_COLOURSPACES["sRGB"]
-            src_colorspace.use_derived_transformation_matrices(True)
-            dst_colorspace = "XYZ"
-            matrix = matrix_primaries_transform_ocio(
-                source=src_colorspace,
-                target=dst_colorspace,
-                source_whitepoint=src_colorspace.whitepoint,
-                target_whitepoint=whitepoint_d65,
-            )
+            matrix = get_conversion_matrix("XYZ")
             colorspace.set_transforms_from_reference(
                 [
                     ocio.MatrixTransform(matrix=matrix),
@@ -842,23 +816,9 @@ class AgXcConfig(ocio.Config):
                 colorspace.allocation = ocio.ALLOCATION_LG2
                 colorspace.allocationVars = [-8, 5, 0.00390625]
 
-            src_colorspace = "XYZ"
-            dst_colorspace: colour.RGB_Colourspace = colour.RGB_COLOURSPACES[
-                "ITU-R BT.2020"
-            ]
-            dst_colorspace.use_derived_transformation_matrices(True)
-            matrix = matrix_primaries_transform_ocio(
-                source=src_colorspace,
-                target=dst_colorspace,
-                source_whitepoint=whitepoint_d65,
-                target_whitepoint=dst_colorspace.whitepoint,
-            )
+            matrix = get_conversion_matrix("ITU-R BT.2020")
             colorspace.set_transforms_from_reference(
                 [
-                    ocio.ColorSpaceTransform(
-                        src="reference",
-                        dst=self.colorspace_CIE_XYZ_D65,
-                    ),
                     ocio.MatrixTransform(matrix=matrix),
                 ]
             )
