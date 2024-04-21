@@ -1,6 +1,6 @@
 # OCIO
 
-The goal was making [the proof-of-concept OCIO config](https://github.com/sobotka/AgX) 
+The initial goal was making [the Troy proof-of-concept OCIO config](https://github.com/sobotka/AgX) 
 more "production-ready" because, well that's a damn solid concept.
 
 ![AgXc comparison with ACES and filmic using a cg render](../doc/images/dragon.full.combined.jpg)
@@ -35,8 +35,8 @@ This was tested on :
 
 I do not guarantee it is perfectly working on OCIO v1 GPU engine.
 
-## Future
+## Development
 
-This config was initially a proof of concept (of an already proof of concept yes) and I planned to write it in Python with OCIO binding but never had the time.
-
-You can open issues if you feel like something can be improved.
+The config is now generated from a python script that can be found in 
+[../.dev/implementations/ocio](../.dev/implementations/ocio). Refer to that
+build script for details about why and how the config is built that way.

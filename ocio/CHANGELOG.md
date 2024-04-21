@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 None
 
+## [0.2.5]
+
+### Changed
+
+- The config is now built with a python script instead of manually edited on place.
+
 ## [0.2.4]
 
 ### Added

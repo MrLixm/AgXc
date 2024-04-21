@@ -872,11 +872,10 @@ def get_cli(argv=None):
     parser.add_argument(
         "--target_dir",
         type=str,
-        help="filesystem path to an existing directory",
+        help="Filesystem path to an existing directory to export the ocio config in.",
     )
     parser.add_argument(
-        "--debug",
-        action="store_true",
+        "--debug", action="store_true", help="Display DEBUG logging message."
     )
 
     parsed = parser.parse_args(argv)
