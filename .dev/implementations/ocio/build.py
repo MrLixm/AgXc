@@ -1,11 +1,9 @@
 import argparse
-import dataclasses
 import datetime
 import enum
 import logging
 import sys
 from pathlib import Path
-from typing import Optional
 
 import PyOpenColorIO as ocio
 import colour
@@ -84,26 +82,26 @@ class AgXcConfig(ocio.Config):
             self.look_punchy,
         ]
 
-        self.colorspace_Linear_sRGB = "sRGB-linear"
-        self.colorspace_AgX_Log = "AgX-Log-(Kraken)"
         self.colorspace_EOTF_2_2 = "2.2-EOTF-Encoding"
         self.colorspace_EOTF_2_4 = "2.4-EOTF-Encoding"
+        self.colorspace_sRGB_linear = "sRGB-linear"
         self.colorspace_sRGB_2_2 = "sRGB-2.2"
         self.colorspace_sRGB_EOTF = "sRGB-EOTF"
         self.colorspace_Display_P3 = "Display-P3"
-        self.colorspace_BT_1886 = "BT.1886"
+        self.colorspace_BT1886 = "BT.1886"
+        self.colorspace_AgX_Log = "AgX-Log-(Kraken)"
         self.colorspace_AgX_Base = "AgX"
         self.colorspace_Passthrough = "Passthrough"
         self.colorspace_ACEScg = "ACEScg"
         self.colorspace_ACES20651 = "ACES2065-1"
         self.colorspace_CIE_XYZ_D65 = "CIE-XYZ-D65"
-        self.colorspace_Linear_BT2020 = "BT.2020-linear"
+        self.colorspace_BT2020_linear = "BT.2020-linear"
 
         self.display_colorspaces = [
             self.colorspace_sRGB_2_2,
             self.colorspace_sRGB_EOTF,
             self.colorspace_Display_P3,
-            self.colorspace_BT_1886,
+            self.colorspace_BT1886,
         ]
 
         self.image_renderings = [
@@ -154,11 +152,11 @@ class AgXcConfig(ocio.Config):
         self.setRole("data", self.colorspace_Passthrough)
         self.setRole("default", self.colorspace_sRGB_2_2)
         self.setRole("default_byte", self.colorspace_sRGB_2_2)
-        self.setRole("default_float", self.colorspace_Linear_sRGB)
+        self.setRole("default_float", self.colorspace_sRGB_linear)
         self.setRole("default_sequencer", self.colorspace_sRGB_2_2)
         self.setRole("matte_paint", self.colorspace_sRGB_2_2)
-        self.setRole("reference", self.colorspace_Linear_sRGB)
-        self.setRole("scene_linear", self.colorspace_Linear_sRGB)
+        self.setRole("reference", self.colorspace_sRGB_linear)
+        self.setRole("scene_linear", self.colorspace_sRGB_linear)
         self.setRole("texture_paint", self.colorspace_sRGB_2_2)
         self.setRole("aces_interchange", self.colorspace_ACES20651)
         self.setRole("cie_xyz_d65_interchange", self.colorspace_CIE_XYZ_D65)
@@ -301,7 +299,7 @@ class AgXcConfig(ocio.Config):
                 ]
             )
 
-        with build_ocio_colorspace(self.colorspace_BT_1886, self) as colorspace:
+        with build_ocio_colorspace(self.colorspace_BT1886, self) as colorspace:
             colorspace.description = "BT.1886 2.4 Exponent EOTF Display. Also known as Rec.709 transfer function."
             colorspace.family = AgXcFamily.colorspaces
             colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
@@ -384,7 +382,7 @@ class AgXcConfig(ocio.Config):
             colorspace.isData = True
             colorspace.equalityGroup = "scalar"
 
-        with build_ocio_colorspace(self.colorspace_Linear_sRGB, self) as colorspace:
+        with build_ocio_colorspace(self.colorspace_sRGB_linear, self) as colorspace:
             colorspace.description = "Open Domain Linear BT.709 Tristimulus"
             colorspace.family = AgXcFamily.colorspaces
             colorspace.bitdepth = ocio.BIT_DEPTH_F32
@@ -437,8 +435,8 @@ class AgXcConfig(ocio.Config):
                 ]
             )
 
-        with build_ocio_colorspace(self.colorspace_Linear_BT2020, self) as colorspace:
-            colorspace.name = self.colorspace_Linear_BT2020
+        with build_ocio_colorspace(self.colorspace_BT2020_linear, self) as colorspace:
+            colorspace.name = self.colorspace_BT2020_linear
             colorspace.description = (
                 "The ITU-R BT.2020 colorspace with a linear transfer-function.\n"
                 "A very wide gamut on the edge of the spectral locus, with a D65 whitepoint."
