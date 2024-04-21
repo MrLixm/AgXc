@@ -7,6 +7,11 @@ Contains the build script for the OCIO config.
 - You have a python environment as specified by the repository root `pyproject.toml`.
 - The `AgXLib` package is in the `PYTHONPATH`
 
+for tesing you also need:
+
+- Foundry's Nuke installed on your machine (15+ version)
+- Git Bash if you are on Windows, to execute shell scripts
+
 ## build instructions
 
 Once prerequisites are satisfied:
@@ -17,3 +22,10 @@ its location.
 
 The build script has a small CLI, use `python build.py --help` to check for 
 options.
+
+## testing
+
+To run a basic test the config is working you can execute the 
+[launch-tests.sh](tests/nuke/launch-tests.sh) script in the `tests/` folder.
+
+You need to manually check the output of the execution for warnings or errors.
