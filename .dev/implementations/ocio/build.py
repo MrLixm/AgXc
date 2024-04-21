@@ -1,15 +1,9 @@
 import argparse
-import contextlib
-import dataclasses
 import datetime
 import enum
 import logging
 import sys
 from pathlib import Path
-from typing import Optional
-from typing import ContextManager
-from typing import Literal
-from typing import Union
 
 import PyOpenColorIO as ocio
 import colour
@@ -20,136 +14,20 @@ import AgXLib
 LOGGER = logging.getLogger(__name__)
 PARENT_DIR = Path(__file__).parent
 
-DEFAULT_CAT = "Bradford"
-DEFAULT_DECIMALS = 12
+ADDITIONAL_MODULES_DIR = str(PARENT_DIR / "modules")
+
+if ADDITIONAL_MODULES_DIR not in sys.path:
+    sys.path.append(ADDITIONAL_MODULES_DIR)
+
+from ocio_matrix_generation import matrix_primaries_transform_ocio
+from ocio_matrix_generation import matrix_format_ocio
+from ocio_config_helpers import View
+from ocio_config_helpers import BaseFamily
+from ocio_config_helpers import build_ocio_colorspace
+from ocio_config_helpers import build_display_views
 
 
-"""-------------------------------------------------------------------------------------
-Matrix utilities
-"""
-
-
-def matrix_3x3_to_4x4(matrix: numpy.ndarray) -> numpy.ndarray:
-    """
-    Convert a 3x3 matrix to a 4x4 matrix as such :
-    [[ value  value  value  0. ]
-     [ value  value  value  0. ]
-     [ value  value  value  0. ]
-     [ 0.     0.     0.    1. ]]
-
-    Returns:
-        4x4 matrix
-    """
-
-    output = numpy.append(matrix, [[0], [0], [0]], axis=1)
-    output = numpy.append(output, [[0, 0, 0, 1]], axis=0)
-    return output
-
-
-def matrix_format_ocio(matrix: numpy.ndarray) -> list[float]:
-    """
-    Format the given 3x3 matrix to an OCIO parameters complient list.
-
-    Args:
-        matrix: 3x3 matrix
-    Returns:
-        list: 4x4 matrix in a single line list.
-    """
-    new_matrix = matrix_3x3_to_4x4(matrix)
-    # "un-nest" the matrix by ensuring we have a flat list
-    new_matrix = numpy.concatenate(new_matrix).tolist()
-    return new_matrix
-
-
-def matrix_whitepoint_cat(
-    source_whitepoint: numpy.ndarray,
-    target_whitepoint: numpy.ndarray,
-    cat: str = DEFAULT_CAT,
-) -> numpy.ndarray:
-    """Return the matrix to perform a chromatic adaptation with the given
-    parameters.
-
-    Args:
-        source_whitepoint: source whitepoint name as xy coordinates
-        target_whitepoint: target whitepoint name as xy coordinates
-        cat: chromatic adaptation transform method to use.
-
-    Returns:
-        chromatic adaptation matrix from test viewing conditions
-         to reference viewing conditions. A 3x3 matrix.
-    """
-
-    matrix = colour.adaptation.matrix_chromatic_adaptation_VonKries(
-        colour.xy_to_XYZ(source_whitepoint),
-        colour.xy_to_XYZ(target_whitepoint),
-        transform=cat,
-    )
-
-    return matrix
-
-
-def matrix_primaries_transform_ocio(
-    source: Union[colour.RGB_Colourspace, Literal["XYZ"]],
-    target: Union[colour.RGB_Colourspace, Literal["XYZ"]],
-    source_whitepoint: Optional[numpy.ndarray] = None,
-    target_whitepoint: Optional[numpy.ndarray] = None,
-    cat: str = DEFAULT_CAT,
-    decimals: int = DEFAULT_DECIMALS,
-) -> list[float]:
-    """
-    By given a source and target colorspace, return the corresponding
-    colorspace conversion matrix.
-    You can use "XYZ" as a source or target.
-
-    Args:
-        source: source colorspace, use "XYZ" for CIE-XYZ.
-        target: target colorspace, use "XYZ" for CIE-XYZ.
-        source_whitepoint: whitepoint coordinates as [x, y]
-        target_whitepoint: whitepoint coordinates as [x, y]
-        cat: chromatic adaptation transform
-        decimals: number of decimal after zero to conserve
-    Returns:
-        4x4 matrix in a single line list.
-    """
-    matrix_cat = None
-    if source_whitepoint is not None and target_whitepoint is not None:
-        matrix_cat = matrix_whitepoint_cat(
-            source_whitepoint=source_whitepoint,
-            target_whitepoint=target_whitepoint,
-            cat=cat,
-        )
-
-    if source == "XYZ" or target == "XYZ":
-        if target == "XYZ":
-            matrix = source.matrix_RGB_to_XYZ
-
-            if matrix_cat is not None:
-                matrix = numpy.dot(matrix_cat, matrix)
-
-        else:
-            matrix = target.matrix_XYZ_to_RGB
-
-            if matrix_cat is not None:
-                matrix = numpy.dot(matrix, matrix_cat)
-
-    else:
-        matrix = source.matrix_RGB_to_XYZ
-
-        if matrix_cat is not None:
-            matrix = numpy.dot(matrix_cat, source.matrix_RGB_to_XYZ)
-
-        matrix = numpy.dot(target.matrix_XYZ_to_RGB, matrix)
-
-    matrix = matrix.round(decimals)
-    return matrix_format_ocio(matrix)
-
-
-"""-------------------------------------------------------------------------------------
-Config utilities
-"""
-
-
-class AgXcFamily(enum.Enum):
+class AgXcFamily(BaseFamily):
     """
     The various families used to categorise colorspaces
     """
@@ -159,137 +37,6 @@ class AgXcFamily(enum.Enum):
     util_curves = "Utilities/Curves"
     views = "Views"
     view_looks = "Views/Looked"
-
-
-@dataclasses.dataclass
-class _Colorspace:
-    """
-    simple wrapper function on ocio.ColorSpace to have better default/type-hinting
-    """
-
-    name: str
-    family: Optional[AgXcFamily] = None
-    bitdepth: ocio.BitDepth = ocio.BIT_DEPTH_UNKNOWN
-    aliases: Optional[list[str]] = None
-    description: str = ""
-    encoding: str = ""
-    equalityGroup: str = ""
-    categories: Optional[list[str]] = None
-    isData: bool = False
-    allocation: ocio.Allocation = ocio.ALLOCATION_UNIFORM
-    allocationVars: Optional[list[float]] = None
-    toReference: Optional[ocio.Transform] = None
-    fromReference: Optional[ocio.Transform] = None
-    referenceSpace: ocio.ReferenceSpaceType = ocio.REFERENCE_SPACE_SCENE
-
-    def asOCIO(self) -> ocio.ColorSpace:
-        aliases = self.aliases or []
-        categories = self.categories or []
-        allocationVars = [float(number) for number in self.allocationVars or []]
-        family = self.family.value or ""
-        return ocio.ColorSpace(
-            referenceSpace=self.referenceSpace,
-            name=self.name,
-            aliases=aliases,
-            description=self.description,
-            family=family,
-            encoding=self.encoding,
-            equalityGroup=self.equalityGroup,
-            categories=categories,
-            bitDepth=self.bitdepth,
-            isData=self.isData,
-            allocation=self.allocation,
-            allocationVars=allocationVars,
-            toReference=self.toReference,
-            fromReference=self.fromReference,
-        )
-
-    def set_transforms_from_reference(self, transforms: list[ocio.Transform]):
-        if len(transforms) == 1:
-            self.fromReference = transforms[0]
-            return
-
-        group_transform = ocio.GroupTransform()
-        for transform in transforms:
-            group_transform.appendTransform(transform)
-
-        self.fromReference = group_transform
-
-    def set_transforms_to_reference(self, transforms: list[ocio.Transform]):
-        if len(transforms) == 1:
-            self.toReference = transforms[0]
-            return
-
-        group_transform = ocio.GroupTransform()
-        for transform in transforms:
-            group_transform.appendTransform(transform)
-
-        self.toReference = group_transform
-
-
-@dataclasses.dataclass
-class _View:
-    name: str
-    """
-    Human readable name of the view.
-    """
-
-    colorspace: str
-    """
-    Existing colorspace name that the view is using.
-    """
-
-    looks: list[str] = dataclasses.field(default_factory=list)
-    """
-    List of existing look names. Optionally prepend with + or - to add or remove the look.
-    """
-
-
-@contextlib.contextmanager
-def build_ocio_colorspace(
-    name: str,
-    config: ocio.Config,
-) -> ContextManager[_Colorspace]:
-    """
-    To use as::
-
-        with build_ocio_colorspace("my Colorspace", config) as colorspace:
-            colorspace.isData = True
-    """
-    colorspace = _Colorspace(name=name)
-    try:
-        yield colorspace
-    finally:
-        ocio_colorspace = colorspace.asOCIO()
-        config.addColorSpace(ocio_colorspace)
-
-
-@contextlib.contextmanager
-def build_display_views(
-    display_name: str, config: ocio.Config
-) -> ContextManager[list[_View]]:
-    """
-    To use as::
-
-        with build_display_views("my Display", config) as display:
-            display.append(_View("myView", "my Colorspace"))
-    """
-    views: list[_View] = []
-    try:
-        yield views
-    finally:
-        for view in views:
-            config.addDisplayView(
-                display=display_name,
-                view=view.name,
-                colorSpaceName=view.colorspace,
-                looks=",".join(view.looks),
-            )
-
-
-"""-------------------------------------------------------------------------------------
-Config definition
-"""
 
 
 class AgXcConfigVariant(enum.Enum):
@@ -307,6 +54,8 @@ class AgXcConfigVariant(enum.Enum):
 class AgXcConfig(ocio.Config):
     version = "0.2.5"
     lut_dir_name = "LUTs"
+    default_cat = "Bradford"
+    decimal_precision = 12
 
     def __init__(self, variant: AgXcConfigVariant):
         super().__init__()
@@ -370,7 +119,7 @@ class AgXcConfig(ocio.Config):
         self.setDescription(
             "AgX image rendering initially designed by Troy Sobotka.\n"
             "Adapted by Liam Collod with full permissions from Troy Sobotka.\n"
-            f"C.A.T. used for whitepoint conversions is <{DEFAULT_CAT}>.\n"
+            f"C.A.T. used for whitepoint conversions is <{self.default_cat}>.\n"
         )
         self.setStrictParsingEnabled(True)
         self.setSearchPath(self.lut_dir_name)
@@ -456,6 +205,8 @@ class AgXcConfig(ocio.Config):
                 target=_src,
                 source_whitepoint=reference_colorspace.whitepoint,
                 target_whitepoint=_src_whitepoint,
+                cat=self.default_cat,
+                decimals=self.decimal_precision,
             )
 
         with build_ocio_colorspace(self.colorspace_Linear_sRGB, self) as colorspace:
@@ -823,26 +574,24 @@ class AgXcConfig(ocio.Config):
 
     def _build_display_view(self):
         with build_display_views("sRGB", self) as display:
-            display.append(_View("AgX Punchy", self.colorspace_Appearance_PunchysRGB))
-            display.append(_View("AgX", self.colorspace_AgX_Base_sRGB))
-            display.append(_View("Disabled", self.colorspace_Passthrough))
-            display.append(_View("Display Native", self.colorspace_sRGB_2_2))
+            display.append(View("AgX Punchy", self.colorspace_Appearance_PunchysRGB))
+            display.append(View("AgX", self.colorspace_AgX_Base_sRGB))
+            display.append(View("Disabled", self.colorspace_Passthrough))
+            display.append(View("Display Native", self.colorspace_sRGB_2_2))
 
         with build_display_views("Display P3", self) as display:
             display.append(
-                _View("AgX Punchy", self.colorspace_Appearance_Punchy_DisplayP3)
+                View("AgX Punchy", self.colorspace_Appearance_Punchy_DisplayP3)
             )
-            display.append(_View("AgX", self.colorspace_AgX_Base_DisplayP3))
-            display.append(_View("Disabled", self.colorspace_Passthrough))
-            display.append(_View("Display Native", self.colorspace_Display_P3))
+            display.append(View("AgX", self.colorspace_AgX_Base_DisplayP3))
+            display.append(View("Disabled", self.colorspace_Passthrough))
+            display.append(View("Display Native", self.colorspace_Display_P3))
 
         with build_display_views("BT.1886", self) as display:
-            display.append(
-                _View("AgX Punchy", self.colorspace_Appearance_Punchy_BT1886)
-            )
-            display.append(_View("AgX", self.colorspace_AgX_Base_BT1886))
-            display.append(_View("Disabled", self.colorspace_Passthrough))
-            display.append(_View("Display Native", self.colorspace_BT_1886))
+            display.append(View("AgX Punchy", self.colorspace_Appearance_Punchy_BT1886))
+            display.append(View("AgX", self.colorspace_AgX_Base_BT1886))
+            display.append(View("Disabled", self.colorspace_Passthrough))
+            display.append(View("Display Native", self.colorspace_BT_1886))
 
         self.setActiveDisplays(":".join(["sRGB"]))
         self.setActiveViews(":".join([]))
@@ -872,6 +621,9 @@ class AgXcConfig(ocio.Config):
 
 
 def get_cli(argv=None):
+    """
+    Retrieve the command line arguments provided by user.
+    """
     argv = argv or sys.argv[1:]
     parser = argparse.ArgumentParser(
         "agxc-ocio-build",
@@ -892,6 +644,9 @@ def get_cli(argv=None):
 
 
 def main():
+    """
+    Parse command line arguments and generate the AgXc config on disk.
+    """
     cli = get_cli()
     log_level = logging.DEBUG if cli.debug else logging.INFO
     logging.basicConfig(
