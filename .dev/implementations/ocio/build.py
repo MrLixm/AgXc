@@ -944,7 +944,7 @@ def main():
         ocio_config = AgXcConfig(variant=variant)
         ocio_config.validate()
 
-        ocio_config_path = target_dir / f"AgXc-v{AgXcConfig.version}_{variant.value}"
+        ocio_config_path = target_dir / f"AgXc_{variant.value}"
         if not ocio_config_path.exists():
             LOGGER.debug(f"mkdir({ocio_config_path})")
             ocio_config_path.mkdir()
