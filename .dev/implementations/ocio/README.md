@@ -5,7 +5,9 @@ Contains the build script for the OCIO config.
 ## prerequisites
 
 - You have a python environment as specified by the repository root `pyproject.toml`.
-- The `AgXLib` package is in the `PYTHONPATH`
+- The `AgXLib` package is registred in the `PYTHONPATH`
+- The `./modules` dir is optionally in your `PYTHONPATH` (if not it is added via 
+`sys.path` mechanism).
 
 for tesing you also need:
 

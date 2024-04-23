@@ -1,0 +1,360 @@
+# version: 0.2.5
+# name: AgXc
+# variant: default_OCIO-v2
+# built on: 2024-04-21 19:05:20.468807
+# // visit https://github.com/MrLixm/AgXc
+# // and inspect the python build script for details
+
+ocio_profile_version: 2
+
+environment:
+  {}
+search_path: LUTs
+strictparsing: true
+luma: [0.2126, 0.7152, 0.0722]
+name: AgXc
+description: |
+  AgX image rendering initially designed by Troy Sobotka.
+  Adapted by Liam Collod with full permissions from Troy Sobotka.
+  C.A.T. used for whitepoint conversions is <Bradford>.
+
+roles:
+  aces_interchange: ACES2065-1
+  cie_xyz_d65_interchange: CIE-XYZ-D65
+  color_picking: sRGB-2.2
+  color_timing: sRGB-2.2
+  compositing_log: AgX-Log-(Kraken)
+  data: Passthrough
+  default: sRGB-2.2
+  default_byte: sRGB-2.2
+  default_float: sRGB-linear
+  default_sequencer: sRGB-2.2
+  matte_paint: sRGB-2.2
+  reference: sRGB-linear
+  scene_linear: sRGB-linear
+  texture_paint: sRGB-2.2
+
+file_rules:
+  - !<Rule> {name: Default, colorspace: default}
+
+displays:
+  sRGB-2.2:
+    - !<View> {name: AgX, colorspace: Image AgX sRGB-2.2}
+    - !<View> {name: AgX Punchy, colorspace: Image AgX-Punchy sRGB-2.2}
+    - !<View> {name: Disabled, colorspace: Passthrough}
+    - !<View> {name: Display Native, colorspace: sRGB-2.2}
+  sRGB-EOTF:
+    - !<View> {name: AgX, colorspace: Image AgX sRGB-EOTF}
+    - !<View> {name: AgX Punchy, colorspace: Image AgX-Punchy sRGB-EOTF}
+    - !<View> {name: Disabled, colorspace: Passthrough}
+    - !<View> {name: Display Native, colorspace: sRGB-EOTF}
+  Display-P3:
+    - !<View> {name: AgX, colorspace: Image AgX Display-P3}
+    - !<View> {name: AgX Punchy, colorspace: Image AgX-Punchy Display-P3}
+    - !<View> {name: Disabled, colorspace: Passthrough}
+    - !<View> {name: Display Native, colorspace: Display-P3}
+  BT.1886:
+    - !<View> {name: AgX, colorspace: Image AgX BT.1886}
+    - !<View> {name: AgX Punchy, colorspace: Image AgX-Punchy BT.1886}
+    - !<View> {name: Disabled, colorspace: Passthrough}
+    - !<View> {name: Display Native, colorspace: BT.1886}
+
+active_displays: [sRGB-2.2]
+active_views: []
+
+looks:
+  - !<Look>
+    name: Punchy
+    process_space: AgX
+    description: A punchy and more chroma laden look.
+    transform: !<CDLTransform> {power: [1.3, 1.3, 1.3], sat: 1.2}
+
+
+colorspaces:
+  - !<ColorSpace>
+    name: 2.2-EOTF-Encoding
+    family: Utilities/Curves
+    equalitygroup: ""
+    bitdepth: unknown
+    description: "transfer-function: 2.2 Exponent EOTF Encoding"
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<ExponentTransform> {value: 2.2, direction: inverse}
+
+  - !<ColorSpace>
+    name: 2.4-EOTF-Encoding
+    family: Utilities/Curves
+    equalitygroup: ""
+    bitdepth: unknown
+    description: "transfer-function: 2.4 Exponent EOTF Encoding"
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<ExponentTransform> {value: 2.4, direction: inverse}
+
+  - !<ColorSpace>
+    name: sRGB-2.2
+    family: Colorspaces
+    equalitygroup: ""
+    bitdepth: unknown
+    description: sRGB with transfer-function simplified to the 2.2 power function.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<ExponentTransform> {value: 2.2, direction: inverse}
+
+  - !<ColorSpace>
+    name: sRGB-EOTF
+    family: Colorspaces
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      sRGB IEC 61966-2-1 2.2 Exponent Reference EOTF Display
+      This "colorspace" is required by Redshift.
+    isdata: false
+    allocation: uniform
+    to_scene_reference: !<FileTransform> {src: sRGB-EOTF-inverse.spi1d, interpolation: linear}
+
+  - !<ColorSpace>
+    name: Display-P3
+    family: Colorspaces
+    equalitygroup: ""
+    bitdepth: unknown
+    description: Display P3 2.2 Exponent EOTF Display. For Apple hardware.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<MatrixTransform> {matrix: [0.868579739716, 0.128919138461, 0.002501121823, 0, 0.034540410254, 0.961811386362, 0.003648203384, 0, 0.016771429041, 0.071039997787, 0.912188573172, 0, 0, 0, 0, 1]}
+        - !<ExponentTransform> {value: 2.2, direction: inverse}
+
+  - !<ColorSpace>
+    name: BT.1886
+    family: Colorspaces
+    equalitygroup: ""
+    bitdepth: unknown
+    description: BT.1886 2.4 Exponent EOTF Display. Also known as Rec.709 transfer function.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<ExponentTransform> {value: 2.4, direction: inverse}
+
+  - !<ColorSpace>
+    name: AgX-Log-(Kraken)
+    family: AgX
+    equalitygroup: ""
+    bitdepth: 32f
+    description: AgX Log (Kraken)
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<RangeTransform> {min_in_value: 0, min_out_value: 0}
+        - !<MatrixTransform> {matrix: [0.842398929049531, 0.0784301651048638, 0.0791709058456044, 0, 0.0423989290495314, 0.878430165104864, 0.0791709058456048, 0, 0.0423989290495314, 0.0784301651048639, 0.879170905845605, 0, 0, 0, 0, 1]}
+        - !<AllocationTransform> {allocation: lg2, vars: [-12.47393, 4.026069]}
+
+  - !<ColorSpace>
+    name: AgX
+    family: AgX
+    equalitygroup: ""
+    bitdepth: unknown
+    description: AgX Base Image Encoding, output is already display encoded.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgX-Log-(Kraken)}
+        - !<FileTransform> {src: AgX_Default_Contrast.spi1d, interpolation: linear}
+
+  - !<ColorSpace>
+    name: Passthrough
+    family: Colorspaces
+    equalitygroup: scalar
+    bitdepth: 32f
+    description: Passthrough means no transformations. Also know as "raw".
+    isdata: true
+    allocation: uniform
+
+  - !<ColorSpace>
+    name: sRGB-linear
+    family: Colorspaces
+    equalitygroup: ""
+    bitdepth: 32f
+    description: Open Domain Linear BT.709 Tristimulus
+    isdata: false
+    allocation: uniform
+
+  - !<ColorSpace>
+    name: ACEScg
+    family: Colorspaces
+    equalitygroup: ""
+    bitdepth: 32f
+    description: ACES rendering space for CGI. Also known as AP1.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<MatrixTransform> {matrix: [0.613097402401, 0.339523146184, 0.047379451415, 0, 0.07019372247, 0.916353879057, 0.013452398473, 0, 0.020615592882, 0.109569772938, 0.86981463418, 0, 0, 0, 0, 1]}
+
+  - !<ColorSpace>
+    name: ACES2065-1
+    family: Colorspaces
+    equalitygroup: ""
+    bitdepth: 32f
+    description: ACES Interchange format. Also known as AP0.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<MatrixTransform> {matrix: [0.439632981919, 0.382988698152, 0.177378319929, 0, 0.089776442959, 0.813439428749, 0.096784128292, 0, 0.017541170383, 0.111546553302, 0.870912276314, 0, 0, 0, 0, 1]}
+
+  - !<ColorSpace>
+    name: CIE-XYZ-D65
+    family: Colorspaces
+    equalitygroup: ""
+    bitdepth: 32f
+    description: CIE 1931 Colorspace with a D65 whitepoint.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<MatrixTransform> {matrix: [0.412390799266, 0.357584339384, 0.180480788402, 0, 0.212639005872, 0.715168678768, 0.072192315361, 0, 0.019330818716, 0.119194779795, 0.95053215225, 0, 0, 0, 0, 1]}
+
+  - !<ColorSpace>
+    name: BT.2020-linear
+    family: Colorspaces
+    equalitygroup: ""
+    bitdepth: 32f
+    description: |
+      The ITU-R BT.2020 colorspace with a linear transfer-function.
+      A very wide gamut on the edge of the spectral locus, with a D65 whitepoint.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<MatrixTransform> {matrix: [0.627403895935, 0.329283038378, 0.043313065687, 0, 0.069097289358, 0.919540395075, 0.011362315566, 0, 0.016391438875, 0.088013307877, 0.895595253248, 0, 0, 0, 0, 1]}
+
+  - !<ColorSpace>
+    name: Image AgX sRGB-2.2
+    family: Views
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      A display-referred/display-ready colorspace. Built with:
+      - the AgX image rendering transform
+      - a conversion for sRGB-2.2 display standard.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgX}
+        - !<ColorSpaceTransform> {src: AgX, dst: sRGB-2.2}
+
+  - !<ColorSpace>
+    name: Image AgX sRGB-EOTF
+    family: Views
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      A display-referred/display-ready colorspace. Built with:
+      - the AgX image rendering transform
+      - a conversion for sRGB-EOTF display standard.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgX}
+        - !<ColorSpaceTransform> {src: AgX, dst: sRGB-EOTF}
+
+  - !<ColorSpace>
+    name: Image AgX Display-P3
+    family: Views
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      A display-referred/display-ready colorspace. Built with:
+      - the AgX image rendering transform
+      - a conversion for Display-P3 display standard.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgX}
+        - !<ColorSpaceTransform> {src: AgX, dst: Display-P3}
+
+  - !<ColorSpace>
+    name: Image AgX BT.1886
+    family: Views
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      A display-referred/display-ready colorspace. Built with:
+      - the AgX image rendering transform
+      - a conversion for BT.1886 display standard.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgX}
+        - !<ColorSpaceTransform> {src: AgX, dst: BT.1886}
+
+  - !<ColorSpace>
+    name: Image AgX-Punchy sRGB-2.2
+    family: Views
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      A display-referred/display-ready colorspace. Built with:
+      - the AgX image rendering transform
+      - the Punchy look transform
+      - a conversion for sRGB-2.2 display standard.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgX}
+        - !<LookTransform> {src: AgX, dst: AgX, looks: Punchy}
+        - !<ColorSpaceTransform> {src: AgX, dst: sRGB-2.2}
+
+  - !<ColorSpace>
+    name: Image AgX-Punchy sRGB-EOTF
+    family: Views
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      A display-referred/display-ready colorspace. Built with:
+      - the AgX image rendering transform
+      - the Punchy look transform
+      - a conversion for sRGB-EOTF display standard.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgX}
+        - !<LookTransform> {src: AgX, dst: AgX, looks: Punchy}
+        - !<ColorSpaceTransform> {src: AgX, dst: sRGB-EOTF}
+
+  - !<ColorSpace>
+    name: Image AgX-Punchy Display-P3
+    family: Views
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      A display-referred/display-ready colorspace. Built with:
+      - the AgX image rendering transform
+      - the Punchy look transform
+      - a conversion for Display-P3 display standard.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgX}
+        - !<LookTransform> {src: AgX, dst: AgX, looks: Punchy}
+        - !<ColorSpaceTransform> {src: AgX, dst: Display-P3}
+
+  - !<ColorSpace>
+    name: Image AgX-Punchy BT.1886
+    family: Views
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      A display-referred/display-ready colorspace. Built with:
+      - the AgX image rendering transform
+      - the Punchy look transform
+      - a conversion for BT.1886 display standard.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgX}
+        - !<LookTransform> {src: AgX, dst: AgX, looks: Punchy}
+        - !<ColorSpaceTransform> {src: AgX, dst: BT.1886}
