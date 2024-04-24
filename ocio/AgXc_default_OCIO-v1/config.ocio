@@ -1,7 +1,7 @@
 # version: 0.2.5
 # name: AgXc
 # variant: default_OCIO-v1
-# built on: 2024-04-24 09:50:02.007673
+# built on: 2024-04-24 09:56:43.287676
 # // visit https://github.com/MrLixm/AgXc
 # // and inspect the python build script for details
 
@@ -24,7 +24,7 @@ roles:
   cie_xyz_d65_interchange: CIE-XYZ-D65
   color_picking: sRGB-2.2
   color_timing: sRGB-2.2
-  compositing_log: AgX-Log
+  compositing_log: AgXc-Log
   data: Passthrough
   default: sRGB-2.2
   default_byte: sRGB-2.2
@@ -37,27 +37,27 @@ roles:
 
 displays:
   sRGB-2.2:
-    - !<View> {name: AgX, colorspace: Image AgX sRGB-2.2}
-    - !<View> {name: AgX Punchy, colorspace: Image AgX-Punchy sRGB-2.2}
+    - !<View> {name: AgXc, colorspace: Image AgXc sRGB-2.2}
+    - !<View> {name: AgXc Punchy, colorspace: Image AgXc-Punchy sRGB-2.2}
     - !<View> {name: Disabled, colorspace: Passthrough}
     - !<View> {name: Display Native, colorspace: sRGB-2.2}
   sRGB-EOTF:
-    - !<View> {name: AgX, colorspace: Image AgX sRGB-EOTF}
-    - !<View> {name: AgX Punchy, colorspace: Image AgX-Punchy sRGB-EOTF}
+    - !<View> {name: AgXc, colorspace: Image AgXc sRGB-EOTF}
+    - !<View> {name: AgXc Punchy, colorspace: Image AgXc-Punchy sRGB-EOTF}
     - !<View> {name: Disabled, colorspace: Passthrough}
     - !<View> {name: Display Native, colorspace: sRGB-EOTF}
   Display-P3:
-    - !<View> {name: AgX, colorspace: Image AgX Display-P3}
-    - !<View> {name: AgX Punchy, colorspace: Image AgX-Punchy Display-P3}
+    - !<View> {name: AgXc, colorspace: Image AgXc Display-P3}
+    - !<View> {name: AgXc Punchy, colorspace: Image AgXc-Punchy Display-P3}
     - !<View> {name: Disabled, colorspace: Passthrough}
     - !<View> {name: Display Native, colorspace: Display-P3}
   BT.1886:
-    - !<View> {name: AgX, colorspace: Image AgX BT.1886}
-    - !<View> {name: AgX Punchy, colorspace: Image AgX-Punchy BT.1886}
+    - !<View> {name: AgXc, colorspace: Image AgXc BT.1886}
+    - !<View> {name: AgXc Punchy, colorspace: Image AgXc-Punchy BT.1886}
     - !<View> {name: Disabled, colorspace: Passthrough}
     - !<View> {name: Display Native, colorspace: BT.1886}
   Pre-Display:
-    - !<View> {name: AgX, colorspace: AgX}
+    - !<View> {name: AgX, colorspace: AgXc}
 
 active_displays: []
 active_views: []
@@ -65,7 +65,7 @@ active_views: []
 looks:
   - !<Look>
     name: Punchy
-    process_space: AgX
+    process_space: AgXc
     description: A punchy and more chroma laden look.
     transform: !<CDLTransform> {power: [1.3, 1.3, 1.3], sat: 1.2}
 
@@ -152,7 +152,7 @@ colorspaces:
         - !<ExponentTransform> {value: [2.4, 2.4, 2.4, 1], direction: inverse}
 
   - !<ColorSpace>
-    name: AgX-Log
+    name: AgXc-Log
     family: AgX
     equalitygroup: ""
     bitdepth: 32f
@@ -167,7 +167,7 @@ colorspaces:
         - !<AllocationTransform> {allocation: lg2, vars: [-12.47393, 4.026069]}
 
   - !<ColorSpace>
-    name: AgX
+    name: AgXc
     family: AgX
     equalitygroup: ""
     bitdepth: unknown
@@ -184,7 +184,7 @@ colorspaces:
         - !<FileTransform> {src: luminance-compensation.cube, interpolation: linear}
         - !<AllocationTransform> {allocation: lg2, vars: [-10, 15], direction: inverse}
         - !<MatrixTransform> {matrix: [0.618670147202678, 0.234793838818814, 0.146536013978508, 0, 0.286893546584074, 0.403294772093313, 0.309811681322613, 0, 0.18487431590798, 0.0656521026537463, 0.749473581438274, 0, 0, 0, 0, 1]}
-        - !<ColorSpaceTransform> {src: reference, dst: AgX-Log}
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc-Log}
         - !<FileTransform> {src: AgX_Default_Contrast.spi1d, interpolation: linear}
         - !<MatrixTransform> {matrix: [1.70401243235717, -0.279876242822721, -0.424136189534447, 0, -0.549691197050973, 1.97382738658542, -0.424136189534448, 0, -0.549691197050973, -0.279876242822721, 1.82956743987369, 0, 0, 0, 0, 1]}
         - !<MatrixTransform> {matrix: [1.660491002108, -0.587641138789, -0.07284986332, 0, -0.124550474522, 1.132899897126, -0.008349422604, 0, -0.018150763355, -0.100578898008, 1.118729661363, 0, 0, 0, 0, 1]}
@@ -259,81 +259,81 @@ colorspaces:
     from_reference: !<MatrixTransform> {}
 
   - !<ColorSpace>
-    name: Image AgX sRGB-2.2
+    name: Image AgXc sRGB-2.2
     family: Views
     equalitygroup: ""
     bitdepth: unknown
     description: |
       A display-referred/display-ready colorspace. Built with:
-      - the AgX image rendering transform
+      - the AgXc image rendering transform
       - a conversion for sRGB-2.2 display standard.
     isdata: false
     allocation: uniform
     allocationvars: [0, 1]
     from_reference: !<GroupTransform>
       children:
-        - !<ColorSpaceTransform> {src: reference, dst: AgX}
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc}
         - !<ColorSpaceTransform> {src: reference, dst: sRGB-2.2}
 
   - !<ColorSpace>
-    name: Image AgX sRGB-EOTF
+    name: Image AgXc sRGB-EOTF
     family: Views
     equalitygroup: ""
     bitdepth: unknown
     description: |
       A display-referred/display-ready colorspace. Built with:
-      - the AgX image rendering transform
+      - the AgXc image rendering transform
       - a conversion for sRGB-EOTF display standard.
     isdata: false
     allocation: uniform
     allocationvars: [0, 1]
     from_reference: !<GroupTransform>
       children:
-        - !<ColorSpaceTransform> {src: reference, dst: AgX}
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc}
         - !<ColorSpaceTransform> {src: reference, dst: sRGB-EOTF}
 
   - !<ColorSpace>
-    name: Image AgX Display-P3
+    name: Image AgXc Display-P3
     family: Views
     equalitygroup: ""
     bitdepth: unknown
     description: |
       A display-referred/display-ready colorspace. Built with:
-      - the AgX image rendering transform
+      - the AgXc image rendering transform
       - a conversion for Display-P3 display standard.
     isdata: false
     allocation: uniform
     allocationvars: [0, 1]
     from_reference: !<GroupTransform>
       children:
-        - !<ColorSpaceTransform> {src: reference, dst: AgX}
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc}
         - !<ColorSpaceTransform> {src: reference, dst: Display-P3}
 
   - !<ColorSpace>
-    name: Image AgX BT.1886
+    name: Image AgXc BT.1886
     family: Views
     equalitygroup: ""
     bitdepth: unknown
     description: |
       A display-referred/display-ready colorspace. Built with:
-      - the AgX image rendering transform
+      - the AgXc image rendering transform
       - a conversion for BT.1886 display standard.
     isdata: false
     allocation: uniform
     allocationvars: [0, 1]
     from_reference: !<GroupTransform>
       children:
-        - !<ColorSpaceTransform> {src: reference, dst: AgX}
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc}
         - !<ColorSpaceTransform> {src: reference, dst: BT.1886}
 
   - !<ColorSpace>
-    name: Image AgX-Punchy sRGB-2.2
+    name: Image AgXc-Punchy sRGB-2.2
     family: Views
     equalitygroup: ""
     bitdepth: unknown
     description: |
       A display-referred/display-ready colorspace. Built with:
-      - the AgX image rendering transform
+      - the AgXc image rendering transform
       - the Punchy look transform
       - a conversion for sRGB-2.2 display standard.
     isdata: false
@@ -341,18 +341,18 @@ colorspaces:
     allocationvars: [0, 1]
     from_reference: !<GroupTransform>
       children:
-        - !<ColorSpaceTransform> {src: reference, dst: AgX}
-        - !<LookTransform> {src: AgX, dst: AgX, looks: Punchy}
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc}
+        - !<LookTransform> {src: AgXc, dst: AgXc, looks: Punchy}
         - !<ColorSpaceTransform> {src: reference, dst: sRGB-2.2}
 
   - !<ColorSpace>
-    name: Image AgX-Punchy sRGB-EOTF
+    name: Image AgXc-Punchy sRGB-EOTF
     family: Views
     equalitygroup: ""
     bitdepth: unknown
     description: |
       A display-referred/display-ready colorspace. Built with:
-      - the AgX image rendering transform
+      - the AgXc image rendering transform
       - the Punchy look transform
       - a conversion for sRGB-EOTF display standard.
     isdata: false
@@ -360,18 +360,18 @@ colorspaces:
     allocationvars: [0, 1]
     from_reference: !<GroupTransform>
       children:
-        - !<ColorSpaceTransform> {src: reference, dst: AgX}
-        - !<LookTransform> {src: AgX, dst: AgX, looks: Punchy}
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc}
+        - !<LookTransform> {src: AgXc, dst: AgXc, looks: Punchy}
         - !<ColorSpaceTransform> {src: reference, dst: sRGB-EOTF}
 
   - !<ColorSpace>
-    name: Image AgX-Punchy Display-P3
+    name: Image AgXc-Punchy Display-P3
     family: Views
     equalitygroup: ""
     bitdepth: unknown
     description: |
       A display-referred/display-ready colorspace. Built with:
-      - the AgX image rendering transform
+      - the AgXc image rendering transform
       - the Punchy look transform
       - a conversion for Display-P3 display standard.
     isdata: false
@@ -379,18 +379,18 @@ colorspaces:
     allocationvars: [0, 1]
     from_reference: !<GroupTransform>
       children:
-        - !<ColorSpaceTransform> {src: reference, dst: AgX}
-        - !<LookTransform> {src: AgX, dst: AgX, looks: Punchy}
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc}
+        - !<LookTransform> {src: AgXc, dst: AgXc, looks: Punchy}
         - !<ColorSpaceTransform> {src: reference, dst: Display-P3}
 
   - !<ColorSpace>
-    name: Image AgX-Punchy BT.1886
+    name: Image AgXc-Punchy BT.1886
     family: Views
     equalitygroup: ""
     bitdepth: unknown
     description: |
       A display-referred/display-ready colorspace. Built with:
-      - the AgX image rendering transform
+      - the AgXc image rendering transform
       - the Punchy look transform
       - a conversion for BT.1886 display standard.
     isdata: false
@@ -398,6 +398,6 @@ colorspaces:
     allocationvars: [0, 1]
     from_reference: !<GroupTransform>
       children:
-        - !<ColorSpaceTransform> {src: reference, dst: AgX}
-        - !<LookTransform> {src: AgX, dst: AgX, looks: Punchy}
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc}
+        - !<LookTransform> {src: AgXc, dst: AgXc, looks: Punchy}
         - !<ColorSpaceTransform> {src: reference, dst: BT.1886}
