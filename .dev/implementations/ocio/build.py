@@ -28,6 +28,11 @@ from ocio_config_helpers import build_display_views
 from ocio_config_helpers import ImageColorspace
 
 
+def set_colorspace_linear(colour_colorspace: colour.RGB_Colourspace):
+    colour_colorspace.cctf_decoding = colour.models.linear_function
+    colour_colorspace.cctf_encoding = colour.models.linear_function
+
+
 class AgXcFamily(BaseFamily):
     """
     The various families used to categorise colorspaces
@@ -75,6 +80,7 @@ class AgXcConfig(ocio.Config):
         self.overrides: list[str] = []
         self.lut_sRGB = "sRGB-EOTF-inverse.spi1d"
         self.lut_AgX = "AgX_Default_Contrast.spi1d"
+        self.lut_luma_compensation = "luminance-compensation.cube"
         self._luts: dict[str, colour.LUT1D] = {}
 
         self.look_punchy = "Punchy"
@@ -89,13 +95,19 @@ class AgXcConfig(ocio.Config):
         self.colorspace_sRGB_EOTF = "sRGB-EOTF"
         self.colorspace_Display_P3 = "Display-P3"
         self.colorspace_BT1886 = "BT.1886"
-        self.colorspace_AgX_Log = "AgX-Log-(Kraken)"
+        self.colorspace_AgX_Log = "AgX-Log"
         self.colorspace_AgX_Base = "AgX"
         self.colorspace_Passthrough = "Passthrough"
         self.colorspace_ACEScg = "ACEScg"
         self.colorspace_ACES20651 = "ACES2065-1"
         self.colorspace_CIE_XYZ_D65 = "CIE-XYZ-D65"
         self.colorspace_BT2020_linear = "BT.2020-linear"
+
+        # XXX: we define the reference colorspace as working colorspace too
+        self.reference_colorspace_name = self.colorspace_BT2020_linear
+        self.reference_colour_colorspace = colour.models.RGB_COLOURSPACE_BT2020.copy()
+        self.reference_colour_colorspace.use_derived_transformation_matrices(True)
+        set_colorspace_linear(self.reference_colour_colorspace)
 
         self.display_colorspaces = [
             self.colorspace_sRGB_2_2,
@@ -155,8 +167,8 @@ class AgXcConfig(ocio.Config):
         self.setRole("default_float", self.colorspace_sRGB_linear)
         self.setRole("default_sequencer", self.colorspace_sRGB_2_2)
         self.setRole("matte_paint", self.colorspace_sRGB_2_2)
-        self.setRole("reference", self.colorspace_sRGB_linear)
-        self.setRole("scene_linear", self.colorspace_sRGB_linear)
+        self.setRole("reference", self.reference_colorspace_name)
+        self.setRole("scene_linear", self.reference_colorspace_name)
         self.setRole("texture_paint", self.colorspace_sRGB_2_2)
         self.setRole("aces_interchange", self.colorspace_ACES20651)
         self.setRole("cie_xyz_d65_interchange", self.colorspace_CIE_XYZ_D65)
@@ -197,6 +209,29 @@ class AgXcConfig(ocio.Config):
         )
         self._luts[self.lut_AgX] = lut
 
+        lut_domain = numpy.array([[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]])
+        array = colour.LUT3D.linear_table(64, lut_domain)
+        array = colour.models.log_decoding_Log2(
+            array,
+            min_exposure=-10,
+            max_exposure=+15,
+            middle_grey=0.18,
+        )
+        array = AgXLib.reshape.apply_luminance_compensation(array)
+        array = colour.models.log_encoding_Log2(
+            array,
+            min_exposure=-10,
+            max_exposure=+15,
+            middle_grey=0.18,
+        )
+        lut = colour.LUT3D(
+            table=array,
+            name="Luminance Compensation",
+            domain=lut_domain,
+            comments=[],
+        )
+        self._luts[self.lut_luma_compensation] = lut
+
     def _build_looks(self):
         look = ocio.Look(
             name=self.look_punchy,
@@ -207,25 +242,21 @@ class AgXcConfig(ocio.Config):
         self.addLook(look)
 
     def _build_colorspaces(self):
-        colorspaces = colour.RGB_COLOURSPACES
         illum_1931 = colour.CCS_ILLUMINANTS["CIE 1931 2 Degree Standard Observer"]
         whitepoint_d65 = illum_1931["D65"]
-
-        reference_colorspace: colour.RGB_Colourspace = colorspaces["sRGB"]
-        reference_colorspace.use_derived_transformation_matrices(True)
 
         def get_conversion_matrix(colorspace_name: str) -> list[float]:
             if colorspace_name == "XYZ":
                 _src = "XYZ"
                 _src_whitepoint = whitepoint_d65
             else:
-                _src: colour.RGB_Colourspace = colorspaces[colorspace_name]
+                _src: colour.RGB_Colourspace = colour.RGB_COLOURSPACES[colorspace_name]
                 _src.use_derived_transformation_matrices(True)
                 _src_whitepoint = _src.whitepoint
             return matrix_primaries_transform_ocio(
-                source=reference_colorspace,
+                source=self.reference_colour_colorspace,
                 target=_src,
-                source_whitepoint=reference_colorspace.whitepoint,
+                source_whitepoint=self.reference_colour_colorspace.whitepoint,
                 target_whitepoint=_src_whitepoint,
                 cat=self.default_cat,
                 decimals=self.decimal_precision,
@@ -272,7 +303,13 @@ class AgXcConfig(ocio.Config):
             colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
             if self.use_ocio_v1:
                 colorspace.allocationVars = [0.0, 1.0]
-            colorspace.set_transforms_from_reference([transform_eotf_22])
+            matrix = get_conversion_matrix("sRGB")
+            colorspace.set_transforms_from_reference(
+                [
+                    ocio.MatrixTransform(matrix=matrix),
+                    transform_eotf_22,
+                ]
+            )
 
         with build_ocio_colorspace(self.colorspace_sRGB_EOTF, self) as colorspace:
             colorspace.description = 'sRGB IEC 61966-2-1 2.2 Exponent Reference EOTF Display\nThis "colorspace" is required by Redshift.'
@@ -280,7 +317,14 @@ class AgXcConfig(ocio.Config):
             colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
             if self.use_ocio_v1:
                 colorspace.allocationVars = [0.0, 1.0]
-            colorspace.set_transforms_to_reference([transform_eotf_srgb])
+
+            matrix = get_conversion_matrix("sRGB")
+            colorspace.set_transforms_from_reference(
+                [
+                    ocio.MatrixTransform(matrix=matrix),
+                    transform_eotf_srgb,
+                ]
+            )
 
         with build_ocio_colorspace(self.colorspace_Display_P3, self) as colorspace:
             colorspace.description = (
@@ -305,25 +349,23 @@ class AgXcConfig(ocio.Config):
             colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
             if self.use_ocio_v1:
                 colorspace.allocationVars = [0, 1]
-            colorspace.set_transforms_from_reference([transform_eotf_24])
+
+            matrix = get_conversion_matrix("sRGB")
+            colorspace.set_transforms_from_reference(
+                [
+                    ocio.MatrixTransform(matrix=matrix),
+                    transform_eotf_24,
+                ]
+            )
 
         # // AgX colorspaces
 
         with build_ocio_colorspace(self.colorspace_AgX_Log, self) as colorspace:
-            colorspace.description = "AgX Log (Kraken)"
+            colorspace.description = "AgX Log encoding."
             colorspace.family = AgXcFamily.agx
             colorspace.bitdepth = ocio.BIT_DEPTH_F32
             if self.use_ocio_v1:
                 colorspace.allocationVars = [-12.47393, 4.026069]
-
-            inset_matrix = AgXLib.get_reshaped_colorspace_matrix(
-                src_gamut=reference_colorspace.primaries,
-                src_whitepoint=reference_colorspace.whitepoint,
-                inset_r=0.2,
-                inset_g=0.2,
-                inset_b=0.2,
-            )
-            inset_matrix = matrix_format_ocio(numpy.linalg.inv(inset_matrix))
 
             if self.use_ocio_v1:
                 # hack to clamp negatives only, in OCIOv1
@@ -340,7 +382,6 @@ class AgXcConfig(ocio.Config):
             colorspace.set_transforms_from_reference(
                 clamp_transform
                 + [
-                    ocio.MatrixTransform(matrix=inset_matrix),
                     ocio.AllocationTransform(
                         allocation=ocio.ALLOCATION_LG2,
                         vars=[-12.47393, 4.026069],
@@ -350,21 +391,94 @@ class AgXcConfig(ocio.Config):
 
         with build_ocio_colorspace(self.colorspace_AgX_Base, self) as colorspace:
             colorspace.description = (
-                "AgX Base Image Encoding, output is already display encoded."
+                "AgXc image rendering transform.\n"
+                "Output is encoded in working colorspace."
             )
             colorspace.family = AgXcFamily.agx
             colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
             if self.use_ocio_v1:
                 colorspace.allocationVars = [0, 1]
+
+            # XXX: all the inset/rotate values were produced from experimentation in Nuke
+            #   using the "MacAdam moments" experiment from jpzambrano:
+            #   https://community.acescentral.com/t/aces-2-0-cam-drt-development/4700/434
+            src_matrix_pre_inset = AgXLib.get_reshaped_colorspace_matrix(
+                src_gamut=self.reference_colour_colorspace.primaries,
+                src_whitepoint=self.reference_colour_colorspace.whitepoint,
+                inset_r=0.62,
+                inset_g=0.55,
+                inset_b=0.58,
+                rotate_r=10,
+                rotate_g=4,
+                rotate_b=19,
+            )
+            pre_inset_matrix = matrix_format_ocio(
+                numpy.linalg.inv(src_matrix_pre_inset)
+            )
+            src_matrix_inset = AgXLib.get_reshaped_colorspace_matrix(
+                src_gamut=self.reference_colour_colorspace.primaries,
+                src_whitepoint=self.reference_colour_colorspace.whitepoint,
+                inset_r=0.65,
+                inset_g=0.5,
+                inset_b=0.5,
+                rotate_r=16,
+                rotate_g=-24,
+                rotate_b=-12,
+            )
+            inset_matrix = matrix_format_ocio(numpy.linalg.inv(src_matrix_inset))
+
+            src_matrix_outset = AgXLib.get_reshaped_colorspace_matrix(
+                src_gamut=self.reference_colour_colorspace.primaries,
+                src_whitepoint=self.reference_colour_colorspace.whitepoint,
+                inset_r=0.65,
+                inset_g=0.5,
+                inset_b=0.5,
+                # outset doesnt restore rotation
+                rotate_r=0,
+                rotate_g=0,
+                rotate_b=0,
+            )
+            outset_matrix = matrix_format_ocio(src_matrix_outset)
+            restore_matrix = get_conversion_matrix("sRGB")
+
             colorspace.set_transforms_from_reference(
                 [
+                    # pre-inset
+                    ocio.MatrixTransform(matrix=pre_inset_matrix),
+                    # lumninance compensation as 3D Lut
+                    ocio.AllocationTransform(
+                        allocation=ocio.ALLOCATION_LG2,
+                        vars=[-10, 15],
+                    ),
+                    ocio.FileTransform(
+                        src=self.lut_luma_compensation,
+                        interpolation=ocio.INTERP_LINEAR,
+                    ),
+                    ocio.AllocationTransform(
+                        allocation=ocio.ALLOCATION_LG2,
+                        vars=[-10, 15],
+                        direction=ocio.TRANSFORM_DIR_INVERSE,
+                    ),
+                    # inset
+                    ocio.MatrixTransform(matrix=inset_matrix),
+                    # log-encoding for tonescale
                     ocio.ColorSpaceTransform(
                         src="reference",
                         dst=self.colorspace_AgX_Log,
                     ),
+                    # tonescale
                     ocio.FileTransform(
                         src=self.lut_AgX,
                         interpolation=ocio.INTERP_LINEAR,
+                    ),
+                    # outset to inverse inset
+                    ocio.MatrixTransform(matrix=outset_matrix),
+                    # no idea why we need this, but it looks better with
+                    ocio.MatrixTransform(matrix=restore_matrix),
+                    # the tonescale already include the EOTF so linearize
+                    ocio.ColorSpaceTransform(
+                        src=self.colorspace_EOTF_2_4,
+                        dst="reference",
                     ),
                 ]
             )
@@ -389,6 +503,13 @@ class AgXcConfig(ocio.Config):
             if self.use_ocio_v1:
                 colorspace.allocation = ocio.ALLOCATION_LG2
                 colorspace.allocationVars = [-10, 7, 0.0056065625]
+
+            matrix = get_conversion_matrix("sRGB")
+            colorspace.set_transforms_from_reference(
+                [
+                    ocio.MatrixTransform(matrix=matrix),
+                ]
+            )
 
         with build_ocio_colorspace(self.colorspace_ACEScg, self) as colorspace:
             colorspace.description = "ACES rendering space for CGI. Also known as AP1."
@@ -439,7 +560,8 @@ class AgXcConfig(ocio.Config):
             colorspace.name = self.colorspace_BT2020_linear
             colorspace.description = (
                 "The ITU-R BT.2020 colorspace with a linear transfer-function.\n"
-                "A very wide gamut on the edge of the spectral locus, with a D65 whitepoint."
+                "A very wide gamut on the edge of the spectral locus, with a D65 whitepoint.\n"
+                "Also the reference/working colorspace for this config."
             )
             colorspace.family = AgXcFamily.colorspaces
             colorspace.bitdepth = ocio.BIT_DEPTH_F32
@@ -486,7 +608,14 @@ class AgXcConfig(ocio.Config):
                 display.append(View("Disabled", self.colorspace_Passthrough))
                 display.append(View("Display Native", display_colorspace))
 
-        self.setActiveDisplays(":".join([self.display_colorspaces[0]]))
+        # we create a display with just the image-rendering
+        # this is useful to apply grading after image-rendering but before display-rendering
+        # one could argue than in that case it's not useful to have it as a Display, and
+        # the user can already pick the existing colorspace.
+        with build_display_views("Pre-Display", self) as display:
+            display.append(View("AgX", self.colorspace_AgX_Base))
+
+        self.setActiveDisplays(":".join([]))
         self.setActiveViews(":".join([]))
 
     def as_text(self) -> str:

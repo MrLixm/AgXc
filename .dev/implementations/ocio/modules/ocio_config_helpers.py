@@ -147,7 +147,7 @@ class ImageColorspace:
             ]
         transforms += [
             ocio.ColorSpaceTransform(
-                src=self.image_rendering,
+                src="reference",
                 dst=self.display_colorspace,
             ),
         ]
