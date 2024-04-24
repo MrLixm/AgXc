@@ -57,7 +57,7 @@ class AgXcConfigVariant(enum.Enum):
 
 
 class AgXcConfig(ocio.Config):
-    version = "0.2.5"
+    version = "1.0.0"
     lut_dir_name = "LUTs"
     default_cat = "Bradford"
     decimal_precision = 12
