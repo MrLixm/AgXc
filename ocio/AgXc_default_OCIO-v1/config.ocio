@@ -1,7 +1,7 @@
 # version: 1.0.0
 # name: AgXc
 # variant: default_OCIO-v1
-# built on: 2024-04-24 10:02:28.523822
+# built on: 2024-06-22 21:50:07.697039
 # // visit https://github.com/MrLixm/AgXc
 # // and inspect the python build script for details
 
@@ -188,6 +188,21 @@ colorspaces:
         - !<FileTransform> {src: AgX_Default_Contrast.spi1d, interpolation: linear}
         - !<MatrixTransform> {matrix: [1.70401243235717, -0.279876242822721, -0.424136189534447, 0, -0.549691197050973, 1.97382738658542, -0.424136189534448, 0, -0.549691197050973, -0.279876242822721, 1.82956743987369, 0, 0, 0, 0, 1]}
         - !<MatrixTransform> {matrix: [1.660491002108, -0.587641138789, -0.07284986332, 0, -0.124550474522, 1.132899897126, -0.008349422604, 0, -0.018150763355, -0.100578898008, 1.118729661363, 0, 0, 0, 0, 1]}
+        - !<ColorSpaceTransform> {src: 2.4-EOTF-Encoding, dst: reference}
+
+  - !<ColorSpace>
+    name: AgXc-Tonescale
+    family: AgX
+    equalitygroup: ""
+    bitdepth: unknown
+    description: AgXc 1D curve. Output is linear.
+    isdata: false
+    allocation: uniform
+    allocationvars: [0, 1]
+    from_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc-Log}
+        - !<FileTransform> {src: AgX_Default_Contrast.spi1d, interpolation: linear}
         - !<ColorSpaceTransform> {src: 2.4-EOTF-Encoding, dst: reference}
 
   - !<ColorSpace>

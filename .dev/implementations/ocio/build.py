@@ -97,6 +97,7 @@ class AgXcConfig(ocio.Config):
         self.colorspace_BT1886 = "BT.1886"
         self.colorspace_AgX_Log = "AgXc-Log"
         self.colorspace_AgX_Base = "AgXc"
+        self.colorspace_AgX_tonescale = "AgXc-Tonescale"
         self.colorspace_Passthrough = "Passthrough"
         self.colorspace_ACEScg = "ACEScg"
         self.colorspace_ACES20651 = "ACES2065-1"
@@ -475,6 +476,33 @@ class AgXcConfig(ocio.Config):
                     ocio.MatrixTransform(matrix=outset_matrix),
                     # no idea why we need this, but it looks better with
                     ocio.MatrixTransform(matrix=restore_matrix),
+                    # the tonescale already include the EOTF so linearize
+                    ocio.ColorSpaceTransform(
+                        src=self.colorspace_EOTF_2_4,
+                        dst="reference",
+                    ),
+                ]
+            )
+
+        with build_ocio_colorspace(self.colorspace_AgX_tonescale, self) as colorspace:
+            colorspace.description = "AgXc 1D curve. Output is linear.\n"
+            colorspace.family = AgXcFamily.agx
+            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
+            if self.use_ocio_v1:
+                colorspace.allocationVars = [0, 1]
+
+            colorspace.set_transforms_from_reference(
+                [
+                    # log-encoding for tonescale
+                    ocio.ColorSpaceTransform(
+                        src="reference",
+                        dst=self.colorspace_AgX_Log,
+                    ),
+                    # tonescale
+                    ocio.FileTransform(
+                        src=self.lut_AgX,
+                        interpolation=ocio.INTERP_LINEAR,
+                    ),
                     # the tonescale already include the EOTF so linearize
                     ocio.ColorSpaceTransform(
                         src=self.colorspace_EOTF_2_4,
