@@ -1,4 +1,5 @@
 import logging
+import math
 from typing import Union
 
 import numpy
@@ -41,6 +42,62 @@ def sigmoid_parabolic(array: Ndarray, pivot: RGBable, t0: RGBable):
         array < t0,
         t0 * (array / t0) ** pivot,
         1 + (t0 - 1) * ((array - 1) / (t0 - 1)) ** pivot,
+    )
+
+
+def tonemap_piecewise_power(
+    array: Ndarray,
+    pivot_x: RGBable = 0.5,
+    pivot_y: RGBable = 0.5,
+    slope: RGBable = 3.0,
+    shoulder_length: RGBable = 0.1,
+    toe_length: RGBable = 0.0,
+    white: tuple[RGBable, RGBable] = (1.0, 1.0),
+    black: tuple[RGBable, RGBable] = (0.0, 0.0),
+):
+    """
+    Apply the John Hable picewise power tonemap curve as modified by Jed Smith.
+
+    This is an S-curve on a [0-1 range].
+
+    References:
+        - [1] https://github.com/jedypod/nuke-colortools/blob/master/toolsets/transfer_function/Tonemap_PiecewisePower.nk
+    """
+    pv_x = numpy.array(pivot_x)
+    pv_y = numpy.array(pivot_y)
+    m = numpy.array(slope)
+    ls = numpy.array(shoulder_length)
+    lt = numpy.array(toe_length)
+    pw = (numpy.array(white[0]), numpy.array(white[1]))
+    pb = (numpy.array(black[0]), numpy.array(black[1]))
+
+    pt = (
+        -lt / (numpy.sqrt(m * m + 1)) + pv_x,
+        -(m * lt) / (numpy.sqrt(m * m + 1)) + pv_y,
+    )
+    ps = (
+        ls / (numpy.sqrt(m * m + 1)) + pv_x,
+        (m * ls) / (numpy.sqrt(m * m + 1)) + pv_y,
+    )
+
+    cb = pt[1] - pt[0] * m
+    bt = (m * (pt[0] - pb[0])) / (pt[1] - pb[1])
+    at = numpy.log(pt[1] - pb[1]) - bt * numpy.log(pt[0] - pb[0])
+    bs = (m * (pw[0] - ps[0])) / (pw[1] - ps[1])
+    as_ = numpy.log(pw[1] - ps[1]) - bs * numpy.log(pw[0] - ps[0])
+
+    return numpy.where(
+        array <= 0,
+        0.0,
+        numpy.where(
+            array <= pt[0],
+            numpy.exp(at + bt * numpy.log(array - pb[0])) + pb[1],
+            numpy.where(
+                array < ps[0],
+                m * array + cb,
+                -numpy.exp(as_ + bs * numpy.log(-(array - pw[0]))) + pw[1],
+            ),
+        ),
     )
 
 
