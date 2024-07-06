@@ -5,6 +5,7 @@ Which based himself on the work of Jed Smith.
 
 Slight modifications in terms of code style but outcome is similar.
 """
+
 import logging
 import typing
 
@@ -120,6 +121,7 @@ def apply_AgX_tonescale(
     array: Ndarray,
     min_EV: float = -10.0,
     max_EV: float = +6.5,
+    pivot_y: float = 0.50,
     general_contrast: float = 2.0,
     limits_contrast: tuple[float, float] = (3.0, 3.25),
 ) -> Ndarray:
@@ -132,6 +134,7 @@ def apply_AgX_tonescale(
             usually in a "shaper space" like log encoding.
         min_EV: minimal exposure being fitted in the curve [0,1] range.
         max_EV: maximum exposure being fitted in the curve [0,1] range.
+        pivot_y: pivot y position in [0,1] range.
         general_contrast: increase "s" shape
         limits_contrast: toe and shoulder contrast
 
@@ -139,7 +142,7 @@ def apply_AgX_tonescale(
         new array with the tonescale applied, same shape as input array.
     """
     AgX_x_pivot = numpy.abs(min_EV / (max_EV - min_EV))
-    AgX_y_pivot = 0.50
+    AgX_y_pivot = pivot_y
 
     AgX_x_pivot = numpy.asarray(AgX_x_pivot)
     AgX_y_pivot = numpy.asarray(AgX_y_pivot)
