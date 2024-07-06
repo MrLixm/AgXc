@@ -122,7 +122,9 @@ def saturation(
     coefs: RGBt = (0.2126, 0.7152, 0.0722),
 ) -> Ndarray:
     """
-    Increase color saturation (not the similarly named clamp operation).
+    Increase color saturation calculating wieghts using given r.g.b weights.
+
+    (NOT the similarly named clamp operation).
 
     SRC:
         - src/OpenColorIO/ops/gradingprimary/GradingPrimaryOpCPU.cpp#L214
@@ -131,7 +133,7 @@ def saturation(
     Args:
         array:
         amount:
-            saturation with different coeff per channel,
+            saturation with different amount per channel,
             or same value for all channels
         coefs:
             luma coefficient. Default if not specified are BT.709 ones.
@@ -142,6 +144,35 @@ def saturation(
 
     luma = array * coefs
     luma = numpy.sum(luma, axis=2)
+    luma = numpy.stack((luma,) * 3, axis=-1)
+
+    array -= luma
+    array *= amount
+    array += luma
+
+    return array
+
+
+def saturation_max(
+    array: Ndarray,
+    amount: RGBable,
+) -> Ndarray:
+    """
+    Increase color saturation calculating luma from max(r,g,b).
+
+    (NOT the similarly named clamp operation)
+
+    Args:
+        array:
+        amount:
+            saturation with different amount per channel,
+            or same value for all channels
+
+    Returns:
+        input array with the given saturation value applied
+    """
+
+    luma = numpy.max(numpy.asarray(array), axis=-1)
     luma = numpy.stack((luma,) * 3, axis=-1)
 
     array -= luma
