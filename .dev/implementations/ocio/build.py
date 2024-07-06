@@ -641,7 +641,7 @@ class AgXcConfig(ocio.Config):
         # one could argue than in that case it's not useful to have it as a Display, and
         # the user can already pick the existing colorspace.
         with build_display_views("Pre-Display", self) as display:
-            display.append(View("AgX", self.colorspace_AgX_Base))
+            display.append(View("AgXc", self.colorspace_AgX_Base))
 
         self.setActiveDisplays(":".join([]))
         self.setActiveViews(":".join([]))
