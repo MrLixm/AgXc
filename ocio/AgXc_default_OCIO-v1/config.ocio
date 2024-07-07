@@ -1,7 +1,7 @@
 # version: 1.0.0
 # name: AgXc
 # variant: default_OCIO-v1
-# built on: 2024-07-07 12:27:35.503554
+# built on: 2024-07-07 16:54:47.724791
 # // visit https://github.com/MrLixm/AgXc
 # // and inspect the python build script for details
 
@@ -43,13 +43,6 @@ displays:
     - !<View> {name: AgXc.softer Punchy, colorspace: Image AgXc.softer-Punchy sRGB-2.2}
     - !<View> {name: Disabled, colorspace: Passthrough}
     - !<View> {name: Display Native, colorspace: sRGB-2.2}
-  sRGB-EOTF:
-    - !<View> {name: AgXc.base, colorspace: Image AgXc.base sRGB-EOTF}
-    - !<View> {name: AgXc.base Punchy, colorspace: Image AgXc.base-Punchy sRGB-EOTF}
-    - !<View> {name: AgXc.softer, colorspace: Image AgXc.softer sRGB-EOTF}
-    - !<View> {name: AgXc.softer Punchy, colorspace: Image AgXc.softer-Punchy sRGB-EOTF}
-    - !<View> {name: Disabled, colorspace: Passthrough}
-    - !<View> {name: Display Native, colorspace: sRGB-EOTF}
   Display-P3:
     - !<View> {name: AgXc.base, colorspace: Image AgXc.base Display-P3}
     - !<View> {name: AgXc.base Punchy, colorspace: Image AgXc.base-Punchy Display-P3}
@@ -120,12 +113,12 @@ colorspaces:
         - !<ExponentTransform> {value: [2.2, 2.2, 2.2, 1], direction: inverse}
 
   - !<ColorSpace>
-    name: sRGB-EOTF
+    name: sRGB-piecewise
     family: Colorspaces
     equalitygroup: ""
     bitdepth: unknown
     description: |
-      sRGB IEC 61966-2-1 2.2 Exponent Reference EOTF Display
+      sRGB colorspace with piecewise transfer-function.
       This "colorspace" is required by Redshift.
     isdata: false
     allocation: uniform
@@ -327,23 +320,6 @@ colorspaces:
         - !<ColorSpaceTransform> {src: reference, dst: sRGB-2.2}
 
   - !<ColorSpace>
-    name: Image AgXc.base sRGB-EOTF
-    family: Views
-    equalitygroup: ""
-    bitdepth: unknown
-    description: |
-      A display-referred/display-ready colorspace. Built with:
-      - the AgXc.base image rendering transform
-      - a conversion for sRGB-EOTF display standard.
-    isdata: false
-    allocation: uniform
-    allocationvars: [0, 1]
-    from_reference: !<GroupTransform>
-      children:
-        - !<ColorSpaceTransform> {src: reference, dst: AgXc.base}
-        - !<ColorSpaceTransform> {src: reference, dst: sRGB-EOTF}
-
-  - !<ColorSpace>
     name: Image AgXc.base Display-P3
     family: Views
     equalitygroup: ""
@@ -395,25 +371,6 @@ colorspaces:
         - !<ColorSpaceTransform> {src: reference, dst: AgXc.base}
         - !<LookTransform> {src: BT.2020-linear, dst: BT.2020-linear, looks: Punchy}
         - !<ColorSpaceTransform> {src: reference, dst: sRGB-2.2}
-
-  - !<ColorSpace>
-    name: Image AgXc.base-Punchy sRGB-EOTF
-    family: Views
-    equalitygroup: ""
-    bitdepth: unknown
-    description: |
-      A display-referred/display-ready colorspace. Built with:
-      - the AgXc.base image rendering transform
-      - the Punchy look transform
-      - a conversion for sRGB-EOTF display standard.
-    isdata: false
-    allocation: uniform
-    allocationvars: [0, 1]
-    from_reference: !<GroupTransform>
-      children:
-        - !<ColorSpaceTransform> {src: reference, dst: AgXc.base}
-        - !<LookTransform> {src: BT.2020-linear, dst: BT.2020-linear, looks: Punchy}
-        - !<ColorSpaceTransform> {src: reference, dst: sRGB-EOTF}
 
   - !<ColorSpace>
     name: Image AgXc.base-Punchy Display-P3
@@ -471,23 +428,6 @@ colorspaces:
         - !<ColorSpaceTransform> {src: reference, dst: sRGB-2.2}
 
   - !<ColorSpace>
-    name: Image AgXc.softer sRGB-EOTF
-    family: Views
-    equalitygroup: ""
-    bitdepth: unknown
-    description: |
-      A display-referred/display-ready colorspace. Built with:
-      - the AgXc.softer image rendering transform
-      - a conversion for sRGB-EOTF display standard.
-    isdata: false
-    allocation: uniform
-    allocationvars: [0, 1]
-    from_reference: !<GroupTransform>
-      children:
-        - !<ColorSpaceTransform> {src: reference, dst: AgXc.softer}
-        - !<ColorSpaceTransform> {src: reference, dst: sRGB-EOTF}
-
-  - !<ColorSpace>
     name: Image AgXc.softer Display-P3
     family: Views
     equalitygroup: ""
@@ -539,25 +479,6 @@ colorspaces:
         - !<ColorSpaceTransform> {src: reference, dst: AgXc.softer}
         - !<LookTransform> {src: BT.2020-linear, dst: BT.2020-linear, looks: Punchy}
         - !<ColorSpaceTransform> {src: reference, dst: sRGB-2.2}
-
-  - !<ColorSpace>
-    name: Image AgXc.softer-Punchy sRGB-EOTF
-    family: Views
-    equalitygroup: ""
-    bitdepth: unknown
-    description: |
-      A display-referred/display-ready colorspace. Built with:
-      - the AgXc.softer image rendering transform
-      - the Punchy look transform
-      - a conversion for sRGB-EOTF display standard.
-    isdata: false
-    allocation: uniform
-    allocationvars: [0, 1]
-    from_reference: !<GroupTransform>
-      children:
-        - !<ColorSpaceTransform> {src: reference, dst: AgXc.softer}
-        - !<LookTransform> {src: BT.2020-linear, dst: BT.2020-linear, looks: Punchy}
-        - !<ColorSpaceTransform> {src: reference, dst: sRGB-EOTF}
 
   - !<ColorSpace>
     name: Image AgXc.softer-Punchy Display-P3

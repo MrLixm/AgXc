@@ -94,7 +94,7 @@ class AgXcConfig(ocio.Config):
         self.colorspace_EOTF_2_4 = "2.4-EOTF-Encoding"
         self.colorspace_sRGB_linear = "sRGB-linear"
         self.colorspace_sRGB_2_2 = "sRGB-2.2"
-        self.colorspace_sRGB_EOTF = "sRGB-EOTF"
+        self.colorspace_sRGB_EOTF = "sRGB-piecewise"
         self.colorspace_Display_P3 = "Display-P3"
         self.colorspace_BT1886 = "BT.1886"
         self.colorspace_AgX_Log = "AgXc-log"
@@ -116,7 +116,6 @@ class AgXcConfig(ocio.Config):
 
         self.display_colorspaces = [
             self.colorspace_sRGB_2_2,
-            self.colorspace_sRGB_EOTF,
             self.colorspace_Display_P3,
             self.colorspace_BT1886,
         ]
@@ -365,8 +364,9 @@ class AgXcConfig(ocio.Config):
                 ]
             )
 
+        # XXX: https://github.com/MrLixm/AgXc/issues/2
         with build_ocio_colorspace(self.colorspace_sRGB_EOTF, self) as colorspace:
-            colorspace.description = 'sRGB IEC 61966-2-1 2.2 Exponent Reference EOTF Display\nThis "colorspace" is required by Redshift.'
+            colorspace.description = 'sRGB colorspace with piecewise transfer-function.\nThis "colorspace" is required by Redshift.'
             colorspace.family = AgXcFamily.colorspaces
             colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
             if self.use_ocio_v1:
