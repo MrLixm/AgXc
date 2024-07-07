@@ -94,6 +94,7 @@ class ImageColorspace:
     image_rendering: str
     display_colorspace: str
     look: Optional[str] = None
+    look_space: Optional[str] = None
 
     @property
     def name(self) -> str:
@@ -131,6 +132,8 @@ class ImageColorspace:
         """
         List of transforms for the <ColorSpace>
         """
+        look_space = self.look_space or self.image_rendering
+
         transforms: list[ocio.Transform] = [
             ocio.ColorSpaceTransform(
                 src="reference",
@@ -140,8 +143,8 @@ class ImageColorspace:
         if self.look:
             transforms += [
                 ocio.LookTransform(
-                    src=self.image_rendering,
-                    dst=self.image_rendering,
+                    src=look_space,
+                    dst=look_space,
                     looks=self.look,
                 ),
             ]

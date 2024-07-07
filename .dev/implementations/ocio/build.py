@@ -79,8 +79,10 @@ class AgXcConfig(ocio.Config):
         ]
         self.overrides: list[str] = []
         self.lut_sRGB = "sRGB-EOTF-inverse.spi1d"
-        self.lut_AgX = "AgX_Default_Contrast.spi1d"
+        self.lut_AgX_tonescale_default = "AgX-tonescale-default.spi1d"
+        self.lut_AgX_tonescale_hardtoe = "AgX-tonescale-hardtoe.spi1d"
         self.lut_luma_compensation = "luminance-compensation.cube"
+        self.lut_satmax_2 = "saturation-max-2.cube"
         self._luts: dict[str, colour.LUT1D] = {}
 
         self.look_punchy = "Punchy"
@@ -95,9 +97,11 @@ class AgXcConfig(ocio.Config):
         self.colorspace_sRGB_EOTF = "sRGB-EOTF"
         self.colorspace_Display_P3 = "Display-P3"
         self.colorspace_BT1886 = "BT.1886"
-        self.colorspace_AgX_Log = "AgXc-Log"
-        self.colorspace_AgX_Base = "AgXc"
-        self.colorspace_AgX_tonescale = "AgXc-Tonescale"
+        self.colorspace_AgX_Log = "AgXc-log"
+        self.colorspace_AgX_Base = "AgXc.base"
+        self.colorspace_AgX_softer = "AgXc.softer"
+        self.colorspace_AgX_tonescale = "AgXc-tonescale-default"
+        self.colorspace_AgX_tonescale_hardtoe = "AgXc-tonescale-hardtoe"
         self.colorspace_Passthrough = "Passthrough"
         self.colorspace_ACEScg = "ACEScg"
         self.colorspace_ACES20651 = "ACES2065-1"
@@ -119,6 +123,7 @@ class AgXcConfig(ocio.Config):
 
         self.image_renderings = [
             self.colorspace_AgX_Base,
+            self.colorspace_AgX_softer,
         ]
 
         self.image_colorspaces: list[ImageColorspace] = []
@@ -132,6 +137,7 @@ class AgXcConfig(ocio.Config):
                         image_rendering=image_rendering,
                         display_colorspace=display_colorspace,
                         look=look,
+                        look_space=self.reference_colorspace_name,
                     )
                     self.image_colorspaces.append(image_colorspace)
 
@@ -198,7 +204,7 @@ class AgXcConfig(ocio.Config):
         array = AgXLib.apply_AgX_tonescale(array)
         lut = colour.LUT1D(
             table=array,
-            name="sRGB EOTF decoding",
+            name=Path(self.lut_AgX_tonescale_default).stem,
             domain=lut_domain,
             comments=[
                 "AgX 1D tonescale with following configuration",
@@ -208,7 +214,31 @@ class AgXcConfig(ocio.Config):
                 "   limits_contrast = (3.0, 3.25)",
             ],
         )
-        self._luts[self.lut_AgX] = lut
+        self._luts[self.lut_AgX_tonescale_default] = lut
+
+        lut_domain = [0.0, 1.0]
+        array = colour.LUT1D.linear_table(4096, lut_domain)
+        array = AgXLib.apply_AgX_tonescale(
+            array,
+            min_EV=-10,
+            max_EV=+6.8,
+            pivot_y=0.33,
+            general_contrast=2.74,
+            limits_contrast=(3.45, 3.25),
+        )
+        lut = colour.LUT1D(
+            table=array,
+            name=Path(self.lut_AgX_tonescale_hardtoe).stem,
+            domain=lut_domain,
+            comments=[
+                "AgX 1D tonescale with following configuration",
+                "   min_EV = -10.0",
+                "   max_EV = +6.8",
+                "   general_contrast = 2.74",
+                "   limits_contrast = (3.45, 3.25)",
+            ],
+        )
+        self._luts[self.lut_AgX_tonescale_hardtoe] = lut
 
         lut_domain = numpy.array([[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]])
         array = colour.LUT3D.linear_table(64, lut_domain)
@@ -218,7 +248,10 @@ class AgXcConfig(ocio.Config):
             max_exposure=+15,
             middle_grey=0.18,
         )
-        array = AgXLib.reshape.apply_luminance_compensation(array)
+        array = AgXLib.reshape.apply_luminance_compensation(
+            array,
+            luma_weights=(0.33, 0.88, 0.2),
+        )
         array = colour.models.log_encoding_Log2(
             array,
             min_exposure=-10,
@@ -233,12 +266,32 @@ class AgXcConfig(ocio.Config):
         )
         self._luts[self.lut_luma_compensation] = lut
 
+        lut_domain = numpy.array([[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]])
+        array = colour.LUT3D.linear_table(64, lut_domain)
+        array = AgXLib.grading.saturation_max(array, amount=2.0)
+        lut = colour.LUT3D(
+            table=array,
+            name="Saturation with max luma calculation to apply on log encoding.",
+            domain=lut_domain,
+            comments=[],
+        )
+        self._luts[self.lut_satmax_2] = lut
+
     def _build_looks(self):
         look = ocio.Look(
             name=self.look_punchy,
-            processSpace=self.colorspace_AgX_Base,
+            processSpace=self.colorspace_AgX_Log,
             description="A punchy and more chroma laden look.",
-            transform=ocio.CDLTransform(power=[1.3, 1.3, 1.3], sat=1.2),
+            transform=ocio.GroupTransform(
+                [
+                    ocio.FileTransform(src=self.lut_satmax_2),
+                    ocio.CDLTransform(
+                        slope=(1.01,) * 3,
+                        offset=(0.038,) * 3,
+                        power=(1.24,) * 3,
+                    ),
+                ]
+            ),
         )
         self.addLook(look)
 
@@ -361,6 +414,104 @@ class AgXcConfig(ocio.Config):
 
         # // AgX colorspaces
 
+        def get_agx_transform(soft_variant=False):
+            # XXX: all the inset/rotate values were produced from experimentation in Nuke
+            #   using the "MacAdam moments" experiment from jpzambrano:
+            #   https://community.acescentral.com/t/aces-2-0-cam-drt-development/4700/434
+            src_matrix_pre_inset = AgXLib.get_reshaped_colorspace_matrix(
+                src_gamut=self.reference_colour_colorspace.primaries,
+                src_whitepoint=self.reference_colour_colorspace.whitepoint,
+                inset_r=0.62,
+                inset_g=0.55,
+                inset_b=0.58,
+                rotate_r=10,
+                rotate_g=4,
+                rotate_b=19,
+            )
+            pre_inset_matrix = matrix_format_ocio(
+                numpy.linalg.inv(src_matrix_pre_inset)
+            )
+            src_matrix_inset = AgXLib.get_reshaped_colorspace_matrix(
+                src_gamut=self.reference_colour_colorspace.primaries,
+                src_whitepoint=self.reference_colour_colorspace.whitepoint,
+                inset_r=0.62,
+                inset_g=0.5,
+                inset_b=0.5,
+                rotate_r=16,
+                rotate_g=-24,
+                rotate_b=-12,
+            )
+            inset_matrix = matrix_format_ocio(numpy.linalg.inv(src_matrix_inset))
+
+            src_matrix_outset = AgXLib.get_reshaped_colorspace_matrix(
+                src_gamut=self.reference_colour_colorspace.primaries,
+                src_whitepoint=self.reference_colour_colorspace.whitepoint,
+                inset_r=0.62,
+                inset_g=0.5,
+                inset_b=0.5,
+                # outset doesnt restore rotation
+                rotate_r=0,
+                rotate_g=0,
+                rotate_b=0,
+            )
+            outset_matrix = matrix_format_ocio(src_matrix_outset)
+            restore_matrix = get_conversion_matrix("sRGB")
+
+            tonescale_lut = (
+                self.lut_AgX_tonescale_hardtoe
+                if soft_variant
+                else self.lut_AgX_tonescale_default
+            )
+
+            if soft_variant:
+                linearize_transform = [
+                    ocio.CDLTransform(slope=(0.82, 0.82, 0.82)),
+                ]
+            else:
+                linearize_transform = [
+                    ocio.ColorSpaceTransform(
+                        src=self.colorspace_EOTF_2_4,
+                        dst="reference",
+                    ),
+                ]
+
+            transforms = [
+                # pre-inset
+                ocio.MatrixTransform(matrix=pre_inset_matrix),
+                # lumninance compensation as 3D Lut
+                ocio.AllocationTransform(
+                    allocation=ocio.ALLOCATION_LG2,
+                    vars=[-10, 15],
+                ),
+                ocio.FileTransform(
+                    src=self.lut_luma_compensation,
+                    interpolation=ocio.INTERP_LINEAR,
+                ),
+                ocio.AllocationTransform(
+                    allocation=ocio.ALLOCATION_LG2,
+                    vars=[-10, 15],
+                    direction=ocio.TRANSFORM_DIR_INVERSE,
+                ),
+                # inset
+                ocio.MatrixTransform(matrix=inset_matrix),
+                # log-encoding for tonescale
+                ocio.ColorSpaceTransform(
+                    src="reference",
+                    dst=self.colorspace_AgX_Log,
+                ),
+                # tonescale
+                ocio.FileTransform(
+                    src=tonescale_lut,
+                    interpolation=ocio.INTERP_LINEAR,
+                ),
+                # outset to inverse inset
+                ocio.MatrixTransform(matrix=outset_matrix),
+                # no idea why we need this, but it looks better with
+                ocio.MatrixTransform(matrix=restore_matrix),
+            ]
+            transforms += linearize_transform
+            return transforms
+
         with build_ocio_colorspace(self.colorspace_AgX_Log, self) as colorspace:
             colorspace.description = "AgX Log encoding."
             colorspace.family = AgXcFamily.agx
@@ -399,89 +550,23 @@ class AgXcConfig(ocio.Config):
             colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
             if self.use_ocio_v1:
                 colorspace.allocationVars = [0, 1]
+            colorspace.set_transforms_from_reference(
+                get_agx_transform(soft_variant=False)
+            )
 
-            # XXX: all the inset/rotate values were produced from experimentation in Nuke
-            #   using the "MacAdam moments" experiment from jpzambrano:
-            #   https://community.acescentral.com/t/aces-2-0-cam-drt-development/4700/434
-            src_matrix_pre_inset = AgXLib.get_reshaped_colorspace_matrix(
-                src_gamut=self.reference_colour_colorspace.primaries,
-                src_whitepoint=self.reference_colour_colorspace.whitepoint,
-                inset_r=0.62,
-                inset_g=0.55,
-                inset_b=0.58,
-                rotate_r=10,
-                rotate_g=4,
-                rotate_b=19,
+        with build_ocio_colorspace(self.colorspace_AgX_softer, self) as colorspace:
+            colorspace.description = (
+                "AgXc image rendering transform.\n"
+                "The tonescale produce a softer result in highlights."
+                "Output is encoded in working colorspace."
             )
-            pre_inset_matrix = matrix_format_ocio(
-                numpy.linalg.inv(src_matrix_pre_inset)
-            )
-            src_matrix_inset = AgXLib.get_reshaped_colorspace_matrix(
-                src_gamut=self.reference_colour_colorspace.primaries,
-                src_whitepoint=self.reference_colour_colorspace.whitepoint,
-                inset_r=0.65,
-                inset_g=0.5,
-                inset_b=0.5,
-                rotate_r=16,
-                rotate_g=-24,
-                rotate_b=-12,
-            )
-            inset_matrix = matrix_format_ocio(numpy.linalg.inv(src_matrix_inset))
-
-            src_matrix_outset = AgXLib.get_reshaped_colorspace_matrix(
-                src_gamut=self.reference_colour_colorspace.primaries,
-                src_whitepoint=self.reference_colour_colorspace.whitepoint,
-                inset_r=0.65,
-                inset_g=0.5,
-                inset_b=0.5,
-                # outset doesnt restore rotation
-                rotate_r=0,
-                rotate_g=0,
-                rotate_b=0,
-            )
-            outset_matrix = matrix_format_ocio(src_matrix_outset)
-            restore_matrix = get_conversion_matrix("sRGB")
+            colorspace.family = AgXcFamily.agx
+            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
+            if self.use_ocio_v1:
+                colorspace.allocationVars = [0, 1]
 
             colorspace.set_transforms_from_reference(
-                [
-                    # pre-inset
-                    ocio.MatrixTransform(matrix=pre_inset_matrix),
-                    # lumninance compensation as 3D Lut
-                    ocio.AllocationTransform(
-                        allocation=ocio.ALLOCATION_LG2,
-                        vars=[-10, 15],
-                    ),
-                    ocio.FileTransform(
-                        src=self.lut_luma_compensation,
-                        interpolation=ocio.INTERP_LINEAR,
-                    ),
-                    ocio.AllocationTransform(
-                        allocation=ocio.ALLOCATION_LG2,
-                        vars=[-10, 15],
-                        direction=ocio.TRANSFORM_DIR_INVERSE,
-                    ),
-                    # inset
-                    ocio.MatrixTransform(matrix=inset_matrix),
-                    # log-encoding for tonescale
-                    ocio.ColorSpaceTransform(
-                        src="reference",
-                        dst=self.colorspace_AgX_Log,
-                    ),
-                    # tonescale
-                    ocio.FileTransform(
-                        src=self.lut_AgX,
-                        interpolation=ocio.INTERP_LINEAR,
-                    ),
-                    # outset to inverse inset
-                    ocio.MatrixTransform(matrix=outset_matrix),
-                    # no idea why we need this, but it looks better with
-                    ocio.MatrixTransform(matrix=restore_matrix),
-                    # the tonescale already include the EOTF so linearize
-                    ocio.ColorSpaceTransform(
-                        src=self.colorspace_EOTF_2_4,
-                        dst="reference",
-                    ),
-                ]
+                get_agx_transform(soft_variant=True)
             )
 
         with build_ocio_colorspace(self.colorspace_AgX_tonescale, self) as colorspace:
@@ -500,7 +585,7 @@ class AgXcConfig(ocio.Config):
                     ),
                     # tonescale
                     ocio.FileTransform(
-                        src=self.lut_AgX,
+                        src=self.lut_AgX_tonescale_default,
                         interpolation=ocio.INTERP_LINEAR,
                     ),
                     # the tonescale already include the EOTF so linearize
@@ -641,7 +726,8 @@ class AgXcConfig(ocio.Config):
         # one could argue than in that case it's not useful to have it as a Display, and
         # the user can already pick the existing colorspace.
         with build_display_views("Pre-Display", self) as display:
-            display.append(View("AgXc", self.colorspace_AgX_Base))
+            display.append(View(self.colorspace_AgX_Base, self.colorspace_AgX_Base))
+            display.append(View(self.colorspace_AgX_softer, self.colorspace_AgX_softer))
 
         self.setActiveDisplays(":".join([]))
         self.setActiveViews(":".join([]))
