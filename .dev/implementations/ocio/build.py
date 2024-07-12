@@ -1,9 +1,11 @@
 import argparse
+import dataclasses
 import datetime
 import enum
 import logging
 import sys
 from pathlib import Path
+from typing import Optional
 
 import PyOpenColorIO as ocio
 import colour
@@ -44,18 +46,39 @@ class AgXcFamily(BaseFamily):
     views = "Views"
 
 
-class AgXcConfigVariant(enum.Enum):
-    default_ociov1 = "default_OCIO-v1"
-    default_ociov2 = "default_OCIO-v2"
-    blender_ociov2 = "blender_OCIO-v2"
+class Dcc(enum.Enum):
+    any = enum.auto()
+    """
+    imply all DCCs
+    """
 
-    @classmethod
-    def get_all(cls):
-        return [
-            cls.default_ociov1,
-            cls.default_ociov2,
-            cls.blender_ociov2,
-        ]
+    none = enum.auto()
+    """
+    imply no DCCs
+    """
+
+    blender = enum.auto()
+
+
+@dataclasses.dataclass
+class ConfigVariant:
+    name: str
+    """
+    unique filesystem-safe name
+    """
+
+    ocio_version: int
+    """
+    major version of the OCIO API for this variant
+    """
+
+    dcc_support: Optional[Dcc]
+    """
+    The dcc this variant was made for.
+    """
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class AgXcConfig(ocio.Config):
@@ -64,17 +87,17 @@ class AgXcConfig(ocio.Config):
     default_cat = "Bradford"
     decimal_precision = 12
 
-    def __init__(self, variant: AgXcConfigVariant):
+    def __init__(self, variant: ConfigVariant):
         super().__init__()
 
         self._variant = variant
 
-        self.use_ocio_v1 = self._variant is self._variant.default_ociov1
+        self.use_ocio_v1 = self._variant.ocio_version == 1
 
         self.header: list[str] = [
             f"# version: {self.version}",
             f"# name: AgXc",
-            f"# variant: {variant.value}",
+            f"# variant: {variant.name}",
             f"# built on: {datetime.datetime.now()}",
             "# // visit https://github.com/MrLixm/AgXc",
             "# // and inspect the python build script for details",
@@ -181,7 +204,7 @@ class AgXcConfig(ocio.Config):
         self.setRole("cie_xyz_d65_interchange", self.colorspace_CIE_XYZ_D65)
 
         # https://docs.blender.org/manual/en/latest/render/color_management.html#opencolorio-configuration
-        if variant == variant.blender_ociov2:
+        if variant.dcc_support in [Dcc.any, Dcc.blender]:
             self.setRole("color_picking", self.reference_colorspace_name)
             self.setRole("default_sequencer", self.reference_colorspace_name)
             self.setRole("default_byte", self.colorspace_sRGB_2_2)
@@ -808,7 +831,11 @@ def main():
             f"Target directory must exist on disk. Got <{target_dir}>."
         )
 
-    variants = AgXcConfigVariant.get_all()
+    variants = [
+        ConfigVariant("default_OCIO-v1", ocio_version=1, dcc_support=Dcc.none),
+        ConfigVariant("default_OCIO-v2", ocio_version=2, dcc_support=Dcc.none),
+        ConfigVariant("blender_OCIO-v2", ocio_version=2, dcc_support=Dcc.blender),
+    ]
     for index, variant in enumerate(variants):
         LOGGER.info(
             f"{index+1}/{len(variants)} generating ocio config variant {variant}"
@@ -816,7 +843,7 @@ def main():
         ocio_config = AgXcConfig(variant=variant)
         ocio_config.validate()
 
-        ocio_config_path = target_dir / f"AgXc_{variant.value}"
+        ocio_config_path = target_dir / f"AgXc_{variant.name}"
         if not ocio_config_path.exists():
             LOGGER.debug(f"mkdir({ocio_config_path})")
             ocio_config_path.mkdir()
