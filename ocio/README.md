@@ -14,17 +14,10 @@ The config from the v1.0.0 version now offer a new look based on those research.
 ## prerequisites
 
 - The config can be used with any DCC supporting OpenColorIO
-- The config is compatible with OCIO v2 and OCIO v1.
+- The config is compatible with OCIO v2 and OCIO v1 depending on its variant.
 
-Note the config has been tested and confirmed to work on:
-
-- RV (no exact version, tested q1 2022)
-- Katana (4.0)
-- Nuke (13)
-- C4D (2023) + Redshift (3.5.07)
-
-However, I do not guarantee it is perfectly working on OCIO v1 GPU engine
-(due to allocation vars mechanism being tricky to configure).
+I do not guarantee the config to perfectly works on OCIO v1 GPU engine
+(due to _allocation vars_ mechanism being tricky to configure).
 
 
 ## content
@@ -37,12 +30,30 @@ The config offers support for 3 type of **SDR** display:
 - BT.1886 (also known as Rec.709)
 - DisplayP3 (Apple devices)
 
-You have 2 variants available depending on your needs:
+You have 5 variants available depending on your needs:
 
-| variant                                      | description                                               |
-|----------------------------------------------|-----------------------------------------------------------|
-| [AgXc_default_OCIO-v1](AgXc_default_OCIO-v1) | compatible with OCIOv1+                                   |
-| [AgXc_default_OCIO-v2](AgXc_default_OCIO-v2) | compatible with OCIOv2+ and include new feature of OCIOv2 |
+- [`AgXc_default_OCIO-v1`](AgXc_default_OCIO-v1)
+  - compatible with OCIOv1+  
+  - minimal configuration
+- [`AgXc_default_OCIO-v2`](AgXc_default_OCIO-v2)
+  - compatible with OCIOv2+ and include new feature of OCIOv2 
+  - minimal configuration
+- [`AgXc_all-dccs_OCIO-v1`](AgXc_all-dccs_OCIO-v1)
+  - compatible with OCIOv1+     
+  - try to offer support for all DCCs at once
+- [`AgXc_all-dccs_OCIO-v2`](AgXc_all-dccs_OCIO-v2)
+  - compatible with OCIOv2+ and include new feature of OCIOv2 
+  - try to offer support for all DCCs at once
+- [`AgXc_blender_OCIO-v2`](AgXc_blender_OCIO-v2)
+  - compatible with OCIOv2+ and include new feature of OCIOv2 
+  - offer support for at least Blender
+
+If that is not clear, uses the _"all"_ variant if you tend to set the OCIO variable 
+once for all your DCC (ex: system environment variable). The other variants are
+useful if you are granular when setting environment variables and you are using
+custom launcher for every DCC. In that case use the config matching your DCC or
+use the _"default"_ one if your dcc is not listed.
+
 
 ### implementation design
 
@@ -66,6 +77,10 @@ far it seems to hold up pretty well.
 
 
 ### differences with original
+
+Note the config has evolved a lto since the initial fork and the following list
+does not fully reflect the differences but might be useful for people used
+to the original AgX config.
 
 - Slight update in the colorspaces names / families 
     - `Generic Data` -> `Passthrough` ( for scalar data)
