@@ -834,6 +834,8 @@ def main():
     variants = [
         ConfigVariant("default_OCIO-v1", ocio_version=1, dcc_support=Dcc.none),
         ConfigVariant("default_OCIO-v2", ocio_version=2, dcc_support=Dcc.none),
+        ConfigVariant("all-dccs_OCIO-v1", ocio_version=1, dcc_support=Dcc.any),
+        ConfigVariant("all-dccs_OCIO-v2", ocio_version=2, dcc_support=Dcc.any),
         ConfigVariant("blender_OCIO-v2", ocio_version=2, dcc_support=Dcc.blender),
     ]
     for index, variant in enumerate(variants):
