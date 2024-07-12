@@ -6,6 +6,7 @@ import logging
 import sys
 from pathlib import Path
 from typing import Optional
+from typing import Union
 
 import PyOpenColorIO as ocio
 import colour
@@ -108,7 +109,7 @@ class AgXcConfig(ocio.Config):
         self.lut_AgX_tonescale_hardtoe = "AgX-tonescale-hardtoe.spi1d"
         self.lut_luma_compensation = "luminance-compensation.cube"
         self.lut_satmax_2 = "saturation-max-2.cube"
-        self._luts: dict[str, colour.LUT1D] = {}
+        self._luts: dict[str, Union[colour.LUT3D, colour.LUT1D]] = {}
 
         self.look_punchy = "Punchy"
         self.looks = [
@@ -331,7 +332,7 @@ class AgXcConfig(ocio.Config):
 
         def get_conversion_matrix(colorspace_name: str) -> list[float]:
             if colorspace_name == "XYZ":
-                _src = "XYZ"
+                _src: str = "XYZ"
                 _src_whitepoint = whitepoint_d65
             else:
                 _src: colour.RGB_Colourspace = colour.RGB_COLOURSPACES[colorspace_name]
