@@ -22,6 +22,7 @@ ADDITIONAL_MODULES_DIR = str(PARENT_DIR / "modules")
 if ADDITIONAL_MODULES_DIR not in sys.path:
     sys.path.append(ADDITIONAL_MODULES_DIR)
 
+from giting import get_current_commit_hash
 from ocio_matrix_generation import matrix_primaries_transform_ocio
 from ocio_matrix_generation import matrix_format_ocio
 from ocio_config_helpers import View
@@ -29,6 +30,9 @@ from ocio_config_helpers import BaseFamily
 from ocio_config_helpers import build_ocio_colorspace
 from ocio_config_helpers import build_display_views
 from ocio_config_helpers import ImageColorspace
+
+
+_COMMIT_HASH = get_current_commit_hash(PARENT_DIR)
 
 
 def set_colorspace_linear(colour_colorspace: colour.RGB_Colourspace):
@@ -99,7 +103,10 @@ class AgXcConfig(ocio.Config):
             f"# version: {self.version}",
             f"# name: AgXc",
             f"# variant: {variant.name}",
-            f"# built on: {datetime.datetime.now()}",
+            f"# built-on: {datetime.datetime.now()}",
+            # XXX: the build being part of a commit we reference the previous commit
+            #   which is better than nothing I guess.
+            f"# previous-commit-hash: {_COMMIT_HASH}",
             "# // visit https://github.com/MrLixm/AgXc",
             "# // and inspect the python build script for details",
         ]

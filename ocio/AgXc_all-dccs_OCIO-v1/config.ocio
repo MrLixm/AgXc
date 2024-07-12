@@ -1,7 +1,8 @@
 # version: 1.0.0
 # name: AgXc
 # variant: all-dccs_OCIO-v1
-# built on: 2024-07-12 13:07:02.684640
+# built-on: 2024-07-12 13:32:36.836953
+# previous-commit-hash: e011a6588083f315a0c13e89a981e372ee2183c8
 # // visit https://github.com/MrLixm/AgXc
 # // and inspect the python build script for details
 
