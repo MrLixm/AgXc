@@ -1,7 +1,7 @@
 # version: 1.0.0
 # name: AgXc
 # variant: default_OCIO-v1
-# built on: 2024-07-07 16:54:47.724791
+# built on: 2024-07-12 12:51:58.115013
 # // visit https://github.com/MrLixm/AgXc
 # // and inspect the python build script for details
 
@@ -27,9 +27,6 @@ roles:
   compositing_log: AgXc-log
   data: Passthrough
   default: sRGB-2.2
-  default_byte: sRGB-2.2
-  default_float: sRGB-linear
-  default_sequencer: sRGB-2.2
   matte_paint: sRGB-2.2
   reference: BT.2020-linear
   scene_linear: BT.2020-linear
@@ -37,24 +34,24 @@ roles:
 
 displays:
   sRGB-2.2:
-    - !<View> {name: AgXc.base, colorspace: Image AgXc.base sRGB-2.2}
     - !<View> {name: AgXc.base Punchy, colorspace: Image AgXc.base-Punchy sRGB-2.2}
-    - !<View> {name: AgXc.softer, colorspace: Image AgXc.softer sRGB-2.2}
+    - !<View> {name: AgXc.base, colorspace: Image AgXc.base sRGB-2.2}
     - !<View> {name: AgXc.softer Punchy, colorspace: Image AgXc.softer-Punchy sRGB-2.2}
+    - !<View> {name: AgXc.softer, colorspace: Image AgXc.softer sRGB-2.2}
     - !<View> {name: Disabled, colorspace: Passthrough}
     - !<View> {name: Display Native, colorspace: sRGB-2.2}
   Display-P3:
-    - !<View> {name: AgXc.base, colorspace: Image AgXc.base Display-P3}
     - !<View> {name: AgXc.base Punchy, colorspace: Image AgXc.base-Punchy Display-P3}
-    - !<View> {name: AgXc.softer, colorspace: Image AgXc.softer Display-P3}
+    - !<View> {name: AgXc.base, colorspace: Image AgXc.base Display-P3}
     - !<View> {name: AgXc.softer Punchy, colorspace: Image AgXc.softer-Punchy Display-P3}
+    - !<View> {name: AgXc.softer, colorspace: Image AgXc.softer Display-P3}
     - !<View> {name: Disabled, colorspace: Passthrough}
     - !<View> {name: Display Native, colorspace: Display-P3}
   BT.1886:
-    - !<View> {name: AgXc.base, colorspace: Image AgXc.base BT.1886}
     - !<View> {name: AgXc.base Punchy, colorspace: Image AgXc.base-Punchy BT.1886}
-    - !<View> {name: AgXc.softer, colorspace: Image AgXc.softer BT.1886}
+    - !<View> {name: AgXc.base, colorspace: Image AgXc.base BT.1886}
     - !<View> {name: AgXc.softer Punchy, colorspace: Image AgXc.softer-Punchy BT.1886}
+    - !<View> {name: AgXc.softer, colorspace: Image AgXc.softer BT.1886}
     - !<View> {name: Disabled, colorspace: Passthrough}
     - !<View> {name: Display Native, colorspace: BT.1886}
   Pre-Display:
@@ -303,57 +300,6 @@ colorspaces:
     from_reference: !<MatrixTransform> {}
 
   - !<ColorSpace>
-    name: Image AgXc.base sRGB-2.2
-    family: Views
-    equalitygroup: ""
-    bitdepth: unknown
-    description: |
-      A display-referred/display-ready colorspace. Built with:
-      - the AgXc.base image rendering transform
-      - a conversion for sRGB-2.2 display standard.
-    isdata: false
-    allocation: uniform
-    allocationvars: [0, 1]
-    from_reference: !<GroupTransform>
-      children:
-        - !<ColorSpaceTransform> {src: reference, dst: AgXc.base}
-        - !<ColorSpaceTransform> {src: reference, dst: sRGB-2.2}
-
-  - !<ColorSpace>
-    name: Image AgXc.base Display-P3
-    family: Views
-    equalitygroup: ""
-    bitdepth: unknown
-    description: |
-      A display-referred/display-ready colorspace. Built with:
-      - the AgXc.base image rendering transform
-      - a conversion for Display-P3 display standard.
-    isdata: false
-    allocation: uniform
-    allocationvars: [0, 1]
-    from_reference: !<GroupTransform>
-      children:
-        - !<ColorSpaceTransform> {src: reference, dst: AgXc.base}
-        - !<ColorSpaceTransform> {src: reference, dst: Display-P3}
-
-  - !<ColorSpace>
-    name: Image AgXc.base BT.1886
-    family: Views
-    equalitygroup: ""
-    bitdepth: unknown
-    description: |
-      A display-referred/display-ready colorspace. Built with:
-      - the AgXc.base image rendering transform
-      - a conversion for BT.1886 display standard.
-    isdata: false
-    allocation: uniform
-    allocationvars: [0, 1]
-    from_reference: !<GroupTransform>
-      children:
-        - !<ColorSpaceTransform> {src: reference, dst: AgXc.base}
-        - !<ColorSpaceTransform> {src: reference, dst: BT.1886}
-
-  - !<ColorSpace>
     name: Image AgXc.base-Punchy sRGB-2.2
     family: Views
     equalitygroup: ""
@@ -411,54 +357,54 @@ colorspaces:
         - !<ColorSpaceTransform> {src: reference, dst: BT.1886}
 
   - !<ColorSpace>
-    name: Image AgXc.softer sRGB-2.2
+    name: Image AgXc.base sRGB-2.2
     family: Views
     equalitygroup: ""
     bitdepth: unknown
     description: |
       A display-referred/display-ready colorspace. Built with:
-      - the AgXc.softer image rendering transform
+      - the AgXc.base image rendering transform
       - a conversion for sRGB-2.2 display standard.
     isdata: false
     allocation: uniform
     allocationvars: [0, 1]
     from_reference: !<GroupTransform>
       children:
-        - !<ColorSpaceTransform> {src: reference, dst: AgXc.softer}
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc.base}
         - !<ColorSpaceTransform> {src: reference, dst: sRGB-2.2}
 
   - !<ColorSpace>
-    name: Image AgXc.softer Display-P3
+    name: Image AgXc.base Display-P3
     family: Views
     equalitygroup: ""
     bitdepth: unknown
     description: |
       A display-referred/display-ready colorspace. Built with:
-      - the AgXc.softer image rendering transform
+      - the AgXc.base image rendering transform
       - a conversion for Display-P3 display standard.
     isdata: false
     allocation: uniform
     allocationvars: [0, 1]
     from_reference: !<GroupTransform>
       children:
-        - !<ColorSpaceTransform> {src: reference, dst: AgXc.softer}
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc.base}
         - !<ColorSpaceTransform> {src: reference, dst: Display-P3}
 
   - !<ColorSpace>
-    name: Image AgXc.softer BT.1886
+    name: Image AgXc.base BT.1886
     family: Views
     equalitygroup: ""
     bitdepth: unknown
     description: |
       A display-referred/display-ready colorspace. Built with:
-      - the AgXc.softer image rendering transform
+      - the AgXc.base image rendering transform
       - a conversion for BT.1886 display standard.
     isdata: false
     allocation: uniform
     allocationvars: [0, 1]
     from_reference: !<GroupTransform>
       children:
-        - !<ColorSpaceTransform> {src: reference, dst: AgXc.softer}
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc.base}
         - !<ColorSpaceTransform> {src: reference, dst: BT.1886}
 
   - !<ColorSpace>
@@ -516,4 +462,55 @@ colorspaces:
       children:
         - !<ColorSpaceTransform> {src: reference, dst: AgXc.softer}
         - !<LookTransform> {src: BT.2020-linear, dst: BT.2020-linear, looks: Punchy}
+        - !<ColorSpaceTransform> {src: reference, dst: BT.1886}
+
+  - !<ColorSpace>
+    name: Image AgXc.softer sRGB-2.2
+    family: Views
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      A display-referred/display-ready colorspace. Built with:
+      - the AgXc.softer image rendering transform
+      - a conversion for sRGB-2.2 display standard.
+    isdata: false
+    allocation: uniform
+    allocationvars: [0, 1]
+    from_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc.softer}
+        - !<ColorSpaceTransform> {src: reference, dst: sRGB-2.2}
+
+  - !<ColorSpace>
+    name: Image AgXc.softer Display-P3
+    family: Views
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      A display-referred/display-ready colorspace. Built with:
+      - the AgXc.softer image rendering transform
+      - a conversion for Display-P3 display standard.
+    isdata: false
+    allocation: uniform
+    allocationvars: [0, 1]
+    from_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc.softer}
+        - !<ColorSpaceTransform> {src: reference, dst: Display-P3}
+
+  - !<ColorSpace>
+    name: Image AgXc.softer BT.1886
+    family: Views
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      A display-referred/display-ready colorspace. Built with:
+      - the AgXc.softer image rendering transform
+      - a conversion for BT.1886 display standard.
+    isdata: false
+    allocation: uniform
+    allocationvars: [0, 1]
+    from_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc.softer}
         - !<ColorSpaceTransform> {src: reference, dst: BT.1886}

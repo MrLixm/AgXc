@@ -47,12 +47,14 @@ class AgXcFamily(BaseFamily):
 class AgXcConfigVariant(enum.Enum):
     default_ociov1 = "default_OCIO-v1"
     default_ociov2 = "default_OCIO-v2"
+    blender_ociov2 = "blender_OCIO-v2"
 
     @classmethod
     def get_all(cls):
         return [
             cls.default_ociov1,
             cls.default_ociov2,
+            cls.blender_ociov2,
         ]
 
 
@@ -130,7 +132,9 @@ class AgXcConfig(ocio.Config):
         # we do a matrix of image_rendering x look x display_colorspace to define how
         # much "image" colorspace we need to create
         for image_rendering in self.image_renderings:
-            for look in [None] + self.looks:
+            # XXX: order matters as they are used to build the Display/Views
+            #   and the first view is usually the "default" view in DCC (ex: Blender)
+            for look in self.looks + [None]:
                 for display_colorspace in self.display_colorspaces:
                     image_colorspace = ImageColorspace(
                         image_rendering=image_rendering,
@@ -169,15 +173,19 @@ class AgXcConfig(ocio.Config):
         self.setRole("compositing_log", self.colorspace_AgX_Log)
         self.setRole("data", self.colorspace_Passthrough)
         self.setRole("default", self.colorspace_sRGB_2_2)
-        self.setRole("default_byte", self.colorspace_sRGB_2_2)
-        self.setRole("default_float", self.colorspace_sRGB_linear)
-        self.setRole("default_sequencer", self.colorspace_sRGB_2_2)
         self.setRole("matte_paint", self.colorspace_sRGB_2_2)
         self.setRole("reference", self.reference_colorspace_name)
         self.setRole("scene_linear", self.reference_colorspace_name)
         self.setRole("texture_paint", self.colorspace_sRGB_2_2)
         self.setRole("aces_interchange", self.colorspace_ACES20651)
         self.setRole("cie_xyz_d65_interchange", self.colorspace_CIE_XYZ_D65)
+
+        # https://docs.blender.org/manual/en/latest/render/color_management.html#opencolorio-configuration
+        if variant == variant.blender_ociov2:
+            self.setRole("color_picking", self.reference_colorspace_name)
+            self.setRole("default_sequencer", self.reference_colorspace_name)
+            self.setRole("default_byte", self.colorspace_sRGB_2_2)
+            self.setRole("default_float", self.colorspace_sRGB_linear)
 
         self._build_looks()
         self._build_colorspaces()

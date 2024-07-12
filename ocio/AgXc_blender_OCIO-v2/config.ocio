@@ -1,7 +1,7 @@
 # version: 1.0.0
 # name: AgXc
-# variant: default_OCIO-v2
-# built on: 2024-07-12 12:52:00.935879
+# variant: blender_OCIO-v2
+# built on: 2024-07-12 12:52:03.766509
 # // visit https://github.com/MrLixm/AgXc
 # // and inspect the python build script for details
 
@@ -21,11 +21,14 @@ description: |
 roles:
   aces_interchange: ACES2065-1
   cie_xyz_d65_interchange: CIE-XYZ-D65
-  color_picking: sRGB-2.2
+  color_picking: BT.2020-linear
   color_timing: sRGB-2.2
   compositing_log: AgXc-log
   data: Passthrough
   default: sRGB-2.2
+  default_byte: sRGB-2.2
+  default_float: sRGB-linear
+  default_sequencer: BT.2020-linear
   matte_paint: sRGB-2.2
   reference: BT.2020-linear
   scene_linear: BT.2020-linear
