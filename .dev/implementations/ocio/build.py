@@ -388,9 +388,7 @@ class AgXcConfig(ocio.Config):
         # // display-referred colorspaces
 
         with build_ocio_colorspace(self.colorspace_sRGB_2_2, self) as colorspace:
-            colorspace.description = (
-                "sRGB with transfer-function simplified to the 2.2 power function."
-            )
+            colorspace.description = "sRGB with 2.2 power function transfer-function."
             colorspace.family = AgXcFamily.colorspaces
             colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
             if self.use_ocio_v1:
@@ -437,7 +435,7 @@ class AgXcConfig(ocio.Config):
             )
 
         with build_ocio_colorspace(self.colorspace_BT1886, self) as colorspace:
-            colorspace.description = "BT.1886 2.4 Exponent EOTF Display. Also known as Rec.709 transfer function."
+            colorspace.description = "sRGB primaries, D65 whitepoint and 2.4 Exponent EOTF. Also known as Rec.709."
             colorspace.family = AgXcFamily.colorspaces
             colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
             if self.use_ocio_v1:
@@ -649,7 +647,9 @@ class AgXcConfig(ocio.Config):
             colorspace.equalityGroup = "scalar"
 
         with build_ocio_colorspace(self.colorspace_sRGB_linear, self) as colorspace:
-            colorspace.description = "Open Domain Linear BT.709 Tristimulus"
+            colorspace.description = (
+                "Standard sRGB colorspace with linear transfer-function."
+            )
             colorspace.family = AgXcFamily.colorspaces
             colorspace.bitdepth = ocio.BIT_DEPTH_F32
             if self.use_ocio_v1:

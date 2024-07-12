@@ -1,8 +1,8 @@
 # version: 1.0.0
 # name: AgXc
 # variant: default_OCIO-v1
-# built-on: 2024-07-12 13:32:30.853544
-# previous-commit-hash: e011a6588083f315a0c13e89a981e372ee2183c8
+# built-on: 2024-07-12 13:56:50.076608
+# previous-commit-hash: cce72b196e32ae6187be50d244e32648ba815c0f
 # // visit https://github.com/MrLixm/AgXc
 # // and inspect the python build script for details
 
@@ -101,7 +101,7 @@ colorspaces:
     family: Colorspaces
     equalitygroup: ""
     bitdepth: unknown
-    description: sRGB with transfer-function simplified to the 2.2 power function.
+    description: sRGB with 2.2 power function transfer-function.
     isdata: false
     allocation: uniform
     allocationvars: [0, 1]
@@ -145,7 +145,7 @@ colorspaces:
     family: Colorspaces
     equalitygroup: ""
     bitdepth: unknown
-    description: BT.1886 2.4 Exponent EOTF Display. Also known as Rec.709 transfer function.
+    description: sRGB primaries, D65 whitepoint and 2.4 Exponent EOTF. Also known as Rec.709.
     isdata: false
     allocation: uniform
     allocationvars: [0, 1]
@@ -247,7 +247,7 @@ colorspaces:
     family: Colorspaces
     equalitygroup: ""
     bitdepth: 32f
-    description: Open Domain Linear BT.709 Tristimulus
+    description: Standard sRGB colorspace with linear transfer-function.
     isdata: false
     allocation: lg2
     allocationvars: [-10, 7, 0.005606562]
