@@ -322,7 +322,10 @@ class AgXcConfig(ocio.Config):
             description="A punchy and more chroma laden look.",
             transform=ocio.GroupTransform(
                 [
-                    ocio.FileTransform(src=self.lut_satmax_2),
+                    ocio.FileTransform(
+                        src=self.lut_satmax_2,
+                        interpolation=ocio.INTERP_TETRAHEDRAL,
+                    ),
                     ocio.CDLTransform(
                         slope=(1.01,) * 3,
                         offset=(0.038,) * 3,

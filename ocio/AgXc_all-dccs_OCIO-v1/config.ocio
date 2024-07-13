@@ -1,8 +1,8 @@
 # version: 1.0.0
 # name: AgXc
 # variant: all-dccs_OCIO-v1
-# built-on: 2024-07-12 13:56:56.529607
-# previous-commit-hash: cce72b196e32ae6187be50d244e32648ba815c0f
+# built-on: 2024-07-13 12:17:42.664924
+# previous-commit-hash: e86c7445674a0d05e8dad347893aa6f5c9014f44
 # // visit https://github.com/MrLixm/AgXc
 # // and inspect the python build script for details
 
@@ -72,7 +72,7 @@ looks:
     description: A punchy and more chroma laden look.
     transform: !<GroupTransform>
       children:
-        - !<FileTransform> {src: saturation-max-2.cube, interpolation: linear}
+        - !<FileTransform> {src: saturation-max-2.cube, interpolation: tetrahedral}
         - !<CDLTransform> {slope: [1.01, 1.01, 1.01], offset: [0.038, 0.038, 0.038], power: [1.24, 1.24, 1.24]}
 
 
