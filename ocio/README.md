@@ -54,8 +54,17 @@ useful if you are granular when setting environment variables and you are using
 custom launcher for every DCC. In that case use the config matching your DCC or
 use the _"default"_ one if your dcc is not listed.
 
+### looks
 
-### implementation design
+The config still offer the initial "Punchy" looks which basically offer a first
+grade pass over the very flat AgXc base. However please note an important distinction
+is that Punchy is applied AFTER the image-rendering transform. This is the opposite
+of the OCIO design which will apply the look BEFORE the View-transform.
+So if your DCC offer a "Look" option (like Blender), keep in mind that using 
+it will NOT have the same look as the one in "Image Rendering ..." colorspace.
+
+
+## implementation design
 
 Here is the design of the image rendering transform, called "AgXc":
 
@@ -75,8 +84,13 @@ As you can notice in the explanations the improvement over the initial AgX
 concept are pretty wacky. Nothing scientific. I don't know why it works but so
 far it seems to hold up pretty well.
 
+For the `Punchy` look:
 
-### differences with original
+- most importantly the looks is applied AFTER image-rendering, but BEFORE display-transform.
+- Punchy increase saturation using the "max" operation to calculate luminance, NOT the usual weights.
+
+
+## differences with original
 
 Note the config has evolved a lto since the initial fork and the following list
 does not fully reflect the differences but might be useful for people used
