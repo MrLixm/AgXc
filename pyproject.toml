@@ -6,7 +6,11 @@ authors = ["Liam Collod <monsieurlixm@gmail.com>"]
 readme = "README.md"
 packages = [
     { include = "AgXLib", from = "python" },
-    { include = "obs_codegen", from = ".dev/obs/python" },
+    { include = "obs_codegen", from = ".dev/implementations/obs/python" },
+    { include = "AgXc_ocio_build", from = ".dev/implementations/ocio" },
+    { include = "giting", from = ".dev/implementations/ocio/modules" },
+    { include = "ocio_config_helpers", from = ".dev/implementations/ocio/modules" },
+    { include = "ocio_matrix_generation", from = ".dev/implementations/ocio/modules" },
 ]
 
 [tool.poetry.dependencies]
