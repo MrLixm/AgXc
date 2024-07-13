@@ -87,7 +87,7 @@ class ConfigVariant:
 
 
 class AgXcConfig(ocio.Config):
-    version = "1.0.0"
+    version = "1.0.0.rc.1"
     lut_dir_name = "LUTs"
     default_cat = "Bradford"
     decimal_precision = 12
