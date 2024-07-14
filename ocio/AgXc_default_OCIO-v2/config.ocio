@@ -1,8 +1,8 @@
-# version: 1.0.0.rc.1
+# version: 1.0.0.rc.2
 # name: AgXc
 # variant: default_OCIO-v2
-# built-on: 2024-07-14 17:04:24.789427
-# previous-commit-hash: 2dacd5b1449b0fd818de178c364f2042077ae73e
+# built-on: 2024-07-14 17:54:17.577260
+# previous-commit-hash: 64a6f20ff9b33abd1d4200e6f338e1d40162acc3
 # // visit https://github.com/MrLixm/AgXc
 # // and inspect the python build script for details
 
@@ -110,7 +110,7 @@ colorspaces:
         - !<ExponentTransform> {value: 2.2, direction: inverse}
 
   - !<ColorSpace>
-    name: sRGB-piecewise
+    name: sRGB-texture
     family: Colorspaces
     equalitygroup: ""
     bitdepth: unknown

@@ -87,7 +87,7 @@ class ConfigVariant:
 
 
 class AgXcConfig(ocio.Config):
-    version = "1.0.0.rc.1"
+    version = "1.0.0.rc.2"
     lut_dir_name = "LUTs"
     default_cat = "Bradford"
     decimal_precision = 12
@@ -127,7 +127,7 @@ class AgXcConfig(ocio.Config):
         self.colorspace_EOTF_2_4 = "2.4-EOTF-Encoding"
         self.colorspace_sRGB_linear = "sRGB-linear"
         self.colorspace_sRGB_2_2 = "sRGB-2.2"
-        self.colorspace_sRGB_EOTF = "sRGB-piecewise"
+        self.colorspace_sRGB_EOTF = "sRGB-texture"
         self.colorspace_Display_P3 = "Display-P3"
         self.colorspace_BT1886 = "BT.1886"
         self.colorspace_AgX_Log = "AgXc-log"
