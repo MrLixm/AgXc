@@ -771,7 +771,7 @@ class AgXcConfig(ocio.Config):
             display.append(View(self.colorspace_AgX_Base, self.colorspace_AgX_Base))
             display.append(View(self.colorspace_AgX_softer, self.colorspace_AgX_softer))
 
-        self.setActiveDisplays(":".join([]))
+        self.setActiveDisplays(":".join([self.colorspace_sRGB_2_2, "Pre-Display"]))
         self.setActiveViews(":".join([]))
 
     def as_text(self) -> str:
