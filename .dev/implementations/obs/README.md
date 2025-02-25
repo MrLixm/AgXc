@@ -17,7 +17,7 @@ With that you will find additional hlsl modules that are all imported in `AgX.hl
 
 You will need :
 
-1. Modify the `.scripts/build-colorspace_core.hlsl.py` by adding the new colorspace.
+1. Modify the `.scripts/obs-build-colorspace_core.hlsl.py` by adding the new colorspace.
    1. This is done by adding a new instance of `AssemblyColorspace`.
 2. Run the script, this will automatically take care of the hlsl code.
 3. You will need to manually update the LUA code :
