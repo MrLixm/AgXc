@@ -1,29 +1,40 @@
-[tool.poetry]
+[project]
 name = "AgXc"
 version = "1.0.0"
 description = "Fork of Troy.S AgX, a display rendering transform available via OCIO and more."
-authors = ["Liam Collod <monsieurlixm@gmail.com>"]
 readme = "README.md"
-packages = [
-    { include = "AgXLib", from = "python" },
-    { include = "obs_codegen", from = ".dev/implementations/obs/python" },
-    { include = "AgXc_ocio_build", from = ".dev/implementations/ocio" },
-    { include = "giting", from = ".dev/implementations/ocio/modules" },
-    { include = "ocio_config_helpers", from = ".dev/implementations/ocio/modules" },
-    { include = "ocio_matrix_generation", from = ".dev/implementations/ocio/modules" },
+authors = [
+    { name = "Liam Collod", email = "monsieurlixm@gmail.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "colour-science==0.4.3",
+    "numpy==1.22",
+    "opencolorio>=2.1",
 ]
 
-[tool.poetry.dependencies]
-python = ">=3.9,<3.11"
-colour-science = { git = "https://github.com/colour-science/colour.git", tag = "v0.4.3" }
-numpy = "*"
-opencolorio = "2.1.*"
+[dependency-groups]
+dev = [
+    "black>=25",
+    "pytest>=8",
+    "types-nuke>=13",
+]
 
-[tool.poetry.group.dev.dependencies]
-black = "*"
-pytest = "*"
-types-nuke = "*"
+[tool.setuptools.packages.find]
+where = [
+    "python",
+    ".dev/implementations/obs/python",
+    ".dev/implementations/ocio/modules",
+]
+include = [
+    "AgXLib",
+    "obs_codegen",
+    "giting",
+    "ocio_config_helpers",
+    "ocio_matrix_generation",
+]
+namespaces = false
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
