@@ -18,23 +18,21 @@ dev = [
     "black>=25",
     "pytest>=8",
     "types-nuke>=13",
+    "hatchling",
 ]
 
-[tool.setuptools.packages.find]
-where = [
-    "python",
-    ".dev/implementations/obs/python",
-    ".dev/implementations/ocio/modules",
+[tool.hatch.build.targets.wheel]
+packages = [
+    "python/AgXLib",
+    ".dev/implementations/obs/python/obs_codegen",
 ]
-include = [
-    "AgXLib",
-    "obs_codegen",
-    "giting",
-    "ocio_config_helpers",
-    "ocio_matrix_generation",
-]
-namespaces = false
+
+[tool.hatch.build.targets.wheel.force-include]
+".dev/implementations/ocio/python/giting.py" = "giting.py"
+".dev/implementations/ocio/python/ocio_config_helpers.py" = "ocio_config_helpers.py"
+".dev/implementations/ocio/python/ocio_matrix_generation.py" = "ocio_matrix_generation.py"
+
 
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
