@@ -1,8 +1,8 @@
 # version: 1.0.0.rc.2
 # name: AgXc
 # variant: blender_OCIO-v2
-# built-on: 2024-07-14 17:54:26.510709
-# previous-commit-hash: 64a6f20ff9b33abd1d4200e6f338e1d40162acc3
+# built-on: 2025-02-25 20:26:16.679843
+# previous-commit-hash: 237572bafc67186cefac67ea688b9ac1aaa15a59
 # // visit https://github.com/MrLixm/AgXc
 # // and inspect the python build script for details
 
@@ -117,9 +117,7 @@ colorspaces:
     family: Colorspaces
     equalitygroup: ""
     bitdepth: unknown
-    description: |
-      sRGB colorspace with piecewise transfer-function.
-      This "colorspace" is required by Redshift.
+    description: sRGB colorspace with piecewise transfer-function.
     isdata: false
     allocation: uniform
     from_scene_reference: !<GroupTransform>
@@ -286,7 +284,6 @@ colorspaces:
       Also the reference/working colorspace for this config.
     isdata: false
     allocation: uniform
-    from_scene_reference: !<MatrixTransform> {}
 
   - !<ColorSpace>
     name: Image AgXc.base-Punchy sRGB-2.2

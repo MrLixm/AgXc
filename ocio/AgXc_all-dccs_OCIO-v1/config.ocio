@@ -1,8 +1,8 @@
 # version: 1.0.0.rc.2
 # name: AgXc
 # variant: all-dccs_OCIO-v1
-# built-on: 2024-07-14 17:54:20.572485
-# previous-commit-hash: 64a6f20ff9b33abd1d4200e6f338e1d40162acc3
+# built-on: 2025-02-25 20:26:10.706354
+# previous-commit-hash: 237572bafc67186cefac67ea688b9ac1aaa15a59
 # // visit https://github.com/MrLixm/AgXc
 # // and inspect the python build script for details
 
@@ -118,9 +118,7 @@ colorspaces:
     family: Colorspaces
     equalitygroup: ""
     bitdepth: unknown
-    description: |
-      sRGB colorspace with piecewise transfer-function.
-      This "colorspace" is required by Redshift.
+    description: sRGB colorspace with piecewise transfer-function.
     isdata: false
     allocation: uniform
     allocationvars: [0, 1]
@@ -301,7 +299,6 @@ colorspaces:
     isdata: false
     allocation: lg2
     allocationvars: [-8, 5, 0.00390625]
-    from_reference: !<MatrixTransform> {}
 
   - !<ColorSpace>
     name: Image AgXc.base-Punchy sRGB-2.2

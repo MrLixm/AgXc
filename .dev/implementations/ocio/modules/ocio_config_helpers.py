@@ -59,7 +59,13 @@ class Colorspace:
             fromReference=self.fromReference,
         )
 
-    def set_transforms_from_reference(self, transforms: list[ocio.Transform]):
+    def set_transforms_from_reference(self, transforms: list[Optional[ocio.Transform]]):
+
+        transforms = [t for t in transforms if t is not None]
+        if not transforms:
+            self.fromReference = None
+            return
+
         if len(transforms) == 1:
             self.fromReference = transforms[0]
             return
@@ -70,7 +76,13 @@ class Colorspace:
 
         self.fromReference = group_transform
 
-    def set_transforms_to_reference(self, transforms: list[ocio.Transform]):
+    def set_transforms_to_reference(self, transforms: list[Optional[ocio.Transform]]):
+
+        transforms = [t for t in transforms if t is not None]
+        if not transforms:
+            self.toReference = None
+            return
+
         if len(transforms) == 1:
             self.toReference = transforms[0]
             return
