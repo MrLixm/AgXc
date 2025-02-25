@@ -845,6 +845,19 @@ class AgXcConfig(ocio.Config):
             colour.write_LUT(lut, str(target_path))
 
 
+_CONFIG_VARIANTS = [
+    ConfigVariant("default_OCIO-v1", ocio_version=1, dcc_support=Dcc.none),
+    ConfigVariant("default_OCIO-v2", ocio_version=2, dcc_support=Dcc.none),
+    ConfigVariant("all-dccs_OCIO-v1", ocio_version=1, dcc_support=Dcc.any),
+    ConfigVariant("all-dccs_OCIO-v2", ocio_version=2, dcc_support=Dcc.any),
+    ConfigVariant("blender_OCIO-v2", ocio_version=2, dcc_support=Dcc.blender),
+    ConfigVariant("redshift_OCIO-v2", ocio_version=2, dcc_support=Dcc.redshift),
+]
+CONFIG_VARIANTS = {cv.name: cv for cv in _CONFIG_VARIANTS}
+
+DEFAULT_TARGET_DIR = PARENT_DIR.parent.parent.parent / "ocio"
+
+
 def get_cli(argv=None):
     """
     Retrieve the command line arguments provided by user.
@@ -854,14 +867,24 @@ def get_cli(argv=None):
         "agxc-ocio-build",
         description="Create the AgXc OCIO config.",
     )
-
+    default_variants = list(CONFIG_VARIANTS.keys())
     parser.add_argument(
-        "--target_dir",
+        "--variants",
         type=str,
-        help="Filesystem path to an existing directory to export the ocio config in.",
+        nargs="*",
+        default=default_variants,
+        help="List of config variants to build (default: %(default)s)",
     )
     parser.add_argument(
-        "--debug", action="store_true", help="Display DEBUG logging message."
+        "--target_dir",
+        type=Path,
+        default=DEFAULT_TARGET_DIR,
+        help="Filesystem path to an existing directory to export the ocio config in (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Display DEBUG logging message.",
     )
 
     parsed = parser.parse_args(argv)
@@ -881,22 +904,15 @@ def main():
         stream=sys.stdout,
     )
 
-    default_target_dir = PARENT_DIR.parent.parent.parent / "ocio"
-    target_dir = Path(cli.target_dir) if cli.target_dir else default_target_dir
+    target_dir: Path = cli.target_dir
+    variants: list[str] = cli.variants
+    variants: list[ConfigVariant] = [CONFIG_VARIANTS[variant] for variant in variants]
 
     if not target_dir.exists():
         raise FileNotFoundError(
             f"Target directory must exist on disk. Got <{target_dir}>."
         )
 
-    variants = [
-        ConfigVariant("default_OCIO-v1", ocio_version=1, dcc_support=Dcc.none),
-        ConfigVariant("default_OCIO-v2", ocio_version=2, dcc_support=Dcc.none),
-        ConfigVariant("all-dccs_OCIO-v1", ocio_version=1, dcc_support=Dcc.any),
-        ConfigVariant("all-dccs_OCIO-v2", ocio_version=2, dcc_support=Dcc.any),
-        ConfigVariant("blender_OCIO-v2", ocio_version=2, dcc_support=Dcc.blender),
-        ConfigVariant("redshift_OCIO-v2", ocio_version=2, dcc_support=Dcc.redshift),
-    ]
     for index, variant in enumerate(variants):
         LOGGER.info(
             f"{index+1}/{len(variants)} generating ocio config variant {variant}"
