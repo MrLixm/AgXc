@@ -31,6 +31,7 @@ packages = [
 ".dev/implementations/ocio/python/giting.py" = "giting.py"
 ".dev/implementations/ocio/python/ocio_config_helpers.py" = "ocio_config_helpers.py"
 ".dev/implementations/ocio/python/ocio_matrix_generation.py" = "ocio_matrix_generation.py"
+".dev/implementations/ocio/python/ocio_AgXc_config.py" = "ocio_AgXc_config.py"
 
 
 [build-system]
