@@ -392,24 +392,6 @@ class AgXcConfig(ocio.Config):
             interpolation=ocio.INTERP_LINEAR,
         )
 
-        # // utilities
-
-        with build_ocio_colorspace(self.colorspace_EOTF_2_2, self) as colorspace:
-            colorspace.description = "transfer-function: 2.2 Exponent EOTF Encoding"
-            colorspace.family = AgXcFamily.util_curves
-            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            if self.use_ocio_v1:
-                colorspace.allocationVars = [0, 1]
-            colorspace.set_transforms_from_reference([transform_eotf_22])
-
-        with build_ocio_colorspace(self.colorspace_EOTF_2_4, self) as colorspace:
-            colorspace.description = "transfer-function: 2.4 Exponent EOTF Encoding"
-            colorspace.family = AgXcFamily.util_curves
-            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            if self.use_ocio_v1:
-                colorspace.allocationVars = [0, 1]
-            colorspace.set_transforms_from_reference([transform_eotf_24])
-
         # // display-referred colorspaces
 
         with build_ocio_colorspace(self.colorspace_sRGB_2_2, self) as colorspace:
@@ -788,6 +770,24 @@ class AgXcConfig(ocio.Config):
                 if self.use_ocio_v1:
                     colorspace.allocationVars = [0, 1]
                 colorspace.set_transforms_from_reference(image_colorspace.transforms)
+
+        # // utilities
+
+        with build_ocio_colorspace(self.colorspace_EOTF_2_2, self) as colorspace:
+            colorspace.description = "transfer-function: 2.2 Exponent EOTF Encoding"
+            colorspace.family = AgXcFamily.util_curves
+            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
+            if self.use_ocio_v1:
+                colorspace.allocationVars = [0, 1]
+            colorspace.set_transforms_from_reference([transform_eotf_22])
+
+        with build_ocio_colorspace(self.colorspace_EOTF_2_4, self) as colorspace:
+            colorspace.description = "transfer-function: 2.4 Exponent EOTF Encoding"
+            colorspace.family = AgXcFamily.util_curves
+            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
+            if self.use_ocio_v1:
+                colorspace.allocationVars = [0, 1]
+            colorspace.set_transforms_from_reference([transform_eotf_24])
 
     def _build_display_view(self):
 
