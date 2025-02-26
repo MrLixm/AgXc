@@ -1,8 +1,8 @@
 # version: 1.0.0.rc.2
 # name: AgXc
 # variant: blender_OCIO-v2
-# built-on: 2025-02-25 20:26:16.679843
-# previous-commit-hash: 237572bafc67186cefac67ea688b9ac1aaa15a59
+# built-on: 2025-02-26 10:43:54.807971
+# previous-commit-hash: 88d772c8e375ee18a2a49be78940b67675ade24b
 # // visit https://github.com/MrLixm/AgXc
 # // and inspect the python build script for details
 
@@ -79,26 +79,6 @@ looks:
 
 
 colorspaces:
-  - !<ColorSpace>
-    name: 2.2-EOTF-Encoding
-    family: Utilities/Curves
-    equalitygroup: ""
-    bitdepth: unknown
-    description: "transfer-function: 2.2 Exponent EOTF Encoding"
-    isdata: false
-    allocation: uniform
-    from_scene_reference: !<ExponentTransform> {value: 2.2, direction: inverse}
-
-  - !<ColorSpace>
-    name: 2.4-EOTF-Encoding
-    family: Utilities/Curves
-    equalitygroup: ""
-    bitdepth: unknown
-    description: "transfer-function: 2.4 Exponent EOTF Encoding"
-    isdata: false
-    allocation: uniform
-    from_scene_reference: !<ExponentTransform> {value: 2.4, direction: inverse}
-
   - !<ColorSpace>
     name: sRGB-2.2
     family: Colorspaces
@@ -488,3 +468,23 @@ colorspaces:
       children:
         - !<ColorSpaceTransform> {src: reference, dst: AgXc.softer}
         - !<ColorSpaceTransform> {src: reference, dst: BT.1886}
+
+  - !<ColorSpace>
+    name: 2.2-EOTF-Encoding
+    family: Utilities/Curves
+    equalitygroup: ""
+    bitdepth: unknown
+    description: "transfer-function: 2.2 Exponent EOTF Encoding"
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<ExponentTransform> {value: 2.2, direction: inverse}
+
+  - !<ColorSpace>
+    name: 2.4-EOTF-Encoding
+    family: Utilities/Curves
+    equalitygroup: ""
+    bitdepth: unknown
+    description: "transfer-function: 2.4 Exponent EOTF Encoding"
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<ExponentTransform> {value: 2.4, direction: inverse}

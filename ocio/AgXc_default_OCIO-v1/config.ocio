@@ -1,8 +1,8 @@
 # version: 1.0.0.rc.2
 # name: AgXc
 # variant: default_OCIO-v1
-# built-on: 2025-02-25 20:26:04.968232
-# previous-commit-hash: 237572bafc67186cefac67ea688b9ac1aaa15a59
+# built-on: 2025-02-26 10:43:42.151232
+# previous-commit-hash: 88d772c8e375ee18a2a49be78940b67675ade24b
 # // visit https://github.com/MrLixm/AgXc
 # // and inspect the python build script for details
 
@@ -74,28 +74,6 @@ looks:
 
 
 colorspaces:
-  - !<ColorSpace>
-    name: 2.2-EOTF-Encoding
-    family: Utilities/Curves
-    equalitygroup: ""
-    bitdepth: unknown
-    description: "transfer-function: 2.2 Exponent EOTF Encoding"
-    isdata: false
-    allocation: uniform
-    allocationvars: [0, 1]
-    from_reference: !<ExponentTransform> {value: [2.2, 2.2, 2.2, 1], direction: inverse}
-
-  - !<ColorSpace>
-    name: 2.4-EOTF-Encoding
-    family: Utilities/Curves
-    equalitygroup: ""
-    bitdepth: unknown
-    description: "transfer-function: 2.4 Exponent EOTF Encoding"
-    isdata: false
-    allocation: uniform
-    allocationvars: [0, 1]
-    from_reference: !<ExponentTransform> {value: [2.4, 2.4, 2.4, 1], direction: inverse}
-
   - !<ColorSpace>
     name: sRGB-2.2
     family: Colorspaces
@@ -512,3 +490,25 @@ colorspaces:
       children:
         - !<ColorSpaceTransform> {src: reference, dst: AgXc.softer}
         - !<ColorSpaceTransform> {src: reference, dst: BT.1886}
+
+  - !<ColorSpace>
+    name: 2.2-EOTF-Encoding
+    family: Utilities/Curves
+    equalitygroup: ""
+    bitdepth: unknown
+    description: "transfer-function: 2.2 Exponent EOTF Encoding"
+    isdata: false
+    allocation: uniform
+    allocationvars: [0, 1]
+    from_reference: !<ExponentTransform> {value: [2.2, 2.2, 2.2, 1], direction: inverse}
+
+  - !<ColorSpace>
+    name: 2.4-EOTF-Encoding
+    family: Utilities/Curves
+    equalitygroup: ""
+    bitdepth: unknown
+    description: "transfer-function: 2.4 Exponent EOTF Encoding"
+    isdata: false
+    allocation: uniform
+    allocationvars: [0, 1]
+    from_reference: !<ExponentTransform> {value: [2.4, 2.4, 2.4, 1], direction: inverse}
