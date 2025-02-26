@@ -2,7 +2,6 @@ import dataclasses
 import datetime
 import enum
 import logging
-import sys
 from pathlib import Path
 from typing import Optional
 from typing import Union
@@ -13,15 +12,6 @@ import numpy
 
 import AgXLib
 
-LOGGER = logging.getLogger(__name__)
-PARENT_DIR = Path(__file__).parent
-
-ADDITIONAL_MODULES_DIR = str(PARENT_DIR)
-
-if ADDITIONAL_MODULES_DIR not in sys.path:
-    print(f"explicitely adding '{ADDITIONAL_MODULES_DIR}' to sys.path")
-    sys.path.append(ADDITIONAL_MODULES_DIR)
-
 from giting import get_current_commit_hash
 from ocio_matrix_generation import matrix_primaries_transform_ocio
 from ocio_matrix_generation import matrix_format_ocio
@@ -31,7 +21,8 @@ from ocio_config_helpers import build_ocio_colorspace
 from ocio_config_helpers import build_display_views
 from ocio_config_helpers import ImageColorspace
 
-
+LOGGER = logging.getLogger(__name__)
+PARENT_DIR = Path(__file__).parent
 _COMMIT_HASH = get_current_commit_hash(PARENT_DIR)
 
 

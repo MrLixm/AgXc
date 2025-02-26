@@ -7,6 +7,13 @@ from typing import TypeVar
 
 import colour
 
+PARENT_DIR = Path(__file__).parent
+ADDITIONAL_MODULES_DIR = str(PARENT_DIR.parent / "python")
+
+if ADDITIONAL_MODULES_DIR not in sys.path:
+    print(f"explicitely adding '{ADDITIONAL_MODULES_DIR}' to sys.path")
+    sys.path.append(ADDITIONAL_MODULES_DIR)
+
 from obs_codegen import Whitepoint
 from obs_codegen import Cat
 from obs_codegen import AssemblyColorspace

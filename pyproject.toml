@@ -11,6 +11,7 @@ dependencies = [
     "colour-science==0.4.3",
     "numpy==1.22",
     "opencolorio>=2.1",
+    "openimageio>=3.0.3",
 ]
 
 [dependency-groups]
@@ -24,14 +25,7 @@ dev = [
 [tool.hatch.build.targets.wheel]
 packages = [
     "python/AgXLib",
-    ".dev/implementations/obs/python/obs_codegen",
 ]
-
-[tool.hatch.build.targets.wheel.force-include]
-".dev/implementations/ocio/python/giting.py" = "giting.py"
-".dev/implementations/ocio/python/ocio_config_helpers.py" = "ocio_config_helpers.py"
-".dev/implementations/ocio/python/ocio_matrix_generation.py" = "ocio_matrix_generation.py"
-".dev/implementations/ocio/python/ocio_AgXc_config.py" = "ocio_AgXc_config.py"
 
 
 [build-system]

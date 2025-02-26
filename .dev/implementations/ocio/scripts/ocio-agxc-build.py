@@ -3,12 +3,18 @@ import logging
 import sys
 from pathlib import Path
 
+PARENT_DIR = Path(__file__).parent
+ADDITIONAL_MODULES_DIR = str(PARENT_DIR.parent / "python")
+
+if ADDITIONAL_MODULES_DIR not in sys.path:
+    print(f"explicitely adding '{ADDITIONAL_MODULES_DIR}' to sys.path")
+    sys.path.append(ADDITIONAL_MODULES_DIR)
+
 from ocio_AgXc_config import ConfigVariant
 from ocio_AgXc_config import Dcc
 from ocio_AgXc_config import AgXcConfig
 
 LOGGER = logging.getLogger(__name__)
-PARENT_DIR = Path(__file__).parent
 
 _CONFIG_VARIANTS = [
     ConfigVariant("default_OCIO-v1", ocio_version=1, dcc_support=Dcc.none),
