@@ -172,9 +172,10 @@ class AgXcConfig(ocio.Config):
                 for display_colorspace in self.display_colorspaces:
                     image_colorspace = ImageColorspace(
                         image_rendering=image_rendering,
+                        workspace_colorspace=self.working_colorspace_name,
                         display_colorspace=display_colorspace,
                         look=look,
-                        look_space=self.reference_colorspace_name,
+                        look_space=self.working_colorspace_name,
                     )
                     self.image_colorspaces.append(image_colorspace)
 
@@ -322,10 +323,17 @@ class AgXcConfig(ocio.Config):
     def _build_looks(self):
         look = ocio.Look(
             name=self.look_punchy,
-            processSpace=self.colorspace_AgX_Log,
+            processSpace=self.working_colorspace_name,
             description="A punchy and more chroma laden look.",
             transform=ocio.GroupTransform(
                 [
+                    # we intentionnally don;t see AgX_Log as processSpace because
+                    # AgX log doesn't handle primaries which results in issue when
+                    # changing the reference space.
+                    ocio.ColorSpaceTransform(
+                        src="reference",
+                        dst=self.colorspace_AgX_Log,
+                    ),
                     ocio.FileTransform(
                         src=self.lut_satmax_2,
                         interpolation=ocio.INTERP_TETRAHEDRAL,
@@ -334,6 +342,10 @@ class AgXcConfig(ocio.Config):
                         slope=(1.01,) * 3,
                         offset=(0.038,) * 3,
                         power=(1.24,) * 3,
+                    ),
+                    ocio.ColorSpaceTransform(
+                        src=self.colorspace_AgX_Log,
+                        dst="reference",
                     ),
                 ]
             ),
@@ -344,19 +356,26 @@ class AgXcConfig(ocio.Config):
         illum_1931 = colour.CCS_ILLUMINANTS["CIE 1931 2 Degree Standard Observer"]
         whitepoint_d65 = illum_1931["D65"]
 
-        def get_conversion_matrix(colorspace_name: str) -> list[float]:
+        def get_conversion_matrix(
+            colorspace_name: str, use_working_colorspace: bool = False
+        ) -> list[float]:
             if colorspace_name == "XYZ":
-                _src: str = "XYZ"
-                _src_whitepoint = whitepoint_d65
+                _dst: str = "XYZ"
+                _dst_whitepoint = whitepoint_d65
             else:
-                _src: colour.RGB_Colourspace = colour.RGB_COLOURSPACES[colorspace_name]
-                _src.use_derived_transformation_matrices(True)
-                _src_whitepoint = _src.whitepoint
+                _dst: colour.RGB_Colourspace = colour.RGB_COLOURSPACES[colorspace_name]
+                _dst.use_derived_transformation_matrices(True)
+                _dst_whitepoint = _dst.whitepoint
+            _src = (
+                self.working_colour_colorspace
+                if use_working_colorspace
+                else self.reference_colour_colorspace
+            )
             return matrix_primaries_transform_ocio(
-                source=self.reference_colour_colorspace,
-                target=_src,
-                source_whitepoint=self.reference_colour_colorspace.whitepoint,
-                target_whitepoint=_src_whitepoint,
+                source=_src,
+                target=_dst,
+                source_whitepoint=_src.whitepoint,
+                target_whitepoint=_dst_whitepoint,
                 cat=self.default_cat,
                 decimals=self.decimal_precision,
             )
@@ -381,6 +400,7 @@ class AgXcConfig(ocio.Config):
         transform_eotf_srgb = ocio.FileTransform(
             src=self.lut_sRGB,
             interpolation=ocio.INTERP_LINEAR,
+            direction=ocio.TRANSFORM_DIR_INVERSE,
         )
 
         # // display-referred colorspaces
@@ -510,7 +530,7 @@ class AgXcConfig(ocio.Config):
                 rotate_b=0,
             )
             outset_matrix = matrix_format_ocio(src_matrix_outset)
-            restore_matrix = get_conversion_matrix("sRGB")
+            restore_matrix = get_conversion_matrix("sRGB", use_working_colorspace=True)
 
             tonescale_lut = (
                 self.lut_AgX_tonescale_hardtoe

@@ -105,6 +105,7 @@ class ImageColorspace:
 
     image_rendering: str
     display_colorspace: str
+    workspace_colorspace: str
     look: Optional[str] = None
     look_space: Optional[str] = None
 
@@ -162,7 +163,7 @@ class ImageColorspace:
             ]
         transforms += [
             ocio.ColorSpaceTransform(
-                src="reference",
+                src=self.workspace_colorspace,
                 dst=self.display_colorspace,
             ),
         ]

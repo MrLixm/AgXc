@@ -1,8 +1,8 @@
 # version: 1.0.0.rc.2
 # name: AgXc
 # variant: all-dccs_OCIO-v1
-# built-on: 2025-02-26 10:43:48.480912
-# previous-commit-hash: 88d772c8e375ee18a2a49be78940b67675ade24b
+# built-on: 2025-02-26 23:35:00.267458
+# previous-commit-hash: a00bee79fe319ded3188288c06e2795b4f7c5bc1
 # // visit https://github.com/MrLixm/AgXc
 # // and inspect the python build script for details
 
@@ -68,12 +68,14 @@ active_views: []
 looks:
   - !<Look>
     name: Punchy
-    process_space: AgXc-log
+    process_space: BT.2020-linear
     description: A punchy and more chroma laden look.
     transform: !<GroupTransform>
       children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc-log}
         - !<FileTransform> {src: saturation-max-2.cube, interpolation: tetrahedral}
         - !<CDLTransform> {slope: [1.01, 1.01, 1.01], offset: [0.038, 0.038, 0.038], power: [1.24, 1.24, 1.24]}
+        - !<ColorSpaceTransform> {src: AgXc-log, dst: reference}
 
 
 colorspaces:
@@ -103,7 +105,7 @@ colorspaces:
     from_reference: !<GroupTransform>
       children:
         - !<MatrixTransform> {matrix: [1.660491002108, -0.587641138789, -0.07284986332, 0, -0.124550474522, 1.132899897126, -0.008349422604, 0, -0.018150763355, -0.100578898008, 1.118729661363, 0, 0, 0, 0, 1]}
-        - !<FileTransform> {src: sRGB-EOTF-inverse.spi1d, interpolation: linear}
+        - !<FileTransform> {src: sRGB-EOTF-inverse.spi1d, interpolation: linear, direction: inverse}
 
   - !<ColorSpace>
     name: Display-P3
@@ -295,7 +297,7 @@ colorspaces:
       children:
         - !<ColorSpaceTransform> {src: reference, dst: AgXc.base}
         - !<LookTransform> {src: BT.2020-linear, dst: BT.2020-linear, looks: Punchy}
-        - !<ColorSpaceTransform> {src: reference, dst: sRGB-2.2}
+        - !<ColorSpaceTransform> {src: BT.2020-linear, dst: sRGB-2.2}
 
   - !<ColorSpace>
     name: Image AgXc.base-Punchy Display-P3
@@ -314,7 +316,7 @@ colorspaces:
       children:
         - !<ColorSpaceTransform> {src: reference, dst: AgXc.base}
         - !<LookTransform> {src: BT.2020-linear, dst: BT.2020-linear, looks: Punchy}
-        - !<ColorSpaceTransform> {src: reference, dst: Display-P3}
+        - !<ColorSpaceTransform> {src: BT.2020-linear, dst: Display-P3}
 
   - !<ColorSpace>
     name: Image AgXc.base-Punchy BT.1886
@@ -333,7 +335,7 @@ colorspaces:
       children:
         - !<ColorSpaceTransform> {src: reference, dst: AgXc.base}
         - !<LookTransform> {src: BT.2020-linear, dst: BT.2020-linear, looks: Punchy}
-        - !<ColorSpaceTransform> {src: reference, dst: BT.1886}
+        - !<ColorSpaceTransform> {src: BT.2020-linear, dst: BT.1886}
 
   - !<ColorSpace>
     name: Image AgXc.base sRGB-2.2
@@ -350,7 +352,7 @@ colorspaces:
     from_reference: !<GroupTransform>
       children:
         - !<ColorSpaceTransform> {src: reference, dst: AgXc.base}
-        - !<ColorSpaceTransform> {src: reference, dst: sRGB-2.2}
+        - !<ColorSpaceTransform> {src: BT.2020-linear, dst: sRGB-2.2}
 
   - !<ColorSpace>
     name: Image AgXc.base Display-P3
@@ -367,7 +369,7 @@ colorspaces:
     from_reference: !<GroupTransform>
       children:
         - !<ColorSpaceTransform> {src: reference, dst: AgXc.base}
-        - !<ColorSpaceTransform> {src: reference, dst: Display-P3}
+        - !<ColorSpaceTransform> {src: BT.2020-linear, dst: Display-P3}
 
   - !<ColorSpace>
     name: Image AgXc.base BT.1886
@@ -384,7 +386,7 @@ colorspaces:
     from_reference: !<GroupTransform>
       children:
         - !<ColorSpaceTransform> {src: reference, dst: AgXc.base}
-        - !<ColorSpaceTransform> {src: reference, dst: BT.1886}
+        - !<ColorSpaceTransform> {src: BT.2020-linear, dst: BT.1886}
 
   - !<ColorSpace>
     name: Image AgXc.softer-Punchy sRGB-2.2
@@ -403,7 +405,7 @@ colorspaces:
       children:
         - !<ColorSpaceTransform> {src: reference, dst: AgXc.softer}
         - !<LookTransform> {src: BT.2020-linear, dst: BT.2020-linear, looks: Punchy}
-        - !<ColorSpaceTransform> {src: reference, dst: sRGB-2.2}
+        - !<ColorSpaceTransform> {src: BT.2020-linear, dst: sRGB-2.2}
 
   - !<ColorSpace>
     name: Image AgXc.softer-Punchy Display-P3
@@ -422,7 +424,7 @@ colorspaces:
       children:
         - !<ColorSpaceTransform> {src: reference, dst: AgXc.softer}
         - !<LookTransform> {src: BT.2020-linear, dst: BT.2020-linear, looks: Punchy}
-        - !<ColorSpaceTransform> {src: reference, dst: Display-P3}
+        - !<ColorSpaceTransform> {src: BT.2020-linear, dst: Display-P3}
 
   - !<ColorSpace>
     name: Image AgXc.softer-Punchy BT.1886
@@ -441,7 +443,7 @@ colorspaces:
       children:
         - !<ColorSpaceTransform> {src: reference, dst: AgXc.softer}
         - !<LookTransform> {src: BT.2020-linear, dst: BT.2020-linear, looks: Punchy}
-        - !<ColorSpaceTransform> {src: reference, dst: BT.1886}
+        - !<ColorSpaceTransform> {src: BT.2020-linear, dst: BT.1886}
 
   - !<ColorSpace>
     name: Image AgXc.softer sRGB-2.2
@@ -458,7 +460,7 @@ colorspaces:
     from_reference: !<GroupTransform>
       children:
         - !<ColorSpaceTransform> {src: reference, dst: AgXc.softer}
-        - !<ColorSpaceTransform> {src: reference, dst: sRGB-2.2}
+        - !<ColorSpaceTransform> {src: BT.2020-linear, dst: sRGB-2.2}
 
   - !<ColorSpace>
     name: Image AgXc.softer Display-P3
@@ -475,7 +477,7 @@ colorspaces:
     from_reference: !<GroupTransform>
       children:
         - !<ColorSpaceTransform> {src: reference, dst: AgXc.softer}
-        - !<ColorSpaceTransform> {src: reference, dst: Display-P3}
+        - !<ColorSpaceTransform> {src: BT.2020-linear, dst: Display-P3}
 
   - !<ColorSpace>
     name: Image AgXc.softer BT.1886
@@ -492,7 +494,7 @@ colorspaces:
     from_reference: !<GroupTransform>
       children:
         - !<ColorSpaceTransform> {src: reference, dst: AgXc.softer}
-        - !<ColorSpaceTransform> {src: reference, dst: BT.1886}
+        - !<ColorSpaceTransform> {src: BT.2020-linear, dst: BT.1886}
 
   - !<ColorSpace>
     name: 2.2-EOTF-Encoding
