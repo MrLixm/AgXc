@@ -252,6 +252,8 @@ def main(output_dir: Path):
         target_dir.mkdir(exist_ok=True)
 
         colorspaces: list[ocio.ColorSpace] = list(config.getColorSpaces())
+        # ensure maximum order between different versions
+        colorspaces = sorted(colorspaces, key=lambda cs: cs.getName())
         colorspaces_n = len(colorspaces)
         for subindex, colorspace in enumerate(colorspaces):
             src_colorspace = "scene_linear"
