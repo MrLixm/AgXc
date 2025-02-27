@@ -80,7 +80,7 @@ class ConfigVariant:
 
 
 class AgXcConfig(ocio.Config):
-    version = "1.0.0.rc.4"
+    version = "1.0.0.rc.5"
     lut_dir_name = "LUTs"
     default_cat = "Bradford"
     decimal_precision = 12
@@ -116,8 +116,6 @@ class AgXcConfig(ocio.Config):
             self.look_punchy,
         ]
 
-        self.colorspace_EOTF_2_2 = "2.2-EOTF-Encoding"
-        self.colorspace_EOTF_2_4 = "2.4-EOTF-Encoding"
         self.colorspace_sRGB_linear = "sRGB-linear"
         self.colorspace_sRGB_2_2 = "sRGB-2.2"
         self.colorspace_sRGB_EOTF = "sRGB-texture"
@@ -396,10 +394,6 @@ class AgXcConfig(ocio.Config):
             value=[2.2, 2.2, 2.2, 1],
             direction=ocio.TRANSFORM_DIR_INVERSE,
         )
-        transform_eotf_24 = ocio.ExponentTransform(
-            value=[2.4, 2.4, 2.4, 1],
-            direction=ocio.TRANSFORM_DIR_INVERSE,
-        )
         transform_eotf_srgb = ocio.FileTransform(
             src=self.lut_sRGB,
             interpolation=ocio.INTERP_LINEAR,
@@ -489,7 +483,10 @@ class AgXcConfig(ocio.Config):
             colorspace.set_transforms_from_reference(
                 [
                     get_matrix_transform("sRGB"),
-                    transform_eotf_24,
+                    ocio.ExponentTransform(
+                        value=[2.4, 2.4, 2.4, 1],
+                        direction=ocio.TRANSFORM_DIR_INVERSE,
+                    ),
                 ]
             )
 
@@ -550,9 +547,9 @@ class AgXcConfig(ocio.Config):
                 ]
             else:
                 linearize_transform = [
-                    ocio.ColorSpaceTransform(
-                        src=self.colorspace_EOTF_2_4,
-                        dst="reference",
+                    ocio.ExponentTransform(
+                        value=[2.4, 2.4, 2.4, 1],
+                        direction=ocio.TRANSFORM_DIR_FORWARD,
                     ),
                 ]
 
@@ -680,9 +677,9 @@ class AgXcConfig(ocio.Config):
                         interpolation=ocio.INTERP_LINEAR,
                     ),
                     # the tonescale already include the EOTF so linearize
-                    ocio.ColorSpaceTransform(
-                        src=self.colorspace_EOTF_2_4,
-                        dst="reference",
+                    ocio.ExponentTransform(
+                        value=[2.4, 2.4, 2.4, 1],
+                        direction=ocio.TRANSFORM_DIR_FORWARD,
                     ),
                 ]
             )
@@ -787,24 +784,6 @@ class AgXcConfig(ocio.Config):
                 if self.use_ocio_v1:
                     colorspace.allocationVars = [0, 1]
                 colorspace.set_transforms_from_reference(image_colorspace.transforms)
-
-        # // utilities
-
-        with build_ocio_colorspace(self.colorspace_EOTF_2_2, self) as colorspace:
-            colorspace.description = "transfer-function: 2.2 Exponent EOTF Encoding"
-            colorspace.family = AgXcFamily.util_curves
-            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            if self.use_ocio_v1:
-                colorspace.allocationVars = [0, 1]
-            colorspace.set_transforms_from_reference([transform_eotf_22])
-
-        with build_ocio_colorspace(self.colorspace_EOTF_2_4, self) as colorspace:
-            colorspace.description = "transfer-function: 2.4 Exponent EOTF Encoding"
-            colorspace.family = AgXcFamily.util_curves
-            colorspace.bitdepth = ocio.BIT_DEPTH_UNKNOWN
-            if self.use_ocio_v1:
-                colorspace.allocationVars = [0, 1]
-            colorspace.set_transforms_from_reference([transform_eotf_24])
 
     def _build_display_view(self):
 
