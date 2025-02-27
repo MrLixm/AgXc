@@ -209,13 +209,27 @@ def generate_contact_sheet(
     )
 
 
+def get_config_version(config_path: Path) -> str | None:
+    content = config_path.read_text("utf-8")
+    for line in content.splitlines():
+        buf = line.replace(" ", "")
+        if buf.startswith("#version:"):
+            return buf.replace("#version:", "").strip(" ")
+    return None
+
+
 def main(output_dir: Path):
 
-    if output_dir.exists():
-        shutil.rmtree(output_dir)
-    output_dir.mkdir()
+    configs_version_path = OCIO_DIR / ".version"
+    configs_version = configs_version_path.read_text("utf-8")
 
-    src_image_path = output_dir / "src.exr"
+    output_dir.mkdir(exist_ok=True)
+    target_root_dir = output_dir / configs_version
+    if target_root_dir.exists():
+        shutil.rmtree(target_root_dir)
+    target_root_dir.mkdir()
+
+    src_image_path = target_root_dir / "src.exr"
     generate_image_src(
         src_image_path,
         width=200,
@@ -234,7 +248,7 @@ def main(output_dir: Path):
         config_path = Path(config_path)
         config: ocio.Config = ocio.Config.CreateFromFile(str(config_path))
         config.validate()
-        target_dir = OUTPUTS_DIR / config_path.parent.name
+        target_dir = target_root_dir / config_path.parent.name
         target_dir.mkdir(exist_ok=True)
 
         colorspaces: list[ocio.ColorSpace] = list(config.getColorSpaces())
@@ -258,11 +272,12 @@ def main(output_dir: Path):
             outputs_by_config.setdefault(config_path, []).append(target_path)
 
         mosaic_path = target_dir / "mosaic.jpg"
+        header = f"{config_path.parent.name} (v{configs_version})"
         generate_contact_sheet(
             image_paths=outputs_by_config[config_path],
             target_path=mosaic_path,
             bitdepth="uint8",
-            header=f"{config_path.parent.name}",
+            header=header,
             max_columns=5,
             compression="jpeg:99",
             srgb_encoded=False,
