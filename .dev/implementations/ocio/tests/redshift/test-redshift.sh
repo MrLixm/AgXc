@@ -1,4 +1,4 @@
-BASEDIR=$(dirname "$0")
+BASEDIR=$(realpath "$(dirname "$0")")
 cd "$BASEDIR" || exit 1
 
 OCIOCONFIG="$BASEDIR/../../../../../ocio/AgXc_redshift_OCIO-v2/config.ocio"
