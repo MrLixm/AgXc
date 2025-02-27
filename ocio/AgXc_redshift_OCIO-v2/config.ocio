@@ -1,8 +1,8 @@
-# version: 1.0.0.rc.3
+# version: 1.0.0.rc.4
 # name: AgXc
 # variant: redshift_OCIO-v2
-# built-on: 2025-02-27 14:50:15.367339
-# previous-commit-hash: 9e857dc1fd93b367f000bc11e1b7d7d7e38cdc26
+# built-on: 2025-02-27 17:10:04.154729
+# previous-commit-hash: 968d65e1b2363b5c309327fcc5c47b7963071881
 # // visit https://github.com/MrLixm/AgXc
 # // and inspect the python build script for details
 

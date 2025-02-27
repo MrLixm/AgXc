@@ -80,7 +80,7 @@ class ConfigVariant:
 
 
 class AgXcConfig(ocio.Config):
-    version = "1.0.0.rc.3"
+    version = "1.0.0.rc.4"
     lut_dir_name = "LUTs"
     default_cat = "Bradford"
     decimal_precision = 12
@@ -139,7 +139,7 @@ class AgXcConfig(ocio.Config):
         self.working_colour_colorspace.use_derived_transformation_matrices(True)
         set_colorspace_linear(self.working_colour_colorspace)
 
-        if variant.dcc_support == Dcc.redshift:
+        if variant.dcc_support in [Dcc.redshift, Dcc.any]:
             self.reference_colorspace_name = self.colorspace_sRGB_linear
             self.reference_colour_colorspace = colour.models.RGB_COLOURSPACE_sRGB.copy()
         else:
@@ -228,7 +228,10 @@ class AgXcConfig(ocio.Config):
         self._build_display_view()
 
     def _build_luts(self):
-        if self._variant.dcc_support != Dcc.redshift:
+        if not (
+            self._variant.dcc_support in [Dcc.redshift, Dcc.any]
+            and not self.use_ocio_v1
+        ):
             lut_domain = [0.0, 1.0]
             array = colour.LUT1D.linear_table(4096, lut_domain)
             array = colour.models.RGB_COLOURSPACE_sRGB.cctf_decoding(array)
@@ -426,7 +429,10 @@ class AgXcConfig(ocio.Config):
             if self.use_ocio_v1:
                 colorspace.allocationVars = [0.0, 1.0]
 
-            if self._variant.dcc_support == Dcc.redshift:
+            if (
+                self._variant.dcc_support in [Dcc.redshift, Dcc.any]
+                and not self.use_ocio_v1
+            ):
                 colorspace.description = (
                     "sRGB IEC 61966-2-1 2.2 Exponent Reference EOTF Display.\n"
                     "This colorspace is required by Redshift to work."
