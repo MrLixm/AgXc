@@ -84,6 +84,9 @@ def main():
             f"Target directory must exist on disk. Got <{target_dir}>."
         )
 
+    version_path = target_dir / ".version"
+    version_path.write_text(AgXcConfig.version)
+
     for index, variant in enumerate(variants):
         LOGGER.info(
             f"{index+1}/{len(variants)} generating ocio config variant {variant}"
