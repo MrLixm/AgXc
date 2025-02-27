@@ -1,5 +1,6 @@
 import argparse
 import logging
+import shutil
 import sys
 from pathlib import Path
 
@@ -95,9 +96,14 @@ def main():
         ocio_config.validate()
 
         ocio_config_path = target_dir / f"AgXc_{variant.name}"
-        if not ocio_config_path.exists():
-            LOGGER.debug(f"mkdir({ocio_config_path})")
-            ocio_config_path.mkdir()
+
+        # remove existing data to start fresh
+        if ocio_config_path.exists():
+            LOGGER.debug(f"rmtree({ocio_config_path})")
+            shutil.rmtree(ocio_config_path)
+
+        LOGGER.debug(f"mkdir({ocio_config_path})")
+        ocio_config_path.mkdir()
 
         ocio_config_path = ocio_config_path / "config.ocio"
         LOGGER.info(f"writing ocio config to <{ocio_config_path}>")
