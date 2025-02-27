@@ -206,6 +206,51 @@ class OcioConfigRenderer:
     view: str
     look: str = ""
 
+    def generate_exposure_bands(
+        self,
+        src_path: Path,
+        dst_path: Path,
+        band_x_offset: float,
+    ):
+        look_str = f", look='{self.look}'" if self.look else ""
+        command = oiiotool_generate_expo_bands(
+            src_path=src_path,
+            dst_path=dst_path,
+            text_left=f"{src_path.stem} - {self.name}",
+            text_right=f"(display='{self.display}', view='{self.view}'{look_str})",
+            ocio_config=self.config_path,
+            ocio_display=self.display,
+            ocio_view=self.view,
+            ocio_srgb_lin=self.srgb_lin,
+            ocio_look=self.look,
+            band_number=7,
+            band_width=0.2,
+            band_exposure_offset=2,
+            band_x_offset=band_x_offset,
+        )
+        LOGGER.debug(f"subprocess.run({command})")
+        subprocess.run(command)
+
+    def generate_full_render(
+        self,
+        src_path: Path,
+        dst_path: Path,
+    ):
+        look_str = f", look='{self.look}'" if self.look else ""
+        command = oiiotool_ocio_render(
+            src_path=src_path,
+            dst_path=dst_path,
+            text_left=f"{src_path.stem} - {self.name}",
+            text_right=f"(display='{self.display}', view='{self.view}'{look_str})",
+            ocio_config=self.config_path,
+            ocio_display=self.display,
+            ocio_view=self.view,
+            ocio_srgb_lin=self.srgb_lin,
+            ocio_look=self.look,
+        )
+        LOGGER.debug(f"subprocess.run({command})")
+        subprocess.run(command)
+
 
 @dataclasses.dataclass
 class SourceAsset:
@@ -304,7 +349,7 @@ def main(target_dir: Path):
             ),
             srgb_lin="Linear",
             display="sRGB",
-            view="sRGB OETF",
+            view="Filmic Log Encoding Base",
             look="Base Contrast",
         ),
     ]
@@ -333,60 +378,46 @@ def main(target_dir: Path):
         LOGGER.debug(f"mkdir({target_src_dir})")
         target_src_dir.mkdir()
 
-        outputs = []
+        bands_outputs = []
+        full_outputs = []
 
-        if not src_asset.skip_bands:
+        for renderer in renderers:
+            dst_path = target_src_dir / f"{src_path.stem}.full.{renderer.filename}.jpg"
+            LOGGER.info(f"generating '{dst_path.name}' ...")
+            renderer.generate_full_render(
+                src_path=src_path,
+                dst_path=dst_path,
+            )
+            full_outputs.append(dst_path)
 
-            for renderer in renderers:
-                dst_path = (
-                    target_src_dir
-                    / f"{src_path.stem}.exposures.{renderer.filename}.jpg"
-                )
-                LOGGER.info(f"generating '{dst_path.name}' ...")
-                look_str = f", look='{renderer.look}'" if renderer.look else ""
-                command = oiiotool_generate_expo_bands(
-                    src_path=src_path,
-                    dst_path=dst_path,
-                    text_left=f"{src_path.stem} - {renderer.name}",
-                    text_right=f"(display='{renderer.display}', view='{renderer.view}'{look_str})",
-                    ocio_config=renderer.config_path,
-                    ocio_display=renderer.display,
-                    ocio_view=renderer.view,
-                    ocio_srgb_lin=renderer.srgb_lin,
-                    ocio_look=renderer.look,
-                    band_number=7,
-                    band_width=0.2,
-                    band_exposure_offset=2,
-                    band_x_offset=src_asset.exposure_bands_offset,
-                )
-                LOGGER.debug(f"subprocess.run({command})")
-                subprocess.run(command)
-                outputs.append(dst_path)
+            if src_asset.skip_bands:
+                continue
 
+            dst_path = (
+                target_src_dir / f"{src_path.stem}.exposures.{renderer.filename}.jpg"
+            )
+            LOGGER.info(f"generating '{dst_path.name}' ...")
+            renderer.generate_exposure_bands(
+                src_path=src_path,
+                dst_path=dst_path,
+                band_x_offset=src_asset.exposure_bands_offset,
+            )
+            bands_outputs.append(dst_path)
+
+        if bands_outputs:
             # create a mosaic which combine all the image created by the renderers
             dst_path = target_src_dir / f"{src_path.stem}.exposures.overview.jpg"
             LOGGER.info(f"generating '{dst_path.name}' ...")
-            command = oiiotool_tile(outputs, dst_path)
+            command = oiiotool_tile(bands_outputs, dst_path)
             LOGGER.debug(f"subprocess.run({command})")
             subprocess.run(command)
 
-        # render the image in full using AgXc renderer
-        renderer = renderers[0]
-        dst_path = target_src_dir / f"{src_path.stem}.full.{renderer.filename}.jpg"
-        look_str = f", look='{renderer.look}'" if renderer.look else ""
-        command = oiiotool_ocio_render(
-            src_path=src_path,
-            dst_path=dst_path,
-            text_left=f"{src_path.stem} - {renderer.name}",
-            text_right=f"(display='{renderer.display}', view='{renderer.view}'{look_str})",
-            ocio_config=renderer.config_path,
-            ocio_display=renderer.display,
-            ocio_view=renderer.view,
-            ocio_srgb_lin=renderer.srgb_lin,
-            ocio_look=renderer.look,
-        )
-        LOGGER.debug(f"subprocess.run({command})")
-        subprocess.run(command)
+        if full_outputs:
+            dst_path = target_src_dir / f"{src_path.stem}.full.overview.jpg"
+            LOGGER.info(f"generating '{dst_path.name}' ...")
+            command = oiiotool_tile(full_outputs, dst_path)
+            LOGGER.debug(f"subprocess.run({command})")
+            subprocess.run(command)
 
     etime = time.time() - stime
     LOGGER.info(f"finished in {etime:.1f}s")
