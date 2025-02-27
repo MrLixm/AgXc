@@ -1,0 +1,21 @@
+{
+    "source": "A030_11081609_C002.braw",
+    "authors": [
+        "Daryl Chris",
+        "@musicbyswift",
+        "@dayday4eva",
+        "@soph_zeks",
+        "@_southythec",
+        "@_hairkraft",
+        "@talkinghand",
+        "@laumie_creates"
+    ],
+    "references": [
+        "https://drive.google.com/file/d/1BnjoWJ5sK3XHZafm8liHL6Ezl7pFO0-a/view",
+        "https://www.youtube.com/watch?v=N7BVmar_m7Q"
+    ],
+    "capture-gamut": "Blackmagic Generation 5",
+    "primary-color": "neutral",
+    "context": "shot with Blackmagic Pocket Cinema Camera 6K, debayered in Nuke with default setting ISO=400,5600K,tint=10,exposure=0,colorspace=Blackmagic Design Film Gen 5.",
+    "type": "plate"
+}

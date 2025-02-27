@@ -1,0 +1,13 @@
+{
+    "source": "Sweep_sRGB_Linear_Half_Zip.exr",
+    "authors": [
+        "Troy Sobotka"
+    ],
+    "references": [
+        "https://github.com/sobotka/Testing_Imagery/blob/main/Sweep_sRGB_Linear_Half_Zip.exr"
+    ],
+    "capture-gamut": "sRGB",
+    "primary-color": "rainbow",
+    "context": "A gradually increasing sweep of uniform R,G,B channels.",
+    "type": "cgi"
+}

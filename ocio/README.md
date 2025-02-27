@@ -9,7 +9,7 @@ Troy guidelines.
 
 The config from the v1.0.0 version now offer a new look based on those research.
 
-![AgXc comparison with ACES and filmic using a cg render](../doc/images/dragon.full.combined.jpg)
+![AgXc comparison with ACES and filmic using a cg render](../doc/images/CAlc-D8T-dragon/CAlc-D8T-dragon.exposures.overview.jpg)
 
 ## prerequisites
 

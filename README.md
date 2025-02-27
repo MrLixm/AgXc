@@ -1,7 +1,7 @@
 "Fork" of Troy Sobotka's AgX https://github.com/sobotka/AgX with implementation
 in various languages/software.
 
-![AgXc comparison with ACES and filmic using a cg render](./doc/images/dragon.full.combined.jpg)
+![AgXc exposure stripe test](./doc/images/CAlc-D8T-dragon/CAlc-D8T-dragon.exposures.AgXc.jpg)
 
 AgX is a [display rendering transform](https://github.com/jedypod/open-display-transform/wiki/doc-introduction)
 (DRT) with the goal of improving image formation.
@@ -14,12 +14,11 @@ smooth color transitions and pleasing exposure handling.
 If you find that there was too much scary-looking words until now, just
 consider AgX as a "LUT".
 
-![AgXc exposure stripe test](./doc/images/dragon.exposure-stripes.AgXc.jpg)
+![AgXc comparison with ACES and filmic using a cg render](./doc/images/CAlc-D8T-dragon/CAlc-D8T-dragon.exposures.overview.jpg)
 
-Exposure stripes increment (in stops units) tests:
+> above tests is using extreme condition with pure ACEScg primaries for rendering.
 
-| [AgXc](./doc/images/dragon.exposure-stripes.AgXc.jpg) | [ACES](./doc/images/dragon.exposure-stripes.ACES1.3-GM.jpg) | [Filmic](./doc/images/dragon.exposure-stripes.filmic.jpg) | [TCAM](./doc/images/dragon.exposure-stripes.TCAMv2.jpg) | [Native](./doc/images/dragon.exposure-stripes.native.jpg) |
-|-------------------------------------------------------|-------------------------------------------------------------|-----------------------------------------------------------|---------------------------------------------------------|-----------------------------------------------------------|
+Make sure to check the [GALLERY.md](GALLERY.md) page for other examples.
 
 # Background
 

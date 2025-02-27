@@ -1,0 +1,13 @@
+{
+    "source": "010_0050_A.lighting.blend",
+    "authors": [
+        "Blender Foundation"
+    ],
+    "references": [
+        "https://studio.blender.org/films/sprite-fright/3a29f46b66bd34/?asset=5456"
+    ],
+    "capture-gamut": "sRGB",
+    "primary-color": "green",
+    "context": "Sample frame from Sprite shot-movie. Rendered on my personal machine with Blender 3.4.0 using the scene provided.",
+    "type": "cgi"
+}
