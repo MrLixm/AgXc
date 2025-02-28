@@ -30,7 +30,7 @@ The config offers support for 3 type of **SDR** display:
 - BT.1886 (also known as Rec.709)
 - DisplayP3 (Apple devices)
 
-You have 5 variants available depending on your needs:
+You have 6 variants available depending on your needs:
 
 - [`AgXc_default_OCIO-v1`](AgXc_default_OCIO-v1)
   - compatible with OCIOv1+  
@@ -40,19 +40,25 @@ You have 5 variants available depending on your needs:
   - minimal configuration
 - [`AgXc_all-dccs_OCIO-v1`](AgXc_all-dccs_OCIO-v1)
   - compatible with OCIOv1+     
-  - try to offer support for all DCCs at once
+  - try to offer support for all DCCs at once (makes it a bit messier)
 - [`AgXc_all-dccs_OCIO-v2`](AgXc_all-dccs_OCIO-v2)
   - compatible with OCIOv2+ and include new feature of OCIOv2 
-  - try to offer support for all DCCs at once
+  - try to offer support for all DCCs at once (makes it a bit messier)
 - [`AgXc_blender_OCIO-v2`](AgXc_blender_OCIO-v2)
   - compatible with OCIOv2+ and include new feature of OCIOv2 
   - offer support for at least Blender
+- [`AgXc_redshift_OCIO-v2`](AgXc_redshift_OCIO-v2)
+  - compatible with OCIOv2+ and include new feature of OCIOv2 
+  - offer support for at least Redshift
 
 If that is not clear, uses the _"all"_ variant if you tend to set the OCIO variable 
 once for all your DCC (ex: system environment variable). The other variants are
 useful if you are granular when setting environment variables and you are using
 custom launcher for every DCC. In that case use the config matching your DCC or
 use the _"default"_ one if your dcc is not listed.
+
+You are guaranteed that colorspace name will not change between variants so you
+are supposed to be able to arbitrarly swap them without issues.
 
 ### looks
 
