@@ -53,7 +53,7 @@ def _oiiotool_export(
 def oiiotool_ocio_render(
     src_path: Path,
     dst_path: Path,
-    text_left: str,
+    text_left: tuple[str, str],
     text_right: str,
     ocio_config: Path,
     ocio_display: str,
@@ -84,9 +84,11 @@ def oiiotool_ocio_render(
         "0x864",
         "--cut",
         "0,0,{TOP.width},{TOP.height+100}",
-        "--text:x=40:y={TOP.height-45}:shadow=0:size=34:color=1,1,1,1:yalign=center",
-        text_left,
-        "--text:x={TOP.width-40}:y={TOP.height-45}:shadow=0:size=24:color=1,1,1,1:yalign=center:xalign=right",
+        "--text:x=40:y={TOP.height-47}:shadow=0:size=34:color=1,1,1,1:yalign=bottom",
+        text_left[0],
+        "--text:x=40:y={TOP.height-42}:shadow=0:size=24:color=1,1,1,1:yalign=top",
+        text_left[1],
+        "--text:x={TOP.width-40}:y={TOP.height-45}:shadow=0:size=34:color=1,1,1,1:yalign=center:xalign=right",
         text_right,
     ]
     return _oiiotool_export(
@@ -240,8 +242,11 @@ class OcioConfigRenderer:
         command = oiiotool_ocio_render(
             src_path=src_path,
             dst_path=dst_path,
-            text_left=f"{src_path.stem} - {self.name}",
-            text_right=f"(display='{self.display}', view='{self.view}'{look_str})",
+            text_left=(
+                f"{self.name}",
+                f"(display='{self.display}', view='{self.view}'{look_str})",
+            ),
+            text_right=f"{src_path.stem}",
             ocio_config=self.config_path,
             ocio_display=self.display,
             ocio_view=self.view,
