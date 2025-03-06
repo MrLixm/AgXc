@@ -3,6 +3,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Distribution / packaging
+*.egg-info/
+*.egg
+MANIFEST
+
 # Unit test / coverage reports
 htmlcov/
 .tox/
@@ -19,8 +24,8 @@ coverage.xml
 # PyCharm
 .idea/
 
-# Poetry
-poetry.lock
+# env/package
+.venv/
 
 # log files
 *.log

@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 
 import nuke
@@ -6,20 +7,21 @@ import nuke
 def main():
     print("test started")
 
-    # XXX: we assume current working directory is correctly set
-    this_dir = Path(".").resolve()
-    repo_dir = this_dir.parent.parent.parent.parent.parent
+    ocio_path = sys.argv[1]
+    assert ocio_path
 
-    agx_config_path = repo_dir / "ocio" / "config.ocio"
-    assert agx_config_path.exists(), agx_config_path
-    assert agx_config_path.is_absolute(), agx_config_path
+    ocio_path = Path(ocio_path).resolve()
+    assert ocio_path.exists(), ocio_path
+    assert ocio_path.is_absolute(), ocio_path
+
+    print(f"using ocio config {ocio_path}")
 
     # XXX: nuke expect posix-like paths
-    agx_config_path = agx_config_path.as_posix()
+    ocio_path = ocio_path.as_posix()
 
     nuke.root()["colorManagement"].setValue("OCIO")
     nuke.root()["OCIO_config"].setValue("custom")
-    nuke.root()["customOCIOConfigPath"].setValue(agx_config_path)
+    nuke.root()["customOCIOConfigPath"].setValue(ocio_path)
 
     assert nuke.usingOcio()
     ocio_error = nuke.root()["ocio_config_error_knob"].value().lstrip(" ")

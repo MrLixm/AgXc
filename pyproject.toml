@@ -1,25 +1,33 @@
-[tool.poetry]
+[project]
 name = "AgXc"
-version = "0.11.4"
+version = "1.0.0"
 description = "Fork of Troy.S AgX, a display rendering transform available via OCIO and more."
-authors = ["Liam Collod <monsieurlixm@gmail.com>"]
 readme = "README.md"
-packages = [
-    { include = "AgXLib", from = "python" },
-    { include = "obs_codegen", from = ".dev/obs/python" },
+authors = [
+    { name = "Liam Collod", email = "monsieurlixm@gmail.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "colour-science==0.4.3",
+    "numpy==1.22",
+    "opencolorio>=2.1",
+    "openimageio>=3.0.3",
 ]
 
-[tool.poetry.dependencies]
-python = ">=3.9,<3.11"
-colour-science = { git = "https://github.com/colour-science/colour.git", tag = "v0.4.3" }
-numpy = "*"
-opencolorio = "2.1.*"
+[dependency-groups]
+dev = [
+    "black>=25",
+    "pytest>=8",
+    "types-nuke>=13",
+    "hatchling",
+]
 
-[tool.poetry.group.dev.dependencies]
-black = "*"
-pytest = "*"
-types-nuke = "*"
+[tool.hatch.build.targets.wheel]
+packages = [
+    "python/AgXLib",
+]
+
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"

@@ -187,6 +187,19 @@ def get_reshaped_colorspace_matrix(
     return colour.algebra.matrix_dot(dst_from_XYZ, src_to_XYZ)
 
 
+def apply_luminance_compensation(array: numpy.ndarray, luma_weights=(0.26, 1.0, 0.2)):
+    """
+    Amateur-algorithm that try to sanitize wide gamut data.
+
+    I don't remember how I come up with this, but it works in the global picture scope.
+    """
+    luma = numpy.dot(array, numpy.array(luma_weights))[..., numpy.newaxis]
+    out = numpy.where(array == 0.0, 0.0, array / luma)
+    out = numpy.power(out + 1, 1 / 0.5)
+    out = out * (luma * 0.25)
+    return out
+
+
 if __name__ == "__main__":
     m = get_reshaped_colorspace_matrix(
         numpy.array([[0.64, 0.33], [0.3, 0.6], [0.15, 0.06]]),

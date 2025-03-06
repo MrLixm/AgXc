@@ -1,0 +1,13 @@
+{
+    "source": "dragonscene_ap0.1001.exr",
+    "authors": [
+        "Liam Collod"
+    ],
+    "references": [
+        "own source"
+    ],
+    "capture-gamut": "ACEScg",
+    "primary-color": "rainbow",
+    "context": "CG Render produced in 3Delight. Rendered with ACEScg primaries. Objects use extreme pure color values.",
+    "type": "cgi"
+}

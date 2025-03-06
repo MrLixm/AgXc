@@ -1,0 +1,470 @@
+# version: 1.0.0.rc.5
+# name: AgXc
+# variant: all-dccs_OCIO-v2
+# built-on: 2025-02-27 17:31:34.867240
+# previous-commit-hash: 31b9f4d8367c08570f6683fd174d17e11ee2d009
+# // visit https://github.com/MrLixm/AgXc
+# // and inspect the python build script for details
+
+ocio_profile_version: 2
+
+environment:
+  {}
+search_path: LUTs
+strictparsing: true
+luma: [0.2126, 0.7152, 0.0722]
+name: AgXc
+description: |
+  AgX image rendering initially designed by Troy Sobotka.
+  Adapted by Liam Collod with full permissions from Troy Sobotka.
+  C.A.T. used for whitepoint conversions is <Bradford>.
+
+roles:
+  aces_interchange: ACES2065-1
+  cie_xyz_d65_interchange: CIE-XYZ-D65
+  color_picking: BT.2020-linear
+  color_timing: sRGB-2.2
+  compositing_log: AgXc-log
+  data: Passthrough
+  default: sRGB-2.2
+  default_byte: sRGB-2.2
+  default_float: sRGB-linear
+  default_sequencer: BT.2020-linear
+  matte_paint: sRGB-2.2
+  reference: sRGB-linear
+  scene_linear: BT.2020-linear
+  texture_paint: sRGB-2.2
+
+file_rules:
+  - !<Rule> {name: Default, colorspace: default}
+
+displays:
+  sRGB-2.2:
+    - !<View> {name: AgXc.base Punchy, colorspace: Image AgXc.base-Punchy sRGB-2.2}
+    - !<View> {name: AgXc.base, colorspace: Image AgXc.base sRGB-2.2}
+    - !<View> {name: AgXc.softer Punchy, colorspace: Image AgXc.softer-Punchy sRGB-2.2}
+    - !<View> {name: AgXc.softer, colorspace: Image AgXc.softer sRGB-2.2}
+    - !<View> {name: Disabled, colorspace: Passthrough}
+    - !<View> {name: Display Native, colorspace: sRGB-2.2}
+  Display-P3:
+    - !<View> {name: AgXc.base Punchy, colorspace: Image AgXc.base-Punchy Display-P3}
+    - !<View> {name: AgXc.base, colorspace: Image AgXc.base Display-P3}
+    - !<View> {name: AgXc.softer Punchy, colorspace: Image AgXc.softer-Punchy Display-P3}
+    - !<View> {name: AgXc.softer, colorspace: Image AgXc.softer Display-P3}
+    - !<View> {name: Disabled, colorspace: Passthrough}
+    - !<View> {name: Display Native, colorspace: Display-P3}
+  BT.1886:
+    - !<View> {name: AgXc.base Punchy, colorspace: Image AgXc.base-Punchy BT.1886}
+    - !<View> {name: AgXc.base, colorspace: Image AgXc.base BT.1886}
+    - !<View> {name: AgXc.softer Punchy, colorspace: Image AgXc.softer-Punchy BT.1886}
+    - !<View> {name: AgXc.softer, colorspace: Image AgXc.softer BT.1886}
+    - !<View> {name: Disabled, colorspace: Passthrough}
+    - !<View> {name: Display Native, colorspace: BT.1886}
+  Pre-Display:
+    - !<View> {name: AgXc.base, colorspace: AgXc.base}
+    - !<View> {name: AgXc.softer, colorspace: AgXc.softer}
+
+active_displays: [sRGB-2.2, Pre-Display]
+active_views: []
+
+looks:
+  - !<Look>
+    name: Punchy
+    process_space: BT.2020-linear
+    description: A punchy and more chroma laden look.
+    transform: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc-log}
+        - !<FileTransform> {src: saturation-max-2.cube, interpolation: tetrahedral}
+        - !<CDLTransform> {slope: [1.01, 1.01, 1.01], offset: [0.038, 0.038, 0.038], power: [1.24, 1.24, 1.24]}
+        - !<ColorSpaceTransform> {src: AgXc-log, dst: reference}
+
+
+colorspaces:
+  - !<ColorSpace>
+    name: sRGB-2.2
+    family: Colorspaces
+    equalitygroup: ""
+    bitdepth: unknown
+    description: sRGB with 2.2 power function transfer-function.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<ExponentTransform> {value: 2.2, direction: inverse}
+
+  - !<ColorSpace>
+    name: sRGB-texture
+    family: Colorspaces
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      sRGB IEC 61966-2-1 2.2 Exponent Reference EOTF Display.
+      This colorspace is required by Redshift to work.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<ExponentWithLinearTransform> {gamma: 2.4, offset: 0.055, direction: inverse}
+        - !<RangeTransform> {min_in_value: 0, max_in_value: 1, min_out_value: 0, max_out_value: 1}
+
+  - !<ColorSpace>
+    name: Display-P3
+    family: Colorspaces
+    equalitygroup: ""
+    bitdepth: unknown
+    description: Display P3 2.2 Exponent EOTF Display. For Apple hardware.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<MatrixTransform> {matrix: [0.868579739716, 0.128919138461, 0.002501121823, 0, 0.034540410254, 0.961811386362, 0.003648203384, 0, 0.016771429041, 0.071039997787, 0.912188573172, 0, 0, 0, 0, 1]}
+        - !<ExponentTransform> {value: 2.2, direction: inverse}
+
+  - !<ColorSpace>
+    name: BT.1886
+    family: Colorspaces
+    equalitygroup: ""
+    bitdepth: unknown
+    description: sRGB primaries, D65 whitepoint and 2.4 Exponent EOTF. Also known as Rec.709.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<ExponentTransform> {value: 2.4, direction: inverse}
+
+  - !<ColorSpace>
+    name: AgXc-log
+    family: AgX
+    equalitygroup: ""
+    bitdepth: 32f
+    description: AgX Log encoding.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<RangeTransform> {min_in_value: 0, min_out_value: 0}
+        - !<AllocationTransform> {allocation: lg2, vars: [-12.47393, 4.026069]}
+
+  - !<ColorSpace>
+    name: AgXc.base
+    family: AgX
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      AgXc image rendering transform.
+      Output is encoded in working colorspace.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: BT.2020-linear}
+        - !<MatrixTransform> {matrix: [0.472738636743224, 0.12687790806726, 0.400383455189515, 0, 0.186381444574505, 0.589240731652576, 0.224377823772918, 0, 0.134783472151827, 0.166178005290661, 0.699038522557512, 0, 0, 0, 0, 1]}
+        - !<AllocationTransform> {allocation: lg2, vars: [-10, 15]}
+        - !<FileTransform> {src: luminance-compensation.cube, interpolation: linear}
+        - !<AllocationTransform> {allocation: lg2, vars: [-10, 15], direction: inverse}
+        - !<MatrixTransform> {matrix: [0.608094094577481, 0.241305765375846, 0.150600140046673, 0, 0.267115783780114, 0.414480014218567, 0.318404202001318, 0, 0.16226708474612, 0.0674729411942575, 0.770259974059622, 0, 0, 0, 0, 1]}
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc-log}
+        - !<FileTransform> {src: AgX-tonescale-default.spi1d, interpolation: linear}
+        - !<MatrixTransform> {matrix: [1.70401243235717, -0.279876242822721, -0.424136189534447, 0, -0.482927084048831, 1.90706327358328, -0.424136189534447, 0, -0.48292708404883, -0.279876242822721, 1.76280332687155, 0, 0, 0, 0, 1]}
+        - !<MatrixTransform> {matrix: [1.660491002108, -0.587641138789, -0.07284986332, 0, -0.124550474522, 1.132899897126, -0.008349422604, 0, -0.018150763355, -0.100578898008, 1.118729661363, 0, 0, 0, 0, 1]}
+        - !<ExponentTransform> {value: 2.4}
+
+  - !<ColorSpace>
+    name: AgXc.softer
+    family: AgX
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      AgXc image rendering transform.
+      The tonescale produce a softer result in highlights.Output is encoded in working colorspace.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: BT.2020-linear}
+        - !<MatrixTransform> {matrix: [0.472738636743224, 0.12687790806726, 0.400383455189515, 0, 0.186381444574505, 0.589240731652576, 0.224377823772918, 0, 0.134783472151827, 0.166178005290661, 0.699038522557512, 0, 0, 0, 0, 1]}
+        - !<AllocationTransform> {allocation: lg2, vars: [-10, 15]}
+        - !<FileTransform> {src: luminance-compensation.cube, interpolation: linear}
+        - !<AllocationTransform> {allocation: lg2, vars: [-10, 15], direction: inverse}
+        - !<MatrixTransform> {matrix: [0.608094094577481, 0.241305765375846, 0.150600140046673, 0, 0.267115783780114, 0.414480014218567, 0.318404202001318, 0, 0.16226708474612, 0.0674729411942575, 0.770259974059622, 0, 0, 0, 0, 1]}
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc-log}
+        - !<FileTransform> {src: AgX-tonescale-hardtoe.spi1d, interpolation: linear}
+        - !<MatrixTransform> {matrix: [1.70401243235717, -0.279876242822721, -0.424136189534447, 0, -0.482927084048831, 1.90706327358328, -0.424136189534447, 0, -0.48292708404883, -0.279876242822721, 1.76280332687155, 0, 0, 0, 0, 1]}
+        - !<MatrixTransform> {matrix: [1.660491002108, -0.587641138789, -0.07284986332, 0, -0.124550474522, 1.132899897126, -0.008349422604, 0, -0.018150763355, -0.100578898008, 1.118729661363, 0, 0, 0, 0, 1]}
+        - !<CDLTransform> {slope: [0.82, 0.82, 0.82]}
+
+  - !<ColorSpace>
+    name: AgXc-tonescale-default
+    family: AgX
+    equalitygroup: ""
+    bitdepth: unknown
+    description: AgXc 1D curve. Output is linear.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc-log}
+        - !<FileTransform> {src: AgX-tonescale-default.spi1d, interpolation: linear}
+        - !<ExponentTransform> {value: 2.4}
+
+  - !<ColorSpace>
+    name: Passthrough
+    family: Colorspaces
+    equalitygroup: scalar
+    bitdepth: 32f
+    description: Passthrough means no transformations. Also know as "raw".
+    isdata: true
+    allocation: uniform
+
+  - !<ColorSpace>
+    name: sRGB-linear
+    family: Colorspaces
+    equalitygroup: ""
+    bitdepth: 32f
+    description: Standard sRGB colorspace with linear transfer-function.
+    isdata: false
+    allocation: uniform
+
+  - !<ColorSpace>
+    name: ACEScg
+    family: Colorspaces
+    equalitygroup: ""
+    bitdepth: 32f
+    description: ACES rendering space for CGI. Also known as AP1.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<MatrixTransform> {matrix: [0.613097402401, 0.339523146184, 0.047379451415, 0, 0.07019372247, 0.916353879057, 0.013452398473, 0, 0.020615592882, 0.109569772938, 0.86981463418, 0, 0, 0, 0, 1]}
+
+  - !<ColorSpace>
+    name: ACES2065-1
+    family: Colorspaces
+    equalitygroup: ""
+    bitdepth: 32f
+    description: ACES Interchange format. Also known as AP0.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<MatrixTransform> {matrix: [0.439632981919, 0.382988698152, 0.177378319929, 0, 0.089776442959, 0.813439428749, 0.096784128292, 0, 0.017541170383, 0.111546553302, 0.870912276314, 0, 0, 0, 0, 1]}
+
+  - !<ColorSpace>
+    name: CIE-XYZ-D65
+    family: Colorspaces
+    equalitygroup: ""
+    bitdepth: 32f
+    description: CIE 1931 Colorspace with a D65 whitepoint.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<MatrixTransform> {matrix: [0.412390799266, 0.357584339384, 0.180480788402, 0, 0.212639005872, 0.715168678768, 0.072192315361, 0, 0.019330818716, 0.119194779795, 0.95053215225, 0, 0, 0, 0, 1]}
+
+  - !<ColorSpace>
+    name: BT.2020-linear
+    family: Colorspaces
+    equalitygroup: ""
+    bitdepth: 32f
+    description: |
+      The ITU-R BT.2020 colorspace with a linear transfer-function.
+      A very wide gamut on the edge of the spectral locus, with a D65 whitepoint.
+      Also the reference/working colorspace for this config.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<MatrixTransform> {matrix: [0.627403895935, 0.329283038378, 0.043313065687, 0, 0.069097289358, 0.919540395075, 0.011362315566, 0, 0.016391438875, 0.088013307877, 0.895595253248, 0, 0, 0, 0, 1]}
+
+  - !<ColorSpace>
+    name: Image AgXc.base-Punchy sRGB-2.2
+    family: Views
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      A display-referred/display-ready colorspace. Built with:
+      - the AgXc.base image rendering transform
+      - the Punchy look transform
+      - a conversion for sRGB-2.2 display standard.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc.base}
+        - !<LookTransform> {src: BT.2020-linear, dst: BT.2020-linear, looks: Punchy}
+        - !<ColorSpaceTransform> {src: BT.2020-linear, dst: sRGB-2.2}
+
+  - !<ColorSpace>
+    name: Image AgXc.base-Punchy Display-P3
+    family: Views
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      A display-referred/display-ready colorspace. Built with:
+      - the AgXc.base image rendering transform
+      - the Punchy look transform
+      - a conversion for Display-P3 display standard.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc.base}
+        - !<LookTransform> {src: BT.2020-linear, dst: BT.2020-linear, looks: Punchy}
+        - !<ColorSpaceTransform> {src: BT.2020-linear, dst: Display-P3}
+
+  - !<ColorSpace>
+    name: Image AgXc.base-Punchy BT.1886
+    family: Views
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      A display-referred/display-ready colorspace. Built with:
+      - the AgXc.base image rendering transform
+      - the Punchy look transform
+      - a conversion for BT.1886 display standard.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc.base}
+        - !<LookTransform> {src: BT.2020-linear, dst: BT.2020-linear, looks: Punchy}
+        - !<ColorSpaceTransform> {src: BT.2020-linear, dst: BT.1886}
+
+  - !<ColorSpace>
+    name: Image AgXc.base sRGB-2.2
+    family: Views
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      A display-referred/display-ready colorspace. Built with:
+      - the AgXc.base image rendering transform
+      - a conversion for sRGB-2.2 display standard.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc.base}
+        - !<ColorSpaceTransform> {src: BT.2020-linear, dst: sRGB-2.2}
+
+  - !<ColorSpace>
+    name: Image AgXc.base Display-P3
+    family: Views
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      A display-referred/display-ready colorspace. Built with:
+      - the AgXc.base image rendering transform
+      - a conversion for Display-P3 display standard.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc.base}
+        - !<ColorSpaceTransform> {src: BT.2020-linear, dst: Display-P3}
+
+  - !<ColorSpace>
+    name: Image AgXc.base BT.1886
+    family: Views
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      A display-referred/display-ready colorspace. Built with:
+      - the AgXc.base image rendering transform
+      - a conversion for BT.1886 display standard.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc.base}
+        - !<ColorSpaceTransform> {src: BT.2020-linear, dst: BT.1886}
+
+  - !<ColorSpace>
+    name: Image AgXc.softer-Punchy sRGB-2.2
+    family: Views
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      A display-referred/display-ready colorspace. Built with:
+      - the AgXc.softer image rendering transform
+      - the Punchy look transform
+      - a conversion for sRGB-2.2 display standard.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc.softer}
+        - !<LookTransform> {src: BT.2020-linear, dst: BT.2020-linear, looks: Punchy}
+        - !<ColorSpaceTransform> {src: BT.2020-linear, dst: sRGB-2.2}
+
+  - !<ColorSpace>
+    name: Image AgXc.softer-Punchy Display-P3
+    family: Views
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      A display-referred/display-ready colorspace. Built with:
+      - the AgXc.softer image rendering transform
+      - the Punchy look transform
+      - a conversion for Display-P3 display standard.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc.softer}
+        - !<LookTransform> {src: BT.2020-linear, dst: BT.2020-linear, looks: Punchy}
+        - !<ColorSpaceTransform> {src: BT.2020-linear, dst: Display-P3}
+
+  - !<ColorSpace>
+    name: Image AgXc.softer-Punchy BT.1886
+    family: Views
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      A display-referred/display-ready colorspace. Built with:
+      - the AgXc.softer image rendering transform
+      - the Punchy look transform
+      - a conversion for BT.1886 display standard.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc.softer}
+        - !<LookTransform> {src: BT.2020-linear, dst: BT.2020-linear, looks: Punchy}
+        - !<ColorSpaceTransform> {src: BT.2020-linear, dst: BT.1886}
+
+  - !<ColorSpace>
+    name: Image AgXc.softer sRGB-2.2
+    family: Views
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      A display-referred/display-ready colorspace. Built with:
+      - the AgXc.softer image rendering transform
+      - a conversion for sRGB-2.2 display standard.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc.softer}
+        - !<ColorSpaceTransform> {src: BT.2020-linear, dst: sRGB-2.2}
+
+  - !<ColorSpace>
+    name: Image AgXc.softer Display-P3
+    family: Views
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      A display-referred/display-ready colorspace. Built with:
+      - the AgXc.softer image rendering transform
+      - a conversion for Display-P3 display standard.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc.softer}
+        - !<ColorSpaceTransform> {src: BT.2020-linear, dst: Display-P3}
+
+  - !<ColorSpace>
+    name: Image AgXc.softer BT.1886
+    family: Views
+    equalitygroup: ""
+    bitdepth: unknown
+    description: |
+      A display-referred/display-ready colorspace. Built with:
+      - the AgXc.softer image rendering transform
+      - a conversion for BT.1886 display standard.
+    isdata: false
+    allocation: uniform
+    from_scene_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: reference, dst: AgXc.softer}
+        - !<ColorSpaceTransform> {src: BT.2020-linear, dst: BT.1886}

@@ -1,0 +1,14 @@
+{
+    "source": "Spectral_Cornell_Boxes_ALEXA.exr",
+    "authors": [
+        "Thomas Mansencal"
+    ],
+    "references": [
+        "https://drive.google.com/file/d/1iGOyfEE23mJm3eSsm1-8BmA-fLv1Etpa/view",
+        "https://community.acescentral.com/t/aces-2-0-cam-drt-development/4700/265?u=mrlixm"
+    ],
+    "capture-gamut": "ARRI Wide Gamut 3",
+    "primary-color": "rainbow",
+    "context": "Spectrally rendered using Mitsuba 3 using the Standard Human Observer. First column is D60 white, 6 other are the primaries and secondaries of BT.2020 using gaussian SPDs (10 FWHM). THis particular variant is rendered using ARRI ALEV3 sensor sensitivities.",
+    "type": "cgi"
+}

@@ -1,0 +1,14 @@
+{
+    "source": "A002_C029_06025K.0000000F.R3D",
+    "authors": [
+        "Martin Smekal"
+    ],
+    "references": [
+        "https://community.acescentral.com/t/rgb-saturation-gamut-mapping-approach-and-a-comp-vfx-perspective/2715/79",
+        "https://www.dropbox.com/sh/u6z2a0jboo4vno8/AADS5vFfUYuSAokonqmh3cZma/martin-smekal"
+    ],
+    "capture-gamut": "REDWideGamutRGB",
+    "primary-color": "red",
+    "context": "Shot with RED HELIUM 8K S35 sensor. Debayered in Nuke to REDWideGamutRGB - Log3G10 at ISO640 - 3600K.",
+    "type": "plate"
+}
